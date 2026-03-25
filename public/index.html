@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulso Financiero NOA — WL HNOS & ASOC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul-oscuro: #0A2D50;
+    --azul-medio: #1A5276;
+    --turquesa: #0096A0;
+    --turquesa-suave: #00B4C5;
+    --turquesa-claro: #E0F7FA;
+    --gris-bg: #F4F6F8;
+    --gris-borde: #E2E8F0;
+    --gris-texto: #64748B;
+    --blanco: #FFFFFF;
+    --rojo: #E53E3E;
+    --verde: #38A169;
+    --naranja: #ED8936;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--gris-bg);
+    color: var(--azul-oscuro);
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: var(--azul-oscuro);
+    padding: 0.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .top-bar .brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--turquesa-suave);
+    letter-spacing: 1px;
+  }
+
+  .top-bar .update-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    background: var(--blanco);
+    border-bottom: 2px solid var(--gris-borde);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+  }
+
+  .nav-tab {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gris-texto);
+    padding: 0.9rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-tab:hover {
+    color: var(--azul-oscuro);
+    background: var(--gris-bg);
+  }
+
+  .nav-tab.active {
+    color: var(--turquesa);
+    border-bottom-color: var(--turquesa);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.4rem;
+  }
+
+  .header-left h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--azul-oscuro);
+  }
+
+  .header-left h1 .highlight {
+    background: linear-gradient(135deg, var(--turquesa), var(--turquesa-suave));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 1rem;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gris-texto);
+    background: var(--blanco);
+  }
+
+  .date-badge::before {
+    content: '◷';
+    font-size: 0.9rem;
+  }
+
+  .subtitle {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--gris-texto);
+    font-size: 0.88rem;
+    margin-bottom: 2.2rem;
+    font-style: italic;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--turquesa);
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--turquesa), var(--turquesa-suave));
+    border-radius: 2px;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .card {
+    background: var(--blanco);
+    border: 1.5px solid var(--gris-borde);
+    border-radius: 12px;
+    padding: 1.3rem 1.4rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--azul-oscuro), var(--turquesa));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: var(--turquesa);
+    box-shadow: 0 6px 24px rgba(0, 150, 160, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .card-label {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gris-texto);
+    margin-bottom: 0.7rem;
+  }
+
+  .card-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+    line-height: 1;
+  }
+
+  .card-detail {
+    margin-top: 0.5rem;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.72rem;
+    color: var(--gris-texto);
+  }
+
+  /* ── LOADING STATE ── */
+  .card-value.loading {
+    background: linear-gradient(90deg, var(--gris-borde) 25%, #f0f0f0 50%, var(--gris-borde) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+    height: 2.2rem;
+    width: 130px;
+    color: transparent;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 3rem;
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--gris-borde);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.72rem;
+    color: var(--gris-texto);
+  }
+
+  .footer a {
+    color: var(--turquesa);
+    text-decoration: none;
+  }
+
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .footer-right span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* ── PLACEHOLDER SECTIONS ── */
+  .coming-soon {
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed var(--gris-borde);
+    border-radius: 12px;
+    color: var(--gris-texto);
+    margin-bottom: 2rem;
+    display: none;
+  }
+
+  .coming-soon h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .coming-soon p {
+    font-size: 0.85rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .top-bar { padding: 0.5rem 1rem; }
+    .nav-tabs { padding: 0 1rem; overflow-x: auto; }
+    .nav-tab { padding: 0.8rem 1rem; font-size: 0.75rem; white-space: nowrap; }
+    .main { padding: 1.5rem 1rem; }
+    .header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .header-right { text-align: left; }
+    .header-left h1 { font-size: 1.6rem; }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+    .card-value { font-size: 1.5rem; }
+    .footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+
+  @media (max-width: 420px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="brand">WL HNOS & ASOC</div>
+    <div class="update-info" id="update-time">Actualizando...</div>
+  </div>
+
+  <!-- NAV TABS -->
+  <nav class="nav-tabs">
+    <div class="nav-tab active">Pulso Financiero</div>
+    <div class="nav-tab" style="opacity:0.4; cursor:default;">Instrumentos</div>
+    <div class="nav-tab" style="opacity:0.4; cursor:default;">Costos</div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <h1>PULSO<br><span class="highlight">FINANCIERO NOA</span></h1>
+      </div>
+      <div class="header-right">
+        <div class="date-badge" id="fecha-hoy"></div>
+      </div>
+    </div>
+
+    <p class="subtitle">Información financiera clave pensada para vos y tu negocio</p>
+
+    <!-- SECCIÓN: VARIABLES CLAVE -->
+    <div class="section-title">Variables Clave</div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-label">Dólar Oficial</div>
+        <div class="card-value loading" id="val-oficial"></div>
+        <div class="card-detail" id="det-oficial"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Dólar MEP</div>
+        <div class="card-value loading" id="val-mep"></div>
+        <div class="card-detail" id="det-mep"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Riesgo País</div>
+        <div class="card-value loading" id="val-riesgo"></div>
+        <div class="card-detail" id="det-riesgo"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">TNA Badlar (Priv.)</div>
+        <div class="card-value loading" id="val-badlar"></div>
+        <div class="card-detail" id="det-badlar"></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER: futuras secciones -->
+    <div class="coming-soon" id="placeholder-instrumentos">
+      <h3>Instrumentos Sugeridos</h3>
+      <p>Próximamente — rendimientos vía API</p>
+    </div>
+
+    <div class="coming-soon" id="placeholder-costos">
+      <h3>Costos de Financiamiento</h3>
+      <p>Próximamente — cheques, caución, adelanto CC</p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
+      <div class="footer-right">
+        <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA</span>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  // ── Fecha ──
+  const hoy = new Date();
+  document.getElementById('fecha-hoy').textContent =
+    hoy.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  // ── Helpers ──
+  function formatARS(num) {
+    return '$' + Math.round(num).toLocaleString('es-AR');
+  }
+
+  function setCard(id, valor, detalle) {
+    const el = document.getElementById('val-' + id);
+    el.classList.remove('loading');
+    el.textContent = valor;
+    if (detalle) document.getElementById('det-' + id).textContent = detalle;
+  }
+
+  function setError(id, msg) {
+    const el = document.getElementById('val-' + id);
+    el.classList.remove('loading');
+    el.textContent = '—';
+    document.getElementById('det-' + id).textContent = msg || 'Error al consultar';
+  }
+
+  function formatFecha(fechaStr) {
+    try {
+      const d = new Date(fechaStr);
+      return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+    } catch { return ''; }
+  }
+
+  // ── Cargar datos ──
+  let apisOk = 0;
+  const totalApis = 4;
+
+  function checkDone() {
+    apisOk++;
+    if (apisOk >= totalApis) {
+      document.getElementById('update-time').textContent =
+        'Actualizado: ' + hoy.toLocaleString('es-AR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+    }
+  }
+
+  // 1. Dólar Oficial
+  fetch('https://dolarapi.com/v1/dolares/oficial')
+    .then(r => r.json())
+    .then(d => {
+      setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
+    })
+    .catch(() => setError('oficial'))
+    .finally(checkDone);
+
+  // 2. Dólar MEP
+  fetch('https://dolarapi.com/v1/dolares/bolsa')
+    .then(r => r.json())
+    .then(d => {
+      setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
+    })
+    .catch(() => setError('mep'))
+    .finally(checkDone);
+
+  // 3. Riesgo País
+  fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo')
+    .then(r => r.json())
+    .then(d => {
+      setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha);
+    })
+    .catch(() => setError('riesgo'))
+    .finally(checkDone);
+
+  // 4. BADLAR via proxy (en Vercel usa /api/bcra?id=7, en local intenta directo)
+  const bcraUrl = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+    ? 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7'
+    : '/api/bcra?id=7';
+
+  fetch(bcraUrl)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(d => {
+      let valor = null, fecha = null;
+      if (d.results && d.results.length > 0) {
+        const res = d.results[0];
+        if (res.detalle && res.detalle.length > 0) {
+          valor = res.detalle[0].valor;
+          fecha = res.detalle[0].fecha;
+        } else if (res.ultValorInformado !== undefined) {
+          valor = res.ultValorInformado;
+          fecha = res.ultFechaInformada;
+        }
+      }
+      if (valor !== null) {
+        setCard('badlar', valor.toFixed(2) + '%', 'TNA · ' + (fecha || ''));
+      } else {
+        setError('badlar', 'Sin datos');
+      }
+    })
+    .catch(() => setError('badlar', 'Requiere deploy en Vercel'))
+    .finally(checkDone);
+</script>
+
+</body>
+</html>
