@@ -9,504 +9,406 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --azul-oscuro: #0A2D50;
-    --azul-medio: #1A5276;
-    --turquesa: #0096A0;
-    --turquesa-suave: #00B4C5;
-    --turquesa-claro: #E0F7FA;
-    --gris-bg: #F4F6F8;
-    --gris-borde: #E2E8F0;
-    --gris-texto: #64748B;
-    --blanco: #FFFFFF;
-    --rojo: #E53E3E;
-    --verde: #38A169;
-    --naranja: #ED8936;
+    --azul-oscuro:#0A2D50; --azul-medio:#1A5276; --turquesa:#0096A0;
+    --turquesa-suave:#00B4C5; --turquesa-claro:#E0F7FA; --gris-bg:#F4F6F8;
+    --gris-borde:#E2E8F0; --gris-texto:#64748B; --blanco:#FFFFFF;
+    --rojo:#E53E3E; --verde:#38A169; --naranja:#ED8936;
   }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Open Sans',sans-serif;background:var(--gris-bg);color:var(--azul-oscuro);min-height:100vh}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .top-bar{background:var(--azul-oscuro);padding:.5rem 2rem;display:flex;justify-content:space-between;align-items:center}
+  .top-bar .brand{font-family:'Poppins',sans-serif;font-weight:700;font-size:.8rem;color:var(--turquesa-suave);letter-spacing:1px}
+  .top-bar .update-info{font-family:'Space Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.5)}
+  .top-bar .countdown{font-family:'Space Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.35);margin-left:.5rem}
 
-  body {
-    font-family: 'Open Sans', sans-serif;
-    background: var(--gris-bg);
-    color: var(--azul-oscuro);
-    min-height: 100vh;
+  .nav-tabs{background:var(--blanco);border-bottom:2px solid var(--gris-borde);padding:0 2rem;display:flex;gap:0}
+  .nav-tab{font-family:'Open Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--gris-texto);padding:.9rem 1.5rem;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+  .nav-tab:hover{color:var(--azul-oscuro);background:var(--gris-bg)}
+  .nav-tab.active{color:var(--turquesa);border-bottom-color:var(--turquesa)}
+
+  .main{max-width:1100px;margin:0 auto;padding:2rem}
+
+  .header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.4rem}
+  .header-left h1{font-family:'Poppins',sans-serif;font-size:2.2rem;font-weight:800;line-height:1.05}
+  .header-left h1 .highlight{background:linear-gradient(135deg,var(--turquesa),var(--turquesa-suave));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .date-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border:1.5px solid var(--gris-borde);border-radius:20px;font-family:'Space Mono',monospace;font-size:.78rem;color:var(--gris-texto);background:var(--blanco)}
+  .date-badge::before{content:'◷';font-size:.9rem}
+  .subtitle{color:var(--gris-texto);font-size:.88rem;margin-bottom:2.2rem;font-style:italic}
+
+  .section-title{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--turquesa)}
+  .section-title::before{content:'';width:4px;height:20px;background:linear-gradient(180deg,var(--turquesa),var(--turquesa-suave));border-radius:2px}
+
+  .cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2.5rem}
+  .card{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;padding:1.2rem 1.3rem;transition:all .3s;position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--azul-oscuro),var(--turquesa));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+  .card:hover{border-color:var(--turquesa);box-shadow:0 6px 24px rgba(0,150,160,.1);transform:translateY(-2px)}
+  .card:hover::before{transform:scaleX(1)}
+  .card-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texto);margin-bottom:.6rem}
+  .card-value{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:700;color:var(--azul-oscuro);line-height:1}
+  .card-detail{margin-top:.4rem;font-size:.7rem;color:var(--gris-texto)}
+
+  .card-value.loading{background:linear-gradient(90deg,var(--gris-borde) 25%,#f0f0f0 50%,var(--gris-borde) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:2rem;width:110px;color:transparent}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* LECAP TABLE */
+  .lecap-section{margin-bottom:2.5rem}
+  .lecap-table-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden}
+  .lecap-table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .lecap-table thead{background:var(--azul-oscuro)}
+  .lecap-table th{font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.85);padding:.8rem 1rem;text-align:left}
+  .lecap-table td{padding:.7rem 1rem;border-bottom:1px solid var(--gris-bg);font-family:'Open Sans',sans-serif}
+  .lecap-table tbody tr:hover{background:var(--turquesa-claro)}
+  .lecap-table tbody tr:last-child td{border-bottom:none}
+  .ticker-badge{font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;color:var(--turquesa);background:var(--turquesa-claro);padding:.2rem .5rem;border-radius:4px}
+  .tir-value{font-family:'Space Mono',monospace;font-weight:700;color:var(--azul-oscuro);font-size:.9rem}
+  .lecap-loading{padding:2rem;text-align:center;color:var(--gris-texto);font-size:.85rem}
+
+  .footer{margin-top:3rem;padding:1.2rem 0;border-top:1px solid var(--gris-borde);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--gris-texto)}
+
+  @media(max-width:768px){
+    .top-bar{padding:.5rem 1rem}.nav-tabs{padding:0 1rem;overflow-x:auto}
+    .nav-tab{padding:.8rem 1rem;font-size:.75rem;white-space:nowrap}
+    .main{padding:1.5rem 1rem}
+    .header{flex-direction:column;align-items:flex-start;gap:.8rem}
+    .header-left h1{font-size:1.6rem}
+    .cards-grid{grid-template-columns:1fr 1fr}
+    .card-value{font-size:1.3rem}
+    .footer{flex-direction:column;gap:.5rem;text-align:center}
   }
-
-  /* ── TOP BAR ── */
-  .top-bar {
-    background: var(--azul-oscuro);
-    padding: 0.5rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .top-bar .brand {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: var(--turquesa-suave);
-    letter-spacing: 1px;
-  }
-
-  .top-bar .update-info {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.5);
-  }
-
-  /* ── NAV TABS ── */
-  .nav-tabs {
-    background: var(--blanco);
-    border-bottom: 2px solid var(--gris-borde);
-    padding: 0 2rem;
-    display: flex;
-    gap: 0;
-  }
-
-  .nav-tab {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--gris-texto);
-    padding: 0.9rem 1.5rem;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .nav-tab:hover {
-    color: var(--azul-oscuro);
-    background: var(--gris-bg);
-  }
-
-  .nav-tab.active {
-    color: var(--turquesa);
-    border-bottom-color: var(--turquesa);
-  }
-
-  /* ── MAIN CONTENT ── */
-  .main {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 0.4rem;
-  }
-
-  .header-left h1 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 800;
-    line-height: 1.05;
-    color: var(--azul-oscuro);
-  }
-
-  .header-left h1 .highlight {
-    background: linear-gradient(135deg, var(--turquesa), var(--turquesa-suave));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .header-right {
-    text-align: right;
-  }
-
-  .date-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 1rem;
-    border: 1.5px solid var(--gris-borde);
-    border-radius: 20px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--gris-texto);
-    background: var(--blanco);
-  }
-
-  .date-badge::before {
-    content: '◷';
-    font-size: 0.9rem;
-  }
-
-  .subtitle {
-    font-family: 'Open Sans', sans-serif;
-    color: var(--gris-texto);
-    font-size: 0.88rem;
-    margin-bottom: 2.2rem;
-    font-style: italic;
-  }
-
-  /* ── SECTION TITLE ── */
-  .section-title {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 1.2rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.8px;
-    color: var(--turquesa);
-  }
-
-  .section-title::before {
-    content: '';
-    width: 4px;
-    height: 20px;
-    background: linear-gradient(180deg, var(--turquesa), var(--turquesa-suave));
-    border-radius: 2px;
-  }
-
-  /* ── CARDS GRID ── */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .card {
-    background: var(--blanco);
-    border: 1.5px solid var(--gris-borde);
-    border-radius: 12px;
-    padding: 1.3rem 1.4rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--azul-oscuro), var(--turquesa));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-  }
-
-  .card:hover {
-    border-color: var(--turquesa);
-    box-shadow: 0 6px 24px rgba(0, 150, 160, 0.1);
-    transform: translateY(-2px);
-  }
-
-  .card:hover::before {
-    transform: scaleX(1);
-  }
-
-  .card-label {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gris-texto);
-    margin-bottom: 0.7rem;
-  }
-
-  .card-value {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--azul-oscuro);
-    line-height: 1;
-  }
-
-  .card-detail {
-    margin-top: 0.5rem;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 0.72rem;
-    color: var(--gris-texto);
-  }
-
-  /* ── LOADING STATE ── */
-  .card-value.loading {
-    background: linear-gradient(90deg, var(--gris-borde) 25%, #f0f0f0 50%, var(--gris-borde) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 6px;
-    height: 2.2rem;
-    width: 130px;
-    color: transparent;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* ── FOOTER ── */
-  .footer {
-    margin-top: 3rem;
-    padding: 1.2rem 0;
-    border-top: 1px solid var(--gris-borde);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 0.72rem;
-    color: var(--gris-texto);
-  }
-
-  .footer a {
-    color: var(--turquesa);
-    text-decoration: none;
-  }
-
-  .footer-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .footer-right span {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  /* ── PLACEHOLDER SECTIONS ── */
-  .coming-soon {
-    padding: 3rem 2rem;
-    text-align: center;
-    border: 2px dashed var(--gris-borde);
-    border-radius: 12px;
-    color: var(--gris-texto);
-    margin-bottom: 2rem;
-    display: none;
-  }
-
-  .coming-soon h3 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .coming-soon p {
-    font-size: 0.85rem;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    .top-bar { padding: 0.5rem 1rem; }
-    .nav-tabs { padding: 0 1rem; overflow-x: auto; }
-    .nav-tab { padding: 0.8rem 1rem; font-size: 0.75rem; white-space: nowrap; }
-    .main { padding: 1.5rem 1rem; }
-    .header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
-    .header-right { text-align: left; }
-    .header-left h1 { font-size: 1.6rem; }
-    .cards-grid { grid-template-columns: 1fr 1fr; }
-    .card-value { font-size: 1.5rem; }
-    .footer { flex-direction: column; gap: 0.5rem; text-align: center; }
-  }
-
-  @media (max-width: 420px) {
-    .cards-grid { grid-template-columns: 1fr; }
-  }
+  @media(max-width:420px){.cards-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="brand">WL HNOS & ASOC</div>
-    <div class="update-info" id="update-time">Actualizando...</div>
+<div class="top-bar">
+  <div class="brand">WL HNOS & ASOC</div>
+  <div style="display:flex;align-items:center">
+    <span class="update-info" id="update-time">Actualizando...</span>
+    <span class="countdown" id="countdown"></span>
+  </div>
+</div>
+
+<nav class="nav-tabs">
+  <div class="nav-tab active">Pulso Financiero</div>
+  <div class="nav-tab" style="opacity:.4;cursor:default">Instrumentos</div>
+  <div class="nav-tab" style="opacity:.4;cursor:default">Costos</div>
+</nav>
+
+<div class="main">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>PULSO<br><span class="highlight">FINANCIERO NOA</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="date-badge" id="fecha-hoy"></div>
+    </div>
+  </div>
+  <p class="subtitle">Información financiera clave pensada para vos y tu negocio</p>
+
+  <!-- VARIABLES CLAVE -->
+  <div class="section-title">Variables Clave</div>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-label">Dólar Oficial</div>
+      <div class="card-value loading" id="val-oficial"></div>
+      <div class="card-detail" id="det-oficial"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Dólar MEP</div>
+      <div class="card-value loading" id="val-mep"></div>
+      <div class="card-detail" id="det-mep"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Dólar CCL</div>
+      <div class="card-value loading" id="val-ccl"></div>
+      <div class="card-detail" id="det-ccl"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Riesgo País</div>
+      <div class="card-value loading" id="val-riesgo"></div>
+      <div class="card-detail" id="det-riesgo"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">TNA Badlar (Priv.)</div>
+      <div class="card-value loading" id="val-badlar"></div>
+      <div class="card-detail" id="det-badlar"></div>
+    </div>
   </div>
 
-  <!-- NAV TABS -->
-  <nav class="nav-tabs">
-    <div class="nav-tab active">Pulso Financiero</div>
-    <div class="nav-tab" style="opacity:0.4; cursor:default;">Instrumentos</div>
-    <div class="nav-tab" style="opacity:0.4; cursor:default;">Costos</div>
-  </nav>
-
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- HEADER -->
-    <div class="header">
-      <div class="header-left">
-        <h1>PULSO<br><span class="highlight">FINANCIERO NOA</span></h1>
-      </div>
-      <div class="header-right">
-        <div class="date-badge" id="fecha-hoy"></div>
-      </div>
+  <!-- LECAPS -->
+  <div class="section-title">LECAPs — Rendimientos en Vivo</div>
+  <div class="lecap-section">
+    <div class="lecap-table-wrap">
+      <table class="lecap-table">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Nombre</th>
+            <th>Vencimiento</th>
+            <th>Días</th>
+            <th>Precio</th>
+            <th>VPV</th>
+            <th>TNA</th>
+            <th>TIR (TEA)</th>
+          </tr>
+        </thead>
+        <tbody id="lecap-body">
+          <tr><td colspan="8" class="lecap-loading">Cargando LECAPs...</td></tr>
+        </tbody>
+      </table>
     </div>
-
-    <p class="subtitle">Información financiera clave pensada para vos y tu negocio</p>
-
-    <!-- SECCIÓN: VARIABLES CLAVE -->
-    <div class="section-title">Variables Clave</div>
-
-    <div class="cards-grid">
-      <div class="card">
-        <div class="card-label">Dólar Oficial</div>
-        <div class="card-value loading" id="val-oficial"></div>
-        <div class="card-detail" id="det-oficial"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Dólar MEP</div>
-        <div class="card-value loading" id="val-mep"></div>
-        <div class="card-detail" id="det-mep"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Riesgo País</div>
-        <div class="card-value loading" id="val-riesgo"></div>
-        <div class="card-detail" id="det-riesgo"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">TNA Badlar (Priv.)</div>
-        <div class="card-value loading" id="val-badlar"></div>
-        <div class="card-detail" id="det-badlar"></div>
-      </div>
-    </div>
-
-    <!-- PLACEHOLDER: futuras secciones -->
-    <div class="coming-soon" id="placeholder-instrumentos">
-      <h3>Instrumentos Sugeridos</h3>
-      <p>Próximamente — rendimientos vía API</p>
-    </div>
-
-    <div class="coming-soon" id="placeholder-costos">
-      <h3>Costos de Financiamiento</h3>
-      <p>Próximamente — cheques, caución, adelanto CC</p>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-      <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
-      <div class="footer-right">
-        <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA</span>
-      </div>
-    </div>
-
   </div>
+
+  <div class="footer">
+    <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
+    <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
+  </div>
+</div>
 
 <script>
-  // ── Fecha ──
-  const hoy = new Date();
+// ══════════════════════════════════════════
+// DETECT ENVIRONMENT
+// ══════════════════════════════════════════
+const IS_LOCAL = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+const formatARS = n => '$' + Math.round(n).toLocaleString('es-AR');
+const formatDate = s => { const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; };
+
+function setCard(id, valor, detalle) {
+  const el = document.getElementById('val-' + id);
+  el.classList.remove('loading');
+  el.textContent = valor;
+  if (detalle) document.getElementById('det-' + id).textContent = detalle;
+}
+function setError(id, msg) {
+  const el = document.getElementById('val-' + id);
+  el.classList.remove('loading');
+  el.textContent = '—';
+  document.getElementById('det-' + id).textContent = msg || 'Error';
+}
+
+// Settlement T+1 (next business day)
+function getSettlement() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const day = d.getDay();
+  if (day === 0) d.setDate(d.getDate() + 1);
+  if (day === 6) d.setDate(d.getDate() + 2);
+  return d;
+}
+
+// Fetch with fallback: try proxy first, then direct
+async function fetchWithFallback(proxyUrl, directUrl) {
+  if (!IS_LOCAL) {
+    const r = await fetch(proxyUrl);
+    if (r.ok) return r.json();
+  }
+  // Fallback: try direct
+  const r2 = await fetch(directUrl);
+  if (!r2.ok) throw new Error('HTTP ' + r2.status);
+  return r2.json();
+}
+
+// ══════════════════════════════════════════
+// FETCH ALL DATA
+// ══════════════════════════════════════════
+function loadAll() {
+  const now = new Date();
   document.getElementById('fecha-hoy').textContent =
-    hoy.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+    now.toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' });
 
-  // ── Helpers ──
-  function formatARS(num) {
-    return '$' + Math.round(num).toLocaleString('es-AR');
-  }
-
-  function setCard(id, valor, detalle) {
-    const el = document.getElementById('val-' + id);
-    el.classList.remove('loading');
-    el.textContent = valor;
-    if (detalle) document.getElementById('det-' + id).textContent = detalle;
-  }
-
-  function setError(id, msg) {
-    const el = document.getElementById('val-' + id);
-    el.classList.remove('loading');
-    el.textContent = '—';
-    document.getElementById('det-' + id).textContent = msg || 'Error al consultar';
-  }
-
-  function formatFecha(fechaStr) {
-    try {
-      const d = new Date(fechaStr);
-      return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
-    } catch { return ''; }
-  }
-
-  // ── Cargar datos ──
-  let apisOk = 0;
-  const totalApis = 4;
-
-  function checkDone() {
-    apisOk++;
-    if (apisOk >= totalApis) {
-      document.getElementById('update-time').textContent =
-        'Actualizado: ' + hoy.toLocaleString('es-AR', {
-          day: '2-digit', month: '2-digit', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-    }
-  }
-
-  // 1. Dólar Oficial
+  // 1. Dólar Oficial (DolarAPI — sin CORS, funciona directo)
   fetch('https://dolarapi.com/v1/dolares/oficial')
     .then(r => r.json())
-    .then(d => {
-      setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
-    })
-    .catch(() => setError('oficial'))
-    .finally(checkDone);
+    .then(d => setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
+    .catch(() => setError('oficial'));
 
-  // 2. Dólar MEP
+  // 2. Dólar MEP (DolarAPI — sin CORS)
   fetch('https://dolarapi.com/v1/dolares/bolsa')
     .then(r => r.json())
-    .then(d => {
-      setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
-    })
-    .catch(() => setError('mep'))
-    .finally(checkDone);
+    .then(d => setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
+    .catch(() => setError('mep'));
 
-  // 3. Riesgo País
+  // 3. Dólar CCL (DolarAPI — sin CORS)
+  fetch('https://dolarapi.com/v1/dolares/contadoconliqui')
+    .then(r => r.json())
+    .then(d => setCard('ccl', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
+    .catch(() => setError('ccl'));
+
+  // 4. Riesgo País (ArgentinaDatos — sin CORS)
   fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo')
     .then(r => r.json())
-    .then(d => {
-      setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha);
-    })
-    .catch(() => setError('riesgo'))
-    .finally(checkDone);
+    .then(d => setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha))
+    .catch(() => setError('riesgo'));
 
-  // 4. BADLAR via proxy (en Vercel usa /api/bcra?id=7, en local intenta directo)
-  const bcraUrl = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
-    ? 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7'
-    : '/api/bcra?id=7';
-
-  fetch(bcraUrl)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+  // 5. BADLAR — proxy en Vercel, fallback directo al BCRA
+  fetchWithFallback('/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
     .then(d => {
-      let valor = null, fecha = null;
+      let v = null, f = null;
       if (d.results && d.results.length > 0) {
-        const res = d.results[0];
-        if (res.detalle && res.detalle.length > 0) {
-          valor = res.detalle[0].valor;
-          fecha = res.detalle[0].fecha;
-        } else if (res.ultValorInformado !== undefined) {
-          valor = res.ultValorInformado;
-          fecha = res.ultFechaInformada;
+        const r = d.results[0];
+        if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; }
+        else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; }
+      }
+      if (v !== null) setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || ''));
+      else setError('badlar', 'Sin datos');
+    })
+    .catch(() => setError('badlar', IS_LOCAL ? 'Solo en Vercel (CORS)' : 'Error BCRA'));
+
+  // 6. LECAPs
+  loadLecaps();
+
+  // Update timestamp
+  document.getElementById('update-time').textContent =
+    'Actualizado: ' + now.toLocaleString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ══════════════════════════════════════════
+// LECAPS: fetch metadata + live prices + calculate TIR
+// ══════════════════════════════════════════
+async function loadLecaps() {
+  const tbody = document.getElementById('lecap-body');
+
+  try {
+    // STEP 1: Get LECAP metadata from ArgentinaDatos (works everywhere, no CORS)
+    const metaResp = await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
+    if (!metaResp.ok) throw new Error('ArgentinaDatos no respondió');
+    const letras = await metaResp.json();
+
+    // Build metadata map: ticker -> { vpv, vencimiento, fechaEmision, tem }
+    const metaMap = {};
+    for (const l of letras) {
+      metaMap[l.ticker] = {
+        vpv: l.vpv,
+        vencimiento: l.fechaVencimiento,
+        fechaEmision: l.fechaEmision,
+        tem: l.tem
+      };
+    }
+
+    // STEP 2: Get live prices from data912 via proxy (only works on Vercel)
+    let prices = {};
+    let preciosVivos = false;
+
+    try {
+      // Try notes (LECAPs)
+      const notesResp = await fetch(IS_LOCAL ? 'https://data912.com/live/arg_notes' : '/api/data912?type=notes');
+      if (notesResp.ok) {
+        const notes = await notesResp.json();
+        if (Array.isArray(notes)) {
+          for (const item of notes) {
+            if (item.symbol && item.c && parseFloat(item.c) > 0) {
+              prices[item.symbol] = parseFloat(item.c);
+            }
+          }
         }
       }
-      if (valor !== null) {
-        setCard('badlar', valor.toFixed(2) + '%', 'TNA · ' + (fecha || ''));
-      } else {
-        setError('badlar', 'Sin datos');
-      }
-    })
-    .catch(() => setError('badlar', 'Requiere deploy en Vercel'))
-    .finally(checkDone);
-</script>
 
+      // Try bonds (BONCAPs)
+      const bondsResp = await fetch(IS_LOCAL ? 'https://data912.com/live/arg_bonds' : '/api/data912?type=bonds');
+      if (bondsResp.ok) {
+        const bonds = await bondsResp.json();
+        if (Array.isArray(bonds)) {
+          for (const item of bonds) {
+            if (item.symbol && item.c && parseFloat(item.c) > 0) {
+              prices[item.symbol] = parseFloat(item.c);
+            }
+          }
+        }
+      }
+
+      if (Object.keys(prices).length > 0) preciosVivos = true;
+    } catch(e) {
+      console.log('data912 no disponible (CORS local o mercado cerrado):', e.message);
+    }
+
+    // STEP 3: Build table rows
+    const settlement = getSettlement();
+    const rows = [];
+
+    for (const [ticker, meta] of Object.entries(metaMap)) {
+      const vto = new Date(meta.vencimiento + 'T00:00:00');
+      const dias = Math.max(1, Math.round((vto - settlement) / (1000 * 60 * 60 * 24)));
+      if (dias <= 0) continue; // Ya venció
+
+      const precio = prices[ticker] || null;
+      const tipo = ticker.startsWith('T') ? 'BONCAP' : 'LECAP';
+
+      // Nombre amigable
+      const meses = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const [y, m, d] = meta.vencimiento.split('-');
+      const nombre = `${tipo} ${meses[parseInt(m)]} ${parseInt(d)} '${y.slice(2)}`;
+
+      let tna = null, tir = null;
+      if (precio && precio > 0 && meta.vpv) {
+        const ganancia = meta.vpv / precio;
+        tna = (ganancia - 1) * (365 / dias) * 100;
+        tir = (Math.pow(ganancia, 365 / dias) - 1) * 100;
+      }
+
+      rows.push({ ticker, nombre, tipo, vencimiento: meta.vencimiento, dias, precio, vpv: meta.vpv, tem: meta.tem, tna, tir });
+    }
+
+    // Sort by days to maturity
+    rows.sort((a, b) => a.dias - b.dias);
+
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>';
+      return;
+    }
+
+    // Find best TIR for highlighting
+    const tirsValidas = rows.filter(r => r.tir !== null).map(r => r.tir);
+    const bestTir = tirsValidas.length > 0 ? Math.max(...tirsValidas) : null;
+
+    tbody.innerHTML = rows.map(r => {
+      const isBest = r.tir !== null && bestTir !== null && r.tir === bestTir;
+      return `<tr style="${isBest ? 'background:var(--turquesa-claro)' : ''}">
+        <td><span class="ticker-badge">${r.ticker}</span></td>
+        <td style="font-size:.78rem">${r.nombre} <span style="font-size:.65rem;color:var(--gris-texto)">${r.tipo}</span></td>
+        <td style="font-family:'Space Mono',monospace;font-size:.78rem">${formatDate(r.vencimiento)}</td>
+        <td style="font-family:'Space Mono',monospace;text-align:center">${r.dias}d</td>
+        <td style="font-family:'Space Mono',monospace;font-weight:600">${r.precio ? r.precio.toFixed(2) : '<span style=color:var(--gris-texto)>—</span>'}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.78rem">${r.vpv ? r.vpv.toFixed(3) : '—'}</td>
+        <td style="font-family:'Space Mono',monospace">${r.tna !== null ? r.tna.toFixed(2) + '%' : '—'}</td>
+        <td>${r.tir !== null ? '<span class=tir-value>' + r.tir.toFixed(2) + '%</span>' : '<span style=color:var(--gris-texto);font-size:.75rem>Sin precio</span>'}</td>
+      </tr>`;
+    }).join('');
+
+    // Add note if no live prices
+    if (!preciosVivos) {
+      tbody.innerHTML += `<tr><td colspan="8" style="padding:.6rem 1rem;font-size:.75rem;color:var(--naranja);background:#FFFAF0;text-align:center">
+        ⚠ Sin precios en vivo — ${IS_LOCAL ? 'solo disponible en Vercel' : 'mercado cerrado o data912 no disponible'}. Metadata de ArgentinaDatos cargada OK.
+      </td></tr>`;
+    }
+
+  } catch (e) {
+    console.error('LECAPs error:', e);
+    tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">Error al cargar LECAPs — ' + e.message + '</td></tr>';
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT + AUTO-REFRESH 5 MIN
+// ══════════════════════════════════════════
+const REFRESH_MS = 5 * 60 * 1000;
+let nextRefresh = Date.now() + REFRESH_MS;
+
+loadAll();
+
+setInterval(() => { nextRefresh = Date.now() + REFRESH_MS; loadAll(); }, REFRESH_MS);
+
+setInterval(() => {
+  const secs = Math.max(0, Math.round((nextRefresh - Date.now()) / 1000));
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  document.getElementById('countdown').textContent = `(${m}:${String(s).padStart(2,'0')})`;
+}, 1000);
+</script>
 </body>
 </html>
