@@ -49,7 +49,7 @@
   .ticker-badge{font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;color:var(--turquesa);background:var(--turquesa-claro);padding:.2rem .5rem;border-radius:4px}
   .tir-value{font-family:'Space Mono',monospace;font-weight:700;color:var(--azul-oscuro);font-size:.9rem}
   .lecap-loading{padding:2rem;text-align:center;color:var(--gris-texto);font-size:.85rem}
-  .calc-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2.5rem}
+  .calc-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2rem}
   .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
   .calc-inputs{padding:1.5rem;border-right:1px solid var(--gris-borde)}
   .calc-results{padding:1.5rem;background:var(--gris-bg)}
@@ -63,12 +63,38 @@
   .result-row:last-child{border-bottom:none}
   .result-label{font-size:.78rem;color:var(--gris-texto)}
   .result-val{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;color:var(--azul-oscuro)}
-  .result-val.green{color:var(--verde)}.result-val.big{font-size:1.1rem}
+  .result-val.green{color:var(--verde)}.result-val.big{font-size:1.1rem}.result-val.red{color:var(--rojo)}
   .result-divider{height:1px;background:var(--turquesa);margin:.6rem 0;opacity:.3}
   .breakeven-box{margin-top:.8rem;padding:.8rem;background:var(--turquesa-claro);border-radius:8px}
   .breakeven-box .result-label{font-size:.7rem}
+  /* COMPARATIVA */
+  .vs-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+  .vs-header{background:var(--azul-oscuro);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
+  .vs-header .vs-title{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;color:var(--blanco)}
+  .vs-header select,.vs-header input{padding:.5rem .7rem;border:1px solid rgba(255,255,255,.2);border-radius:6px;font-family:'Open Sans',sans-serif;font-size:.82rem;color:var(--blanco);background:rgba(255,255,255,.1)}
+  .vs-header select option{color:var(--azul-oscuro);background:var(--blanco)}
+  .vs-header input::placeholder{color:rgba(255,255,255,.4)}
+  .vs-body{padding:1.5rem}
+  .vs-cards{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1rem}
+  .vs-card{padding:1.2rem;border-radius:10px;text-align:center}
+  .vs-card.lecap-side{background:var(--turquesa-claro);border:1.5px solid var(--turquesa)}
+  .vs-card.pf-side{background:#F0F4FF;border:1.5px solid #93A8D0}
+  .vs-card .vs-card-title{font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+  .vs-card.lecap-side .vs-card-title{color:var(--turquesa)}
+  .vs-card.pf-side .vs-card-title{color:#4472C4}
+  .vs-card .vs-card-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--azul-oscuro)}
+  .vs-card .vs-card-sub{font-size:.72rem;color:var(--gris-texto);margin-top:.3rem}
+  .vs-badge{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;text-align:center}
+  .vs-badge span{display:inline-block;padding:.4rem .8rem;border-radius:6px;font-size:.78rem}
+  .vs-badge .win{background:rgba(56,161,105,.12);color:var(--verde)}
+  .vs-badge .lose{background:rgba(229,62,62,.1);color:var(--rojo)}
+  .vs-detail{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;font-size:.78rem}
+  .vs-detail-item{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--gris-bg)}
+  .vs-detail-item span:first-child{color:var(--gris-texto)}
+  .vs-detail-item span:last-child{font-family:'Space Mono',monospace;font-weight:600}
+  .vs-note{margin-top:1rem;padding:.7rem 1rem;background:var(--gris-bg);border-radius:8px;font-size:.72rem;color:var(--gris-texto);text-align:center}
   .footer{margin-top:3rem;padding:1.2rem 0;border-top:1px solid var(--gris-borde);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--gris-texto)}
-  @media(max-width:768px){.top-bar{padding:.5rem 1rem}.nav-tabs{padding:0 .5rem;overflow-x:auto}.nav-tab{padding:.8rem 1rem;font-size:.72rem;white-space:nowrap}.main{padding:1.5rem 1rem}.header{flex-direction:column;align-items:flex-start;gap:.8rem}.header-left h1{font-size:1.6rem}.cards-grid{grid-template-columns:1fr 1fr}.card-value{font-size:1.3rem}.calc-grid{grid-template-columns:1fr}.calc-inputs{border-right:none;border-bottom:1px solid var(--gris-borde)}.footer{flex-direction:column;gap:.5rem;text-align:center}}
+  @media(max-width:768px){.top-bar{padding:.5rem 1rem}.nav-tabs{padding:0 .5rem;overflow-x:auto}.nav-tab{padding:.8rem 1rem;font-size:.72rem;white-space:nowrap}.main{padding:1.5rem 1rem}.header{flex-direction:column;align-items:flex-start;gap:.8rem}.header-left h1{font-size:1.6rem}.cards-grid{grid-template-columns:1fr 1fr}.card-value{font-size:1.3rem}.calc-grid{grid-template-columns:1fr}.calc-inputs{border-right:none;border-bottom:1px solid var(--gris-borde)}.vs-cards{grid-template-columns:1fr}.footer{flex-direction:column;gap:.5rem;text-align:center}}
   @media(max-width:420px){.cards-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -141,6 +167,34 @@
         </div>
       </div>
     </div></div>
+
+    <!-- COMPARATIVA VS PLAZO FIJO -->
+    <div class="section-title">Comparativa — LECAP vs Plazo Fijo</div>
+    <div class="vs-wrap">
+      <div class="vs-header">
+        <span class="vs-title">Seleccioná tu banco</span>
+        <select id="pf-banco" style="min-width:200px">
+          <option value="">— Elegí un banco —</option>
+          <option value="11">Banco Nación</option>
+          <option value="285">Banco Macro</option>
+          <option value="191">Banco Credicoop</option>
+          <option value="72">Banco Santander</option>
+          <option value="7">Banco Galicia</option>
+          <option value="17">Banco BBVA</option>
+          <option value="15">ICBC</option>
+          <option value="manual">Otro banco (tasa manual)</option>
+        </select>
+        <div id="pf-manual-wrap" style="display:none">
+          <input type="number" id="pf-tna-manual" placeholder="TNA % (ej: 28)" min="0" max="200" step="0.5" style="width:140px">
+        </div>
+        <span id="pf-status" style="font-size:.7rem;color:rgba(255,255,255,.4)"></span>
+      </div>
+      <div class="vs-body">
+        <div id="vs-content" style="text-align:center;color:var(--gris-texto);padding:1rem;font-size:.85rem">
+          Elegí un banco y una LECAP en la calculadora para ver la comparativa.
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="footer"><span>Los datos son informativos y no constituyen asesoramiento financiero.</span><span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span></div>
@@ -171,12 +225,12 @@ async function fetchFB(proxy,direct){if(!IS_LOCAL){const r=await fetch(proxy);if
 
 // SHARED STATE
 let LETRAS_META=[], LIVE_PRICES={}, MEP_VENTA=null, CCL_VENTA=null;
+let PF_TEA=null, PF_TNA=null, PF_BANCO_NOMBRE=null;
 
 // LOAD ALL
 function loadAll(){
   const now=new Date();
   document.getElementById('fecha-hoy').textContent=now.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
-
   fetch('https://dolarapi.com/v1/dolares/oficial').then(r=>r.json()).then(d=>setCard('oficial',formatARS(d.venta),'Compra: '+formatARS(d.compra))).catch(()=>setError('oficial'));
   fetch('https://dolarapi.com/v1/dolares/bolsa').then(r=>r.json()).then(d=>{MEP_VENTA=d.venta;setCard('mep',formatARS(d.venta),'Compra: '+formatARS(d.compra));updateCalcDollar()}).catch(()=>setError('mep'));
   fetch('https://dolarapi.com/v1/dolares/contadoconliqui').then(r=>r.json()).then(d=>{CCL_VENTA=d.venta;setCard('ccl',formatARS(d.venta),'Compra: '+formatARS(d.compra));updateCalcDollar()}).catch(()=>setError('ccl'));
@@ -186,14 +240,13 @@ function loadAll(){
   document.getElementById('update-time').textContent='Actualizado: '+now.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 
-// LECAPS TABLE + CALC DATA
+// LECAPS TABLE
 async function loadLecaps(){
   const tbody=document.getElementById('lecap-body');
   try{
     const metaResp=await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
     if(!metaResp.ok)throw new Error('ArgentinaDatos no respondió');
     LETRAS_META=await metaResp.json();
-
     let preciosVivos=false;
     try{
       const nR=await fetch(IS_LOCAL?'https://data912.com/live/arg_notes':'/api/data912?type=notes');
@@ -202,8 +255,7 @@ async function loadLecaps(){
       if(bR.ok){const b=await bR.json();if(Array.isArray(b))for(const i of b)if(i.symbol&&i.c&&parseFloat(i.c)>0)LIVE_PRICES[i.symbol]=parseFloat(i.c)}
       if(Object.keys(LIVE_PRICES).length>0)preciosVivos=true;
     }catch(e){console.log('data912:',e.message)}
-
-    const stl=getSettlement(), rows=[], ms=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const stl=getSettlement(),rows=[],ms=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     for(const l of LETRAS_META){
       const vto=new Date(l.fechaVencimiento+'T00:00:00'),dias=Math.max(1,Math.round((vto-stl)/864e5));
       if(dias<=0)continue;
@@ -215,7 +267,6 @@ async function loadLecaps(){
     }
     rows.sort((a,b)=>a.dias-b.dias);
     if(rows.length===0){tbody.innerHTML='<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>';return}
-
     const tirs=rows.filter(r=>r.tir!==null).map(r=>r.tir),best=tirs.length>0?Math.max(...tirs):null;
     tbody.innerHTML=rows.map(r=>{
       const ib=r.tir!==null&&best!==null&&r.tir===best;
@@ -230,7 +281,6 @@ async function loadLecaps(){
         +'<td>'+(r.tir!==null?'<span class="tir-value">'+r.tir.toFixed(2)+'%</span>':'<span style="color:var(--gris-texto);font-size:.75rem">Sin precio</span>')+'</td></tr>';
     }).join('');
     if(!preciosVivos)tbody.innerHTML+='<tr><td colspan="8" style="padding:.6rem 1rem;font-size:.75rem;color:var(--naranja);background:#FFFAF0;text-align:center">⚠ Sin precios en vivo — '+(IS_LOCAL?'solo disponible en Vercel':'mercado cerrado')+'. Metadata OK.</td></tr>';
-
     populateCalcDropdown(rows);
   }catch(e){console.error('LECAPs:',e);tbody.innerHTML='<tr><td colspan="8" class="lecap-loading">Error: '+e.message+'</td></tr>'}
 }
@@ -241,31 +291,30 @@ function populateCalcDropdown(rows){
   sel.innerHTML='<option value="">— Seleccioná una letra —</option>';
   for(const r of rows) sel.innerHTML+='<option value="'+r.ticker+'">'+r.ticker+' — '+r.nombre+' ('+r.dias+'d)</option>';
 }
-
 function updateCalcDollar(){
   document.getElementById('calc-mep-val').textContent=MEP_VENTA?formatARS(MEP_VENTA):'—';
   document.getElementById('calc-ccl-val').textContent=CCL_VENTA?formatARS(CCL_VENTA):'—';
   calcular();
 }
 
+// Store last calc results for comparison
+let LAST_CALC={ticker:null,monto:0,dias:0,totalPagar:0,montoCobrar:0,ganancia:0,tea:0,tna:0};
+
 function calcular(){
   const ticker=document.getElementById('calc-ticker').value;
-  if(!ticker){clearResults();return}
+  if(!ticker){clearResults();renderComparativa();return}
   const letra=LETRAS_META.find(l=>l.ticker===ticker);
-  if(!letra){clearResults();return}
-
-  const precio=LIVE_PRICES[ticker], monto=parseFloat(document.getElementById('calc-monto').value)||0, arancelPct=parseFloat(document.getElementById('calc-cartera').value)||0;
+  if(!letra){clearResults();renderComparativa();return}
+  const precio=LIVE_PRICES[ticker],monto=parseFloat(document.getElementById('calc-monto').value)||0,arancelPct=parseFloat(document.getElementById('calc-cartera').value)||0;
   const fechaLiqStr=document.getElementById('calc-fecha-liq').value;
   const stl=fechaLiqStr?new Date(fechaLiqStr+'T00:00:00'):new Date();
   stl.setHours(0,0,0,0);
-  const vto=new Date(letra.fechaVencimiento+'T00:00:00'), dias=Math.max(1,Math.round((vto-stl)/864e5));
-
+  const vto=new Date(letra.fechaVencimiento+'T00:00:00'),dias=Math.max(1,Math.round((vto-stl)/864e5));
   document.getElementById('calc-precio').textContent=precio?precio.toFixed(2):'Sin precio en vivo';
   document.getElementById('calc-vpv').textContent=letra.vpv?letra.vpv.toFixed(6):'—';
   document.getElementById('calc-vto').textContent=formatDate(letra.fechaVencimiento);
   document.getElementById('calc-dias').textContent=dias+' días';
-
-  if(!precio||!letra.vpv||monto<=0){clearResults();if(!precio)document.getElementById('res-nominales').textContent='Necesita precio en vivo';return}
+  if(!precio||!letra.vpv||monto<=0){clearResults();LAST_CALC.ticker=null;renderComparativa();if(!precio)document.getElementById('res-nominales').textContent='Necesita precio en vivo';return}
 
   const nominales=Math.round(monto/precio*100);
   const costoNeto=nominales*(precio/100);
@@ -294,6 +343,9 @@ function calcular(){
   document.getElementById('res-tem').textContent=formatPct(tem);
   document.getElementById('res-mep-be').textContent=mepBE?formatARS(mepBE):'—';
   document.getElementById('res-ccl-be').textContent=cclBE?formatARS(cclBE):'—';
+
+  LAST_CALC={ticker,monto,dias,totalPagar,montoCobrar,ganancia,tea,tna:tna};
+  renderComparativa();
 }
 
 function clearResults(){['res-nominales','res-arancel','res-total-pagar','res-amort','res-cobrar','res-ganancia','res-rend','res-tna','res-tea','res-tem','res-mep-be','res-ccl-be'].forEach(id=>{document.getElementById(id).textContent='—'})}
@@ -302,10 +354,157 @@ document.getElementById('calc-ticker').addEventListener('change',calcular);
 document.getElementById('calc-monto').addEventListener('input',calcular);
 document.getElementById('calc-cartera').addEventListener('change',calcular);
 document.getElementById('calc-fecha-liq').addEventListener('change',calcular);
-
-// Set default date to today
 const hoy=new Date();
 document.getElementById('calc-fecha-liq').value=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+
+// ══════════════════════════════════════════
+// PLAZO FIJO — BANK SELECTOR
+// ══════════════════════════════════════════
+const BANCOS={11:'Banco Nación',285:'Banco Macro',191:'Banco Credicoop',72:'Banco Santander',7:'Banco Galicia',17:'Banco BBVA',15:'ICBC'};
+let PF_CACHE={};
+
+document.getElementById('pf-banco').addEventListener('change',async function(){
+  const val=this.value;
+  const manualWrap=document.getElementById('pf-manual-wrap');
+  const statusEl=document.getElementById('pf-status');
+
+  if(val==='manual'){
+    manualWrap.style.display='';
+    PF_TEA=null;PF_TNA=null;PF_BANCO_NOMBRE='Plazo Fijo (manual)';
+    statusEl.textContent='Ingresá la TNA manualmente';
+    renderComparativa();
+    return;
+  }
+  manualWrap.style.display='none';
+
+  if(!val){PF_TEA=null;PF_TNA=null;PF_BANCO_NOMBRE=null;statusEl.textContent='';renderComparativa();return}
+
+  // Check cache
+  if(PF_CACHE[val]){
+    applyPFData(PF_CACHE[val],val);
+    return;
+  }
+
+  statusEl.textContent='Consultando BCRA...';
+  try{
+    const resp=await fetch('/api/plazofijo?codigoEntidad='+val);
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    PF_CACHE[val]=data;
+    applyPFData(data,val);
+  }catch(e){
+    statusEl.textContent='Error al consultar BCRA';
+    PF_TEA=null;PF_TNA=null;
+    renderComparativa();
+  }
+});
+
+function applyPFData(data,codigo){
+  const statusEl=document.getElementById('pf-status');
+  if(!data.results||data.results.length===0){
+    statusEl.textContent='Sin datos de PF para este banco';
+    PF_TEA=null;PF_TNA=null;renderComparativa();return;
+  }
+  // Filter: PF intransferible en pesos, Home Banking, highest TEA
+  const filtered=data.results.filter(r=>{
+    const nombre=(r.nombreCompleto||'').toUpperCase();
+    const canal=(r.canalConstitucion||'').toLowerCase();
+    const esPesos=!nombre.includes('DOLAR')&&!nombre.includes('UVA');
+    const esHB=canal.includes('home banking')||canal.includes('homebanking');
+    return esPesos&&esHB&&r.tasaEfectivaAnualMinima>0;
+  });
+  if(filtered.length===0){
+    // Fallback: any PF in pesos
+    const fallback=data.results.filter(r=>{
+      const nombre=(r.nombreCompleto||'').toUpperCase();
+      return !nombre.includes('DOLAR')&&!nombre.includes('UVA')&&r.tasaEfectivaAnualMinima>0;
+    });
+    if(fallback.length===0){statusEl.textContent='Sin PF en pesos';PF_TEA=null;PF_TNA=null;renderComparativa();return}
+    fallback.sort((a,b)=>b.tasaEfectivaAnualMinima-a.tasaEfectivaAnualMinima);
+    PF_TEA=fallback[0].tasaEfectivaAnualMinima;
+  }else{
+    filtered.sort((a,b)=>b.tasaEfectivaAnualMinima-a.tasaEfectivaAnualMinima);
+    PF_TEA=filtered[0].tasaEfectivaAnualMinima;
+  }
+  // Convert TEA to TNA: TNA = ((1+TEA)^(30/365)-1) * 365/30
+  const teaDec=PF_TEA/100;
+  PF_TNA=((Math.pow(1+teaDec,30/365)-1)*365/30)*100;
+  PF_BANCO_NOMBRE=BANCOS[codigo]||data.results[0].descripcionEntidad;
+  statusEl.textContent=PF_BANCO_NOMBRE+' · TEA '+PF_TEA.toFixed(2)+'% · TNA '+PF_TNA.toFixed(2)+'%';
+  renderComparativa();
+}
+
+document.getElementById('pf-tna-manual').addEventListener('input',function(){
+  const val=parseFloat(this.value);
+  if(!isNaN(val)&&val>0){
+    PF_TNA=val;
+    PF_TEA=(Math.pow(1+val/100*30/365,365/30)-1)*100;
+    PF_BANCO_NOMBRE='Plazo Fijo (manual)';
+    document.getElementById('pf-status').textContent='TNA '+val.toFixed(2)+'% · TEA '+PF_TEA.toFixed(2)+'%';
+  }else{PF_TNA=null;PF_TEA=null}
+  renderComparativa();
+});
+
+// ══════════════════════════════════════════
+// COMPARATIVA RENDER
+// ══════════════════════════════════════════
+function renderComparativa(){
+  const div=document.getElementById('vs-content');
+
+  if(!LAST_CALC.ticker||!PF_TNA||!PF_TEA){
+    let msg='';
+    if(!LAST_CALC.ticker&&!PF_TNA) msg='Elegí una LECAP en la calculadora y un banco para ver la comparativa.';
+    else if(!LAST_CALC.ticker) msg='Elegí una LECAP en la calculadora de arriba.';
+    else msg='Elegí un banco para comparar contra el Plazo Fijo.';
+    div.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--gris-texto);font-size:.85rem">'+msg+'</div>';
+    return;
+  }
+
+  const monto=LAST_CALC.monto;
+  const dias=LAST_CALC.dias;
+  const tnaDec=PF_TNA/100;
+
+  // PF calculation: simple interest for a single period
+  const pfFinal=monto*(1+tnaDec*dias/365);
+  const pfGanancia=pfFinal-monto;
+
+  const lecapFinal=LAST_CALC.montoCobrar;
+  const lecapGanancia=LAST_CALC.ganancia;
+
+  const diferencia=lecapFinal-pfFinal;
+  const lecapGana=diferencia>0;
+
+  div.innerHTML=`
+    <div class="vs-cards">
+      <div class="vs-card lecap-side">
+        <div class="vs-card-title">LECAP ${LAST_CALC.ticker}</div>
+        <div class="vs-card-amount">${formatMoney(lecapFinal)}</div>
+        <div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LAST_CALC.tea)}</div>
+      </div>
+      <div class="vs-badge">
+        <div style="font-size:.65rem;color:var(--gris-texto);margin-bottom:.3rem">Diferencia</div>
+        <span class="${lecapGana?'win':'lose'}">${lecapGana?'+':''}${formatMoney(diferencia)}</span>
+      </div>
+      <div class="vs-card pf-side">
+        <div class="vs-card-title">PF ${PF_BANCO_NOMBRE}</div>
+        <div class="vs-card-amount">${formatMoney(pfFinal)}</div>
+        <div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${PF_TNA.toFixed(2)}%</div>
+      </div>
+    </div>
+    <div class="vs-detail">
+      <div class="vs-detail-item"><span>Monto invertido</span><span>${formatMoney(monto)}</span></div>
+      <div class="vs-detail-item"><span>Plazo</span><span>${dias} días</span></div>
+      <div class="vs-detail-item"><span>LECAP — Capital final</span><span style="color:var(--turquesa)">${formatMoney(lecapFinal)}</span></div>
+      <div class="vs-detail-item"><span>PF — Capital final</span><span style="color:#4472C4">${formatMoney(pfFinal)}</span></div>
+      <div class="vs-detail-item"><span>LECAP — Ganancia neta</span><span style="color:var(--verde)">${formatMoney(lecapGanancia)}</span></div>
+      <div class="vs-detail-item"><span>PF — Ganancia</span><span>${formatMoney(pfGanancia)}</span></div>
+    </div>
+    <div class="vs-note">
+      ${lecapGana
+        ?'✓ La <strong>LECAP '+LAST_CALC.ticker+'</strong> rinde <strong>'+formatMoney(diferencia)+' más</strong> que el Plazo Fijo de '+PF_BANCO_NOMBRE+' a '+dias+' días (neto de comisiones).'
+        :'El <strong>Plazo Fijo de '+PF_BANCO_NOMBRE+'</strong> rinde <strong>'+formatMoney(-diferencia)+' más</strong> que la LECAP '+LAST_CALC.ticker+' a '+dias+' días.'}
+    </div>`;
+}
 
 // INIT + AUTO-REFRESH
 const REFRESH_MS=5*60*1000;let nextRefresh=Date.now()+REFRESH_MS;
