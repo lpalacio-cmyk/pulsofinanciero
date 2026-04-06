@@ -329,29 +329,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
       </div>
     </div></div>
 
-    <div class="section-title">Comparativa — LECAP vs Plazo Fijo</div>
+    <div class="section-title">Comparativa — LECAP vs Plazo Fijo (ref. BADLAR)</div>
     <div class="vs-wrap">
       <div class="vs-header">
-        <span class="vs-title">Seleccioná tu banco</span>
-        <select id="pf-banco" style="min-width:200px">
-          <option value="">— Elegí un banco —</option>
-          <option value="11">Banco Nación</option>
-          <option value="285">Banco Macro</option>
-          <option value="191">Banco Credicoop</option>
-          <option value="72">Banco Santander</option>
-          <option value="7">Banco Galicia</option>
-          <option value="17">Banco BBVA</option>
-          <option value="15">ICBC</option>
-          <option value="manual">Otro banco (tasa manual)</option>
-        </select>
-        <div id="pf-manual-wrap" style="display:none">
-          <input type="number" id="pf-tna-manual" placeholder="TNA % (ej: 28)" min="0" max="200" step="0.5" style="width:140px">
-        </div>
-        <span id="pf-status" style="font-size:.68rem;color:rgba(255,255,255,.35)"></span>
+        <span class="vs-title">LECAP vs Plazo Fijo</span>
+        <span id="vs-badlar-info" style="font-size:.7rem;color:rgba(255,255,255,.45)">Tasa de referencia: BADLAR TNA Bancos Privados</span>
       </div>
       <div class="vs-body">
         <div id="vs-content" style="text-align:center;color:var(--text-muted);padding:1rem;font-size:.82rem">
-          Elegí un banco y una LECAP en la calculadora para ver la comparativa.
+          Seleccioná una LECAP en la calculadora para ver la comparativa automática contra Plazo Fijo (ref. BADLAR).
         </div>
       </div>
     </div>
@@ -360,17 +346,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.0</span>
+    <span class="version">v3.1</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.0 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.1 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
  * Rediseño visual completo. Lógica idéntica a v2.1.
  * Nuevo: Dark/Light mode toggle con persistencia en localStorage.
+ * v3.1: Comparador simplificado — usa BADLAR TNA como referencia
+ *       única en vez de consultar tasas por banco. Fórmula PF
+ *       corregida a capitalización compuesta (renovación 30d).
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -378,7 +367,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   window.PF = {
     letrasMeta: [], livePrices: {},
     mepVenta: null, cclVenta: null,
-    pfTEA: null, pfTNA: null, pfBancoNombre: null,
+    badlarTNA: null,
     lastCalc: { ticker: null, monto: 0, dias: 0, totalPagar: 0, montoCobrar: 0, ganancia: 0, tea: 0, tna: 0 },
     herramientasCargadas: false
   };
@@ -429,7 +418,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
       if (tab.dataset.tab === 'herramientas' && !window.PF.herramientasCargadas) {
         window.PF.herramientasCargadas = true;
         if (typeof window.initCalculadora === 'function') window.initCalculadora();
-        if (typeof window.initComparador === 'function') window.initComparador();
       }
     });
   });
@@ -478,7 +466,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   }
   function loadBadlar() {
     fetchFB('/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
-      .then(d => { let v = null, f = null; if (d.results && d.results.length > 0) { const r = d.results[0]; if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; } else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; } } if (v !== null) setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || '')); else setError('badlar', 'Sin datos'); })
+      .then(d => { let v = null, f = null; if (d.results && d.results.length > 0) { const r = d.results[0]; if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; } else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; } } if (v !== null) { window.PF.badlarTNA = v; setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || '')); updateBadlarInfo(); renderComparativa(); } else setError('badlar', 'Sin datos'); })
       .catch(() => setError('badlar', window.PF.isLocal ? 'Solo en Vercel (CORS)' : 'Error BCRA', 'loadCards()'));
   }
   window.loadCards = function() { loadOficial(); loadMEP(); loadCCL(); loadRiesgo(); loadBadlar(); document.getElementById('update-time').textContent = 'Actualizado: ' + new Date().toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
@@ -604,73 +592,105 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 })();
 
 
-/* ═══════ MÓDULO 5: COMPARADOR PF ═══════ */
-(function setupComparador() {
-  const BANCOS = { 11: 'Banco Nación', 285: 'Banco Macro', 191: 'Banco Credicoop', 72: 'Banco Santander', 7: 'Banco Galicia', 17: 'Banco BBVA', 15: 'ICBC' };
-  let PF_CACHE = {};
-  function applyPFData(data, codigo) {
-    const statusEl = document.getElementById('pf-status');
-    if (!data.results || data.results.length === 0) { statusEl.textContent = 'Sin datos de PF para este banco'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return; }
-    const filtered = data.results.filter(r => { const nombre = (r.nombreCompleto || '').toUpperCase(); const canal = (r.canalConstitucion || '').toLowerCase(); return !nombre.includes('DOLAR') && !nombre.includes('UVA') && (canal.includes('home banking') || canal.includes('homebanking')) && r.tasaEfectivaAnualMinima > 0; });
-    if (filtered.length === 0) {
-      const fallback = data.results.filter(r => { const nombre = (r.nombreCompleto || '').toUpperCase(); return !nombre.includes('DOLAR') && !nombre.includes('UVA') && r.tasaEfectivaAnualMinima > 0; });
-      if (fallback.length === 0) { statusEl.textContent = 'Sin PF en pesos'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return; }
-      fallback.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima);
-      window.PF.pfTEA = fallback[0].tasaEfectivaAnualMinima;
-    } else { filtered.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima); window.PF.pfTEA = filtered[0].tasaEfectivaAnualMinima; }
-    const teaDec = window.PF.pfTEA / 100;
-    window.PF.pfTNA = ((Math.pow(1 + teaDec, 30 / 365) - 1) * 365 / 30) * 100;
-    window.PF.pfBancoNombre = BANCOS[codigo] || data.results[0].descripcionEntidad;
-    statusEl.textContent = window.PF.pfBancoNombre + ' · TEA ' + window.PF.pfTEA.toFixed(2) + '% · TNA ' + window.PF.pfTNA.toFixed(2) + '%';
-    renderComparativa();
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 5: COMPARADOR — LECAP vs Plazo Fijo (ref. BADLAR)
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Compara automáticamente el rendimiento neto de
+ *   la LECAP seleccionada contra un Plazo Fijo de referencia
+ *   usando BADLAR TNA (bancos privados, >$1M, 30-35 días).
+ *
+ * FUENTE DE DATOS:
+ *   - BADLAR TNA: BCRA Monetarias ID=7 (ya cargada por Módulo 2)
+ *     Se almacena en window.PF.badlarTNA al cargar las cards.
+ *
+ * FÓRMULA PF (capitalización compuesta, renovación cada 30 días):
+ *   tasa30d = BADLAR_TNA / 100 * 30 / 365
+ *   pfFinal = monto * (1 + tasa30d) ^ (días / 30)
+ *
+ *   Supuesto: el inversor renueva el PF cada 30 días hasta
+ *   la fecha de vencimiento de la LECAP, capitalizando intereses.
+ *
+ * COMPARACIÓN:
+ *   - LECAP: montoCobrar neto (ya descontados aranceles y derechos)
+ *   - PF: monto capitalizado a BADLAR por los mismos días
+ *   - Diferencia = LECAP final - PF final
+ *
+ * ACTIVACIÓN: Automática — se renderiza cuando hay una LECAP
+ *   seleccionada en la calculadora y BADLAR está cargada.
+ *   No requiere selección de banco.
+ * ═══════════════════════════════════════════════════════ */
+
+// Actualiza el indicador de BADLAR en el header del comparador
+window.updateBadlarInfo = function() {
+  const el = document.getElementById('vs-badlar-info');
+  if (window.PF.badlarTNA) {
+    el.textContent = 'Tasa de referencia: BADLAR ' + window.PF.badlarTNA.toFixed(2) + '% TNA (Bancos Privados, >$1M)';
   }
-  window.initComparador = function() {
-    document.getElementById('pf-banco').addEventListener('change', async function() {
-      const val = this.value; const manualWrap = document.getElementById('pf-manual-wrap'); const statusEl = document.getElementById('pf-status');
-      if (val === 'manual') { manualWrap.style.display = ''; window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = 'Plazo Fijo (manual)'; statusEl.textContent = 'Ingresá la TNA manualmente'; renderComparativa(); return; }
-      manualWrap.style.display = 'none';
-      if (!val) { window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = null; statusEl.textContent = ''; renderComparativa(); return; }
-      if (PF_CACHE[val]) { applyPFData(PF_CACHE[val], val); return; }
-      statusEl.textContent = 'Consultando BCRA...';
-      try { const resp = await fetch('/api/plazofijo?codigoEntidad=' + val); if (!resp.ok) throw new Error('HTTP ' + resp.status); const data = await resp.json(); if (data.error) throw new Error(data.message || 'Error proxy'); PF_CACHE[val] = data; applyPFData(data, val); }
-      catch (e) { statusEl.textContent = 'Error al consultar BCRA · Reintentá'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); }
-    });
-    document.getElementById('pf-tna-manual').addEventListener('input', function() {
-      const val = parseFloat(this.value);
-      if (!isNaN(val) && val > 0) { window.PF.pfTNA = val; window.PF.pfTEA = (Math.pow(1 + val / 100 * 30 / 365, 365 / 30) - 1) * 100; window.PF.pfBancoNombre = 'Plazo Fijo (manual)'; document.getElementById('pf-status').textContent = 'TNA ' + val.toFixed(2) + '% · TEA ' + window.PF.pfTEA.toFixed(2) + '%'; }
-      else { window.PF.pfTNA = null; window.PF.pfTEA = null; }
-      renderComparativa();
-    });
-  };
-})();
+};
 
-
-/* ═══════ RENDER COMPARATIVA ═══════ */
 function renderComparativa() {
-  const div = document.getElementById('vs-content'); const LC = window.PF.lastCalc;
-  if (!LC.ticker || !window.PF.pfTNA || !window.PF.pfTEA) {
-    let msg = ''; if (!LC.ticker && !window.PF.pfTNA) msg = 'Elegí una LECAP en la calculadora y un banco para ver la comparativa.'; else if (!LC.ticker) msg = 'Elegí una LECAP en la calculadora de arriba.'; else msg = 'Elegí un banco para comparar contra el Plazo Fijo.';
-    div.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.82rem">' + msg + '</div>'; return;
+  const div = document.getElementById('vs-content');
+  const LC = window.PF.lastCalc;
+  const badlar = window.PF.badlarTNA;
+
+  if (!LC.ticker || !badlar) {
+    let msg = '';
+    if (!LC.ticker && !badlar) msg = 'Esperando datos de BADLAR y selección de LECAP...';
+    else if (!LC.ticker) msg = 'Seleccioná una LECAP en la calculadora para ver la comparativa automática.';
+    else msg = 'Esperando tasa BADLAR del BCRA...';
+    div.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.82rem">' + msg + '</div>';
+    return;
   }
-  const monto = LC.monto, dias = LC.dias, tnaDec = window.PF.pfTNA / 100;
-  const pfFinal = monto * (1 + tnaDec * dias / 365), pfGanancia = pfFinal - monto;
-  const lecapFinal = LC.montoCobrar, lecapGanancia = LC.ganancia;
-  const diferencia = lecapFinal - pfFinal, lecapGana = diferencia > 0;
+
+  const monto = LC.monto, dias = LC.dias;
+
+  // PF: capitalización compuesta renovando cada 30 días a BADLAR TNA
+  const tasa30d = badlar / 100 * 30 / 365;
+  const pfFinal = monto * Math.pow(1 + tasa30d, dias / 30);
+  const pfGanancia = pfFinal - monto;
+
+  // PF TEA implícita (para mostrar como referencia)
+  const pfTEA = (Math.pow(1 + tasa30d, 365 / 30) - 1) * 100;
+
+  const lecapFinal = LC.montoCobrar;
+  const lecapGanancia = LC.ganancia;
+  const diferencia = lecapFinal - pfFinal;
+  const lecapGana = diferencia > 0;
+
+  // Cantidad de renovaciones
+  const renovaciones = Math.ceil(dias / 30);
+
   div.innerHTML = `
     <div class="vs-cards">
-      <div class="vs-card lecap-side"><div class="vs-card-title">LECAP ${LC.ticker}</div><div class="vs-card-amount">${formatMoney(lecapFinal)}</div><div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LC.tea)}</div></div>
-      <div class="vs-badge"><div style="font-size:.62rem;color:var(--text-muted);margin-bottom:.25rem">Diferencia</div><span class="${lecapGana ? 'win' : 'lose'}">${lecapGana ? '+' : ''}${formatMoney(diferencia)}</span></div>
-      <div class="vs-card pf-side"><div class="vs-card-title">PF ${window.PF.pfBancoNombre}</div><div class="vs-card-amount">${formatMoney(pfFinal)}</div><div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${window.PF.pfTNA.toFixed(2)}%</div></div>
+      <div class="vs-card lecap-side">
+        <div class="vs-card-title">LECAP ${LC.ticker}</div>
+        <div class="vs-card-amount">${formatMoney(lecapFinal)}</div>
+        <div class="vs-card-sub">Ganancia neta: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LC.tea)}</div>
+      </div>
+      <div class="vs-badge">
+        <div style="font-size:.62rem;color:var(--text-muted);margin-bottom:.25rem">Diferencia</div>
+        <span class="${lecapGana ? 'win' : 'lose'}">${lecapGana ? '+' : ''}${formatMoney(diferencia)}</span>
+      </div>
+      <div class="vs-card pf-side">
+        <div class="vs-card-title">Plazo Fijo (BADLAR)</div>
+        <div class="vs-card-amount">${formatMoney(pfFinal)}</div>
+        <div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TEA ${pfTEA.toFixed(2)}%</div>
+      </div>
     </div>
     <div class="vs-detail">
       <div class="vs-detail-item"><span>Monto invertido</span><span>${formatMoney(monto)}</span></div>
-      <div class="vs-detail-item"><span>Plazo</span><span>${dias} días</span></div>
+      <div class="vs-detail-item"><span>Plazo</span><span>${dias} días (~${renovaciones} renovaciones PF)</span></div>
+      <div class="vs-detail-item"><span>BADLAR TNA (referencia)</span><span>${badlar.toFixed(2)}%</span></div>
+      <div class="vs-detail-item"><span>Tasa PF cada 30d</span><span>${(tasa30d * 100).toFixed(4)}%</span></div>
       <div class="vs-detail-item"><span>LECAP — Capital final</span><span style="color:var(--accent)">${formatMoney(lecapFinal)}</span></div>
       <div class="vs-detail-item"><span>PF — Capital final</span><span style="color:#818CF8">${formatMoney(pfFinal)}</span></div>
-      <div class="vs-detail-item"><span>LECAP — Ganancia neta</span><span style="color:var(--green)">${formatMoney(lecapGanancia)}</span></div>
-      <div class="vs-detail-item"><span>PF — Ganancia</span><span>${formatMoney(pfGanancia)}</span></div>
     </div>
-    <div class="vs-note">${lecapGana ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que el Plazo Fijo de ' + window.PF.pfBancoNombre + ' a ' + dias + ' días (neto de comisiones).' : 'El <strong>Plazo Fijo de ' + window.PF.pfBancoNombre + '</strong> rinde <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}</div>`;
+    <div class="vs-note">
+      ${lecapGana
+        ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que renovar Plazo Fijo a BADLAR durante ' + dias + ' días (neto de comisiones).'
+        : 'Renovar <strong>Plazo Fijo a BADLAR</strong> rendiría <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}
+      <br><span style="font-size:.65rem;opacity:.7">Supuesto: PF renovado cada 30 días capitalizando intereses. BADLAR = promedio bancos privados para depósitos &gt;$1M.</span>
+    </div>`;
 }
 
 
