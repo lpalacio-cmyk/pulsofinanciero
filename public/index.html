@@ -19,6 +19,8 @@
   .nav-tab{font-family:'Open Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--gris-texto);padding:.9rem 1.5rem;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;user-select:none}
   .nav-tab:hover{color:var(--azul-oscuro);background:var(--gris-bg)}
   .nav-tab.active{color:var(--turquesa);border-bottom-color:var(--turquesa)}
+  .nav-tab.disabled{opacity:.4;cursor:default}
+  .nav-tab.disabled:hover{color:var(--gris-texto);background:transparent}
   .main{max-width:1100px;margin:0 auto;padding:2rem}
   .tab-content{display:none}.tab-content.active{display:block}
   .header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.4rem}
@@ -38,6 +40,9 @@
   .card-value{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:700;color:var(--azul-oscuro);line-height:1}
   .card-detail{margin-top:.4rem;font-size:.7rem;color:var(--gris-texto)}
   .card-value.loading{background:linear-gradient(90deg,var(--gris-borde) 25%,#f0f0f0 50%,var(--gris-borde) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:2rem;width:110px;color:transparent}
+  .card-value.error-state{font-size:.85rem;color:var(--rojo)}
+  .card-detail .retry-btn{color:var(--turquesa);cursor:pointer;text-decoration:underline;font-size:.68rem}
+  .card-detail .retry-btn:hover{color:var(--turquesa-suave)}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   .lecap-table-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2.5rem}
   .lecap-table{width:100%;border-collapse:collapse;font-size:.82rem}
@@ -67,7 +72,6 @@
   .result-divider{height:1px;background:var(--turquesa);margin:.6rem 0;opacity:.3}
   .breakeven-box{margin-top:.8rem;padding:.8rem;background:var(--turquesa-claro);border-radius:8px}
   .breakeven-box .result-label{font-size:.7rem}
-  /* COMPARATIVA */
   .vs-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2rem}
   .vs-header{background:var(--azul-oscuro);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
   .vs-header .vs-title{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;color:var(--blanco)}
@@ -93,7 +97,10 @@
   .vs-detail-item span:first-child{color:var(--gris-texto)}
   .vs-detail-item span:last-child{font-family:'Space Mono',monospace;font-weight:600}
   .vs-note{margin-top:1rem;padding:.7rem 1rem;background:var(--gris-bg);border-radius:8px;font-size:.72rem;color:var(--gris-texto);text-align:center}
+  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);padding:.7rem 1.5rem;border-radius:8px;font-family:'Open Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--blanco);background:var(--azul-oscuro);box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+  .toast.show{opacity:1}
   .footer{margin-top:3rem;padding:1.2rem 0;border-top:1px solid var(--gris-borde);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--gris-texto)}
+  .footer .version{font-family:'Space Mono',monospace;font-size:.65rem;opacity:.5}
   @media(max-width:768px){.top-bar{padding:.5rem 1rem}.nav-tabs{padding:0 .5rem;overflow-x:auto}.nav-tab{padding:.8rem 1rem;font-size:.72rem;white-space:nowrap}.main{padding:1.5rem 1rem}.header{flex-direction:column;align-items:flex-start;gap:.8rem}.header-left h1{font-size:1.6rem}.cards-grid{grid-template-columns:1fr 1fr}.card-value{font-size:1.3rem}.calc-grid{grid-template-columns:1fr}.calc-inputs{border-right:none;border-bottom:1px solid var(--gris-borde)}.vs-cards{grid-template-columns:1fr}.footer{flex-direction:column;gap:.5rem;text-align:center}}
   @media(max-width:420px){.cards-grid{grid-template-columns:1fr}}
 </style>
@@ -103,7 +110,7 @@
 <nav class="nav-tabs">
   <div class="nav-tab active" data-tab="pulso">Pulso Financiero</div>
   <div class="nav-tab" data-tab="herramientas">Herramientas</div>
-  <div class="nav-tab" style="opacity:.4;cursor:default">Costos</div>
+  <div class="nav-tab disabled" id="tab-costos-btn">Costos</div>
 </nav>
 <div class="main">
   <div class="header"><div class="header-left"><h1>PULSO<br><span class="highlight">FINANCIERO NOA</span></h1></div><div class="header-right"><div class="date-badge" id="fecha-hoy"></div></div></div>
@@ -197,298 +204,626 @@
     </div>
   </div>
 
-  <div class="footer"><span>Los datos son informativos y no constituyen asesoramiento financiero.</span><span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span></div>
+  <div class="footer">
+    <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
+    <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
+    <span class="version">v2.1</span>
+  </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-// TAB NAVIGATION
-document.querySelectorAll('.nav-tab[data-tab]').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
-  });
-});
+/* ═══════════════════════════════════════════════════════════════
+ * PULSO FINANCIERO NOA — v2.1
+ * ═══════════════════════════════════════════════════════════════
+ * PROPÓSITO: Dashboard financiero automatizado para clientes de
+ *   WL HNOS & ASOC. Reemplaza el reporte manual de Christian
+ *   con datos en vivo de APIs públicas.
+ *
+ * ARQUITECTURA:
+ *   Frontend: Single-file HTML/CSS/JS (este archivo)
+ *   Backend:  Vercel Serverless Functions en /api/
+ *     - /api/bcra.js      → BADLAR, variables monetarias
+ *     - /api/data912.js   → Precios en vivo LECAPs/BONCAPs
+ *     - /api/plazofijo.js → Tasas PF por banco
+ *
+ * APIs DIRECTAS (sin proxy, no tienen CORS):
+ *   - DolarAPI (dolarapi.com) → Dólar Oficial, MEP, CCL
+ *   - ArgentinaDatos (api.argentinadatos.com) → Riesgo País, metadata letras
+ *
+ * MÓDULOS:
+ *   1. Core         → Estado compartido, helpers, navegación
+ *   2. Cards Macro  → Dólares, Riesgo País, BADLAR
+ *   3. Tabla LECAPs → Rendimientos en vivo con metadata ArgentinaDatos
+ *   4. Calculadora  → Replica lógica Excel de Christian
+ *   5. Comparador   → LECAP vs Plazo Fijo por banco
+ *
+ * AUTO-REFRESH: Cada 5 minutos recarga datos de la pestaña activa
+ *
+ * HISTORIAL:
+ *   2026-03    — v1.0: Primera versión con cards + tabla
+ *   2026-03    — v1.5: Calculadora LECAP con arancel y breakeven
+ *   2026-03    — v2.0: Comparador PF, proxy plazofijo, auto-refresh
+ *   2026-04-06 — v2.1: Modularización, documentación, carga progresiva,
+ *                       manejo de errores con reintentar, timeout en proxies
+ * ═══════════════════════════════════════════════════════════════ */
 
-// ENV & HELPERS
-const IS_LOCAL=window.location.protocol==='file:'||window.location.hostname==='localhost';
-const formatARS=n=>'$'+Math.round(n).toLocaleString('es-AR');
-const formatDate=s=>{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y};
-const formatPct=(n,d=2)=>(n*100).toFixed(d)+'%';
-const formatMoney=n=>'$'+Math.round(n).toLocaleString('es-AR');
 
-function setCard(id,v,d){const el=document.getElementById('val-'+id);el.classList.remove('loading');el.textContent=v;if(d)document.getElementById('det-'+id).textContent=d}
-function setError(id,m){const el=document.getElementById('val-'+id);el.classList.remove('loading');el.textContent='—';document.getElementById('det-'+id).textContent=m||'Error'}
-function getSettlement(){const d=new Date();d.setDate(d.getDate()+1);if(d.getDay()===0)d.setDate(d.getDate()+1);if(d.getDay()===6)d.setDate(d.getDate()+2);return d}
-async function fetchFB(proxy,direct){if(!IS_LOCAL){const r=await fetch(proxy);if(r.ok)return r.json()}const r2=await fetch(direct);if(!r2.ok)throw new Error('HTTP '+r2.status);return r2.json()}
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 1: CORE — Estado compartido, helpers, navegación
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Variables globales compartidas entre módulos,
+ *   funciones de formateo, detección de entorno, y sistema
+ *   de navegación por pestañas con carga progresiva.
+ * ═══════════════════════════════════════════════════════ */
+(function initCore() {
 
-// SHARED STATE
-let LETRAS_META=[], LIVE_PRICES={}, MEP_VENTA=null, CCL_VENTA=null;
-let PF_TEA=null, PF_TNA=null, PF_BANCO_NOMBRE=null;
+  // --- Estado compartido (accesible por todos los módulos) ---
+  window.PF = {
+    // Metadata de letras (viene de ArgentinaDatos)
+    letrasMeta: [],
+    // Precios en vivo {ticker: precio} (viene de data912)
+    livePrices: {},
+    // Cotizaciones dólar (se actualizan desde Cards Macro)
+    mepVenta: null,
+    cclVenta: null,
+    // Estado del comparador PF
+    pfTEA: null,
+    pfTNA: null,
+    pfBancoNombre: null,
+    // Último cálculo de la calculadora (para comparativa)
+    lastCalc: { ticker: null, monto: 0, dias: 0, totalPagar: 0, montoCobrar: 0, ganancia: 0, tea: 0, tna: 0 },
+    // Flag: ¿Ya se cargaron los datos de Herramientas?
+    herramientasCargadas: false
+  };
 
-// LOAD ALL
-function loadAll(){
-  const now=new Date();
-  document.getElementById('fecha-hoy').textContent=now.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
-  fetch('https://dolarapi.com/v1/dolares/oficial').then(r=>r.json()).then(d=>setCard('oficial',formatARS(d.venta),'Compra: '+formatARS(d.compra))).catch(()=>setError('oficial'));
-  fetch('https://dolarapi.com/v1/dolares/bolsa').then(r=>r.json()).then(d=>{MEP_VENTA=d.venta;setCard('mep',formatARS(d.venta),'Compra: '+formatARS(d.compra));updateCalcDollar()}).catch(()=>setError('mep'));
-  fetch('https://dolarapi.com/v1/dolares/contadoconliqui').then(r=>r.json()).then(d=>{CCL_VENTA=d.venta;setCard('ccl',formatARS(d.venta),'Compra: '+formatARS(d.compra));updateCalcDollar()}).catch(()=>setError('ccl'));
-  fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo').then(r=>r.json()).then(d=>setCard('riesgo',d.valor+' pts','Fecha: '+d.fecha)).catch(()=>setError('riesgo'));
-  fetchFB('/api/bcra?id=7','https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7').then(d=>{let v=null,f=null;if(d.results&&d.results.length>0){const r=d.results[0];if(r.detalle&&r.detalle.length>0){v=r.detalle[0].valor;f=r.detalle[0].fecha}else if(r.ultValorInformado!==undefined){v=r.ultValorInformado;f=r.ultFechaInformada}}if(v!==null)setCard('badlar',v.toFixed(2)+'%','TNA · '+(f||''));else setError('badlar','Sin datos')}).catch(()=>setError('badlar',IS_LOCAL?'Solo en Vercel (CORS)':'Error BCRA'));
-  loadLecaps();
-  document.getElementById('update-time').textContent='Actualizado: '+now.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-}
+  // --- Detección de entorno ---
+  window.PF.isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
 
-// LECAPS TABLE
-async function loadLecaps(){
-  const tbody=document.getElementById('lecap-body');
-  try{
-    const metaResp=await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
-    if(!metaResp.ok)throw new Error('ArgentinaDatos no respondió');
-    LETRAS_META=await metaResp.json();
-    let preciosVivos=false;
-    try{
-      const nR=await fetch(IS_LOCAL?'https://data912.com/live/arg_notes':'/api/data912?type=notes');
-      if(nR.ok){const n=await nR.json();if(Array.isArray(n))for(const i of n)if(i.symbol&&i.c&&parseFloat(i.c)>0)LIVE_PRICES[i.symbol]=parseFloat(i.c)}
-      const bR=await fetch(IS_LOCAL?'https://data912.com/live/arg_bonds':'/api/data912?type=bonds');
-      if(bR.ok){const b=await bR.json();if(Array.isArray(b))for(const i of b)if(i.symbol&&i.c&&parseFloat(i.c)>0)LIVE_PRICES[i.symbol]=parseFloat(i.c)}
-      if(Object.keys(LIVE_PRICES).length>0)preciosVivos=true;
-    }catch(e){console.log('data912:',e.message)}
-    const stl=getSettlement(),rows=[],ms=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    for(const l of LETRAS_META){
-      const vto=new Date(l.fechaVencimiento+'T00:00:00'),dias=Math.max(1,Math.round((vto-stl)/864e5));
-      if(dias<=0)continue;
-      const precio=LIVE_PRICES[l.ticker]||null,tipo=l.ticker.startsWith('T')?'BONCAP':'LECAP';
-      const[y,m,d]=l.fechaVencimiento.split('-'),nombre=tipo+' '+ms[parseInt(m)]+' '+parseInt(d)+" '"+y.slice(2);
-      let tna=null,tir=null;
-      if(precio&&precio>0&&l.vpv){const g=l.vpv/precio;tna=(g-1)*(365/dias)*100;tir=(Math.pow(g,365/dias)-1)*100}
-      rows.push({ticker:l.ticker,nombre,tipo,vencimiento:l.fechaVencimiento,dias,precio,vpv:l.vpv,tna,tir});
+  // --- Helpers de formateo ---
+  window.formatARS = n => '$' + Math.round(n).toLocaleString('es-AR');
+  window.formatDate = s => { const [y, m, d] = s.split('-'); return d + '/' + m + '/' + y; };
+  window.formatPct = (n, d = 2) => (n * 100).toFixed(d) + '%';
+  window.formatMoney = n => '$' + Math.round(n).toLocaleString('es-AR');
+
+  // --- Helpers de UI ---
+  window.setCard = function(id, v, d) {
+    const el = document.getElementById('val-' + id);
+    el.classList.remove('loading', 'error-state');
+    el.textContent = v;
+    if (d) document.getElementById('det-' + id).textContent = d;
+  };
+
+  window.setError = function(id, msg, retryFn) {
+    const el = document.getElementById('val-' + id);
+    el.classList.remove('loading');
+    el.classList.add('error-state');
+    el.textContent = 'No disponible';
+    const det = document.getElementById('det-' + id);
+    if (retryFn) {
+      det.innerHTML = (msg || 'Error') + ' · <span class="retry-btn" onclick="' + retryFn + '">Reintentar</span>';
+    } else {
+      det.textContent = msg || 'Error';
     }
-    rows.sort((a,b)=>a.dias-b.dias);
-    if(rows.length===0){tbody.innerHTML='<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>';return}
-    const tirs=rows.filter(r=>r.tir!==null).map(r=>r.tir),best=tirs.length>0?Math.max(...tirs):null;
-    tbody.innerHTML=rows.map(r=>{
-      const ib=r.tir!==null&&best!==null&&r.tir===best;
-      return '<tr style="'+(ib?'background:var(--turquesa-claro)':'')+'">'
-        +'<td><span class="ticker-badge">'+r.ticker+'</span></td>'
-        +'<td style="font-size:.78rem">'+r.nombre+' <span style="font-size:.65rem;color:var(--gris-texto)">'+r.tipo+'</span></td>'
-        +'<td style="font-family:Space Mono,monospace;font-size:.78rem">'+formatDate(r.vencimiento)+'</td>'
-        +'<td style="font-family:Space Mono,monospace;text-align:center">'+r.dias+'d</td>'
-        +'<td style="font-family:Space Mono,monospace;font-weight:600">'+(r.precio?r.precio.toFixed(2):'<span style="color:var(--gris-texto)">—</span>')+'</td>'
-        +'<td style="font-family:Space Mono,monospace;font-size:.78rem">'+(r.vpv?r.vpv.toFixed(3):'—')+'</td>'
-        +'<td style="font-family:Space Mono,monospace">'+(r.tna!==null?r.tna.toFixed(2)+'%':'—')+'</td>'
-        +'<td>'+(r.tir!==null?'<span class="tir-value">'+r.tir.toFixed(2)+'%</span>':'<span style="color:var(--gris-texto);font-size:.75rem">Sin precio</span>')+'</td></tr>';
-    }).join('');
-    if(!preciosVivos)tbody.innerHTML+='<tr><td colspan="8" style="padding:.6rem 1rem;font-size:.75rem;color:var(--naranja);background:#FFFAF0;text-align:center">⚠ Sin precios en vivo — '+(IS_LOCAL?'solo disponible en Vercel':'mercado cerrado')+'. Metadata OK.</td></tr>';
-    populateCalcDropdown(rows);
-  }catch(e){console.error('LECAPs:',e);tbody.innerHTML='<tr><td colspan="8" class="lecap-loading">Error: '+e.message+'</td></tr>'}
-}
+  };
 
-// CALCULATOR
-function populateCalcDropdown(rows){
-  const sel=document.getElementById('calc-ticker');
-  sel.innerHTML='<option value="">— Seleccioná una letra —</option>';
-  for(const r of rows) sel.innerHTML+='<option value="'+r.ticker+'">'+r.ticker+' — '+r.nombre+' ('+r.dias+'d)</option>';
-}
-function updateCalcDollar(){
-  document.getElementById('calc-mep-val').textContent=MEP_VENTA?formatARS(MEP_VENTA):'—';
-  document.getElementById('calc-ccl-val').textContent=CCL_VENTA?formatARS(CCL_VENTA):'—';
-  calcular();
-}
+  window.showToast = function(msg, ms) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms || 2500);
+  };
 
-// Store last calc results for comparison
-let LAST_CALC={ticker:null,monto:0,dias:0,totalPagar:0,montoCobrar:0,ganancia:0,tea:0,tna:0};
+  // --- Settlement date (T+1 hábil, salta fines de semana) ---
+  window.getSettlement = function() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+    if (d.getDay() === 6) d.setDate(d.getDate() + 2);
+    return d;
+  };
 
-function calcular(){
-  const ticker=document.getElementById('calc-ticker').value;
-  if(!ticker){clearResults();renderComparativa();return}
-  const letra=LETRAS_META.find(l=>l.ticker===ticker);
-  if(!letra){clearResults();renderComparativa();return}
-  const precio=LIVE_PRICES[ticker],monto=parseFloat(document.getElementById('calc-monto').value)||0,arancelPct=parseFloat(document.getElementById('calc-cartera').value)||0;
-  const fechaLiqStr=document.getElementById('calc-fecha-liq').value;
-  const stl=fechaLiqStr?new Date(fechaLiqStr+'T00:00:00'):new Date();
-  stl.setHours(0,0,0,0);
-  const vto=new Date(letra.fechaVencimiento+'T00:00:00'),dias=Math.max(1,Math.round((vto-stl)/864e5));
-  document.getElementById('calc-precio').textContent=precio?precio.toFixed(2):'Sin precio en vivo';
-  document.getElementById('calc-vpv').textContent=letra.vpv?letra.vpv.toFixed(6):'—';
-  document.getElementById('calc-vto').textContent=formatDate(letra.fechaVencimiento);
-  document.getElementById('calc-dias').textContent=dias+' días';
-  if(!precio||!letra.vpv||monto<=0){clearResults();LAST_CALC.ticker=null;renderComparativa();if(!precio)document.getElementById('res-nominales').textContent='Necesita precio en vivo';return}
+  // --- Fetch con fallback proxy/directo ---
+  window.fetchFB = async function(proxy, direct) {
+    if (!window.PF.isLocal) {
+      const r = await fetch(proxy);
+      if (r.ok) return r.json();
+    }
+    const r2 = await fetch(direct);
+    if (!r2.ok) throw new Error('HTTP ' + r2.status);
+    return r2.json();
+  };
 
-  const nominales=Math.round(monto/precio*100);
-  const costoNeto=nominales*(precio/100);
-  const comision=Math.max((costoNeto*arancelPct/365*dias),100);
-  const derechoMcdo=monto*0.0001;
-  const arancel=comision+derechoMcdo;
-  const totalPagar=monto+arancel;
-  const montoCobrar=nominales*(letra.vpv/100);
-  const ganancia=montoCobrar-totalPagar;
-  const rendDirecto=totalPagar>0?montoCobrar/totalPagar-1:0;
-  const tna=rendDirecto*(365/dias);
-  const tea=Math.pow(1+rendDirecto,365/dias)-1;
-  const tem=Math.pow(1+tea,30/365)-1;
-  const mepBE=MEP_VENTA?MEP_VENTA*(1+rendDirecto):null;
-  const cclBE=CCL_VENTA?CCL_VENTA*(1+rendDirecto):null;
+  // --- Fecha de hoy ---
+  document.getElementById('fecha-hoy').textContent =
+    new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  document.getElementById('res-nominales').textContent=nominales.toLocaleString('es-AR');
-  document.getElementById('res-arancel').textContent=formatMoney(arancel);
-  document.getElementById('res-total-pagar').textContent=formatMoney(totalPagar);
-  document.getElementById('res-amort').textContent=letra.vpv.toFixed(6);
-  document.getElementById('res-cobrar').textContent=formatMoney(montoCobrar);
-  document.getElementById('res-ganancia').textContent=formatMoney(ganancia);
-  document.getElementById('res-rend').textContent=formatPct(rendDirecto);
-  document.getElementById('res-tna').textContent=formatPct(tna);
-  document.getElementById('res-tea').textContent=formatPct(tea);
-  document.getElementById('res-tem').textContent=formatPct(tem);
-  document.getElementById('res-mep-be').textContent=mepBE?formatARS(mepBE):'—';
-  document.getElementById('res-ccl-be').textContent=cclBE?formatARS(cclBE):'—';
+  // --- Navegación por pestañas con carga progresiva ---
+  document.querySelectorAll('.nav-tab[data-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
 
-  LAST_CALC={ticker,monto,dias,totalPagar,montoCobrar,ganancia,tea,tna:tna};
-  renderComparativa();
-}
-
-function clearResults(){['res-nominales','res-arancel','res-total-pagar','res-amort','res-cobrar','res-ganancia','res-rend','res-tna','res-tea','res-tem','res-mep-be','res-ccl-be'].forEach(id=>{document.getElementById(id).textContent='—'})}
-
-document.getElementById('calc-ticker').addEventListener('change',calcular);
-document.getElementById('calc-monto').addEventListener('input',calcular);
-document.getElementById('calc-cartera').addEventListener('change',calcular);
-document.getElementById('calc-fecha-liq').addEventListener('change',calcular);
-const hoy=new Date();
-document.getElementById('calc-fecha-liq').value=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
-
-// ══════════════════════════════════════════
-// PLAZO FIJO — BANK SELECTOR
-// ══════════════════════════════════════════
-const BANCOS={11:'Banco Nación',285:'Banco Macro',191:'Banco Credicoop',72:'Banco Santander',7:'Banco Galicia',17:'Banco BBVA',15:'ICBC'};
-let PF_CACHE={};
-
-document.getElementById('pf-banco').addEventListener('change',async function(){
-  const val=this.value;
-  const manualWrap=document.getElementById('pf-manual-wrap');
-  const statusEl=document.getElementById('pf-status');
-
-  if(val==='manual'){
-    manualWrap.style.display='';
-    PF_TEA=null;PF_TNA=null;PF_BANCO_NOMBRE='Plazo Fijo (manual)';
-    statusEl.textContent='Ingresá la TNA manualmente';
-    renderComparativa();
-    return;
-  }
-  manualWrap.style.display='none';
-
-  if(!val){PF_TEA=null;PF_TNA=null;PF_BANCO_NOMBRE=null;statusEl.textContent='';renderComparativa();return}
-
-  // Check cache
-  if(PF_CACHE[val]){
-    applyPFData(PF_CACHE[val],val);
-    return;
-  }
-
-  statusEl.textContent='Consultando BCRA...';
-  try{
-    const resp=await fetch('/api/plazofijo?codigoEntidad='+val);
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const data=await resp.json();
-    PF_CACHE[val]=data;
-    applyPFData(data,val);
-  }catch(e){
-    statusEl.textContent='Error al consultar BCRA';
-    PF_TEA=null;PF_TNA=null;
-    renderComparativa();
-  }
-});
-
-function applyPFData(data,codigo){
-  const statusEl=document.getElementById('pf-status');
-  if(!data.results||data.results.length===0){
-    statusEl.textContent='Sin datos de PF para este banco';
-    PF_TEA=null;PF_TNA=null;renderComparativa();return;
-  }
-  // Filter: PF intransferible en pesos, Home Banking, highest TEA
-  const filtered=data.results.filter(r=>{
-    const nombre=(r.nombreCompleto||'').toUpperCase();
-    const canal=(r.canalConstitucion||'').toLowerCase();
-    const esPesos=!nombre.includes('DOLAR')&&!nombre.includes('UVA');
-    const esHB=canal.includes('home banking')||canal.includes('homebanking');
-    return esPesos&&esHB&&r.tasaEfectivaAnualMinima>0;
-  });
-  if(filtered.length===0){
-    // Fallback: any PF in pesos
-    const fallback=data.results.filter(r=>{
-      const nombre=(r.nombreCompleto||'').toUpperCase();
-      return !nombre.includes('DOLAR')&&!nombre.includes('UVA')&&r.tasaEfectivaAnualMinima>0;
+      // Carga progresiva: Herramientas se carga al primer clic
+      if (tab.dataset.tab === 'herramientas' && !window.PF.herramientasCargadas) {
+        window.PF.herramientasCargadas = true;
+        if (typeof window.initCalculadora === 'function') window.initCalculadora();
+        if (typeof window.initComparador === 'function') window.initComparador();
+      }
     });
-    if(fallback.length===0){statusEl.textContent='Sin PF en pesos';PF_TEA=null;PF_TNA=null;renderComparativa();return}
-    fallback.sort((a,b)=>b.tasaEfectivaAnualMinima-a.tasaEfectivaAnualMinima);
-    PF_TEA=fallback[0].tasaEfectivaAnualMinima;
-  }else{
-    filtered.sort((a,b)=>b.tasaEfectivaAnualMinima-a.tasaEfectivaAnualMinima);
-    PF_TEA=filtered[0].tasaEfectivaAnualMinima;
+  });
+
+  // --- Pestaña Costos: próximamente ---
+  document.getElementById('tab-costos-btn').addEventListener('click', () => {
+    showToast('Próximamente — sección en desarrollo');
+  });
+
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 2: CARDS MACRO — Dólares, Riesgo País, BADLAR
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Muestra indicadores macroeconómicos clave
+ *   en 5 tarjetas con auto-refresh.
+ *
+ * FUENTES DE DATOS:
+ *   - Dólar Oficial/MEP/CCL: DolarAPI (directo, sin CORS)
+ *     https://dolarapi.com/v1/dolares/{tipo}
+ *   - Riesgo País: ArgentinaDatos (directo)
+ *     https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo
+ *   - BADLAR: BCRA vía /api/bcra.js (proxy por CORS)
+ *     Variable ID=7 (BADLAR bancos privados)
+ *
+ * FALLBACK: Si DolarAPI falla, no hay fallback automático
+ *   (futuro: probar ArgentinaDatos como respaldo).
+ *   Si BCRA falla y estamos en local, muestra "Solo en Vercel".
+ * ═══════════════════════════════════════════════════════ */
+(function initCardsMacro() {
+
+  function loadOficial() {
+    fetch('https://dolarapi.com/v1/dolares/oficial')
+      .then(r => r.json())
+      .then(d => setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
+      .catch(() => setError('oficial', 'DolarAPI caído', 'loadCards()'));
   }
-  // Convert TEA to TNA: TNA = ((1+TEA)^(30/365)-1) * 365/30
-  const teaDec=PF_TEA/100;
-  PF_TNA=((Math.pow(1+teaDec,30/365)-1)*365/30)*100;
-  PF_BANCO_NOMBRE=BANCOS[codigo]||data.results[0].descripcionEntidad;
-  statusEl.textContent=PF_BANCO_NOMBRE+' · TEA '+PF_TEA.toFixed(2)+'% · TNA '+PF_TNA.toFixed(2)+'%';
-  renderComparativa();
-}
 
-document.getElementById('pf-tna-manual').addEventListener('input',function(){
-  const val=parseFloat(this.value);
-  if(!isNaN(val)&&val>0){
-    PF_TNA=val;
-    PF_TEA=(Math.pow(1+val/100*30/365,365/30)-1)*100;
-    PF_BANCO_NOMBRE='Plazo Fijo (manual)';
-    document.getElementById('pf-status').textContent='TNA '+val.toFixed(2)+'% · TEA '+PF_TEA.toFixed(2)+'%';
-  }else{PF_TNA=null;PF_TEA=null}
-  renderComparativa();
-});
+  function loadMEP() {
+    fetch('https://dolarapi.com/v1/dolares/bolsa')
+      .then(r => r.json())
+      .then(d => {
+        window.PF.mepVenta = d.venta;
+        setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
+        if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar();
+      })
+      .catch(() => setError('mep', 'DolarAPI caído', 'loadCards()'));
+  }
 
-// ══════════════════════════════════════════
-// COMPARATIVA RENDER
-// ══════════════════════════════════════════
-function renderComparativa(){
-  const div=document.getElementById('vs-content');
+  function loadCCL() {
+    fetch('https://dolarapi.com/v1/dolares/contadoconliqui')
+      .then(r => r.json())
+      .then(d => {
+        window.PF.cclVenta = d.venta;
+        setCard('ccl', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
+        if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar();
+      })
+      .catch(() => setError('ccl', 'DolarAPI caído', 'loadCards()'));
+  }
 
-  if(!LAST_CALC.ticker||!PF_TNA||!PF_TEA){
-    let msg='';
-    if(!LAST_CALC.ticker&&!PF_TNA) msg='Elegí una LECAP en la calculadora y un banco para ver la comparativa.';
-    else if(!LAST_CALC.ticker) msg='Elegí una LECAP en la calculadora de arriba.';
-    else msg='Elegí un banco para comparar contra el Plazo Fijo.';
-    div.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--gris-texto);font-size:.85rem">'+msg+'</div>';
+  function loadRiesgo() {
+    fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo')
+      .then(r => r.json())
+      .then(d => setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha))
+      .catch(() => setError('riesgo', 'ArgentinaDatos caído', 'loadCards()'));
+  }
+
+  function loadBadlar() {
+    fetchFB('/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
+      .then(d => {
+        let v = null, f = null;
+        if (d.results && d.results.length > 0) {
+          const r = d.results[0];
+          if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; }
+          else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; }
+        }
+        if (v !== null) setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || ''));
+        else setError('badlar', 'Sin datos');
+      })
+      .catch(() => setError('badlar', window.PF.isLocal ? 'Solo en Vercel (CORS)' : 'Error BCRA', 'loadCards()'));
+  }
+
+  // Exponer para retry y auto-refresh
+  window.loadCards = function() {
+    loadOficial();
+    loadMEP();
+    loadCCL();
+    loadRiesgo();
+    loadBadlar();
+    document.getElementById('update-time').textContent = 'Actualizado: ' +
+      new Date().toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Carga inicial
+  window.loadCards();
+
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 3: TABLA LECAPs — Rendimientos en Vivo
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Muestra tabla de LECAPs y BONCAPs con TNA/TIR
+ *   calculadas en base a precios en vivo de data912 y
+ *   metadata de ArgentinaDatos.
+ *
+ * FUENTES DE DATOS:
+ *   - Metadata (ticker, VPV, fechaVencimiento):
+ *     ArgentinaDatos → /v1/finanzas/letras
+ *   - Precios en vivo:
+ *     data912 vía /api/data912.js → type=notes (LECAPs) y type=bonds (BONCAPs)
+ *
+ * FÓRMULAS:
+ *   - TNA = (VPV/Precio - 1) * (365/días) * 100
+ *   - TIR (TEA) = ((VPV/Precio) ^ (365/días) - 1) * 100
+ *   Donde: VPV = Valor Presente de pago al Vencimiento (100 = par)
+ *          Precio = último precio en data912 (campo "c")
+ *          días = días calendario entre settlement y vencimiento
+ *
+ * DEPENDENCIA: Este módulo también alimenta el dropdown
+ *   de la Calculadora (Módulo 4) via populateCalcDropdown().
+ * ═══════════════════════════════════════════════════════ */
+(function initTablaLecaps() {
+
+  async function loadLecaps() {
+    const tbody = document.getElementById('lecap-body');
+    try {
+      const metaResp = await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
+      if (!metaResp.ok) throw new Error('ArgentinaDatos no respondió');
+      window.PF.letrasMeta = await metaResp.json();
+
+      let preciosVivos = false;
+      try {
+        const nR = await fetch(window.PF.isLocal ? 'https://data912.com/live/arg_notes' : '/api/data912?type=notes');
+        if (nR.ok) { const n = await nR.json(); if (Array.isArray(n)) for (const i of n) if (i.symbol && i.c && parseFloat(i.c) > 0) window.PF.livePrices[i.symbol] = parseFloat(i.c); }
+        const bR = await fetch(window.PF.isLocal ? 'https://data912.com/live/arg_bonds' : '/api/data912?type=bonds');
+        if (bR.ok) { const b = await bR.json(); if (Array.isArray(b)) for (const i of b) if (i.symbol && i.c && parseFloat(i.c) > 0) window.PF.livePrices[i.symbol] = parseFloat(i.c); }
+        if (Object.keys(window.PF.livePrices).length > 0) preciosVivos = true;
+      } catch (e) { console.log('data912:', e.message); }
+
+      const stl = getSettlement(), rows = [], ms = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      for (const l of window.PF.letrasMeta) {
+        const vto = new Date(l.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
+        if (dias <= 0) continue;
+        const precio = window.PF.livePrices[l.ticker] || null, tipo = l.ticker.startsWith('T') ? 'BONCAP' : 'LECAP';
+        const [y, m, d] = l.fechaVencimiento.split('-'), nombre = tipo + ' ' + ms[parseInt(m)] + ' ' + parseInt(d) + " '" + y.slice(2);
+        let tna = null, tir = null;
+        if (precio && precio > 0 && l.vpv) { const g = l.vpv / precio; tna = (g - 1) * (365 / dias) * 100; tir = (Math.pow(g, 365 / dias) - 1) * 100; }
+        rows.push({ ticker: l.ticker, nombre, tipo, vencimiento: l.fechaVencimiento, dias, precio, vpv: l.vpv, tna, tir });
+      }
+      rows.sort((a, b) => a.dias - b.dias);
+
+      if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>'; return; }
+
+      const tirs = rows.filter(r => r.tir !== null).map(r => r.tir), best = tirs.length > 0 ? Math.max(...tirs) : null;
+      tbody.innerHTML = rows.map(r => {
+        const ib = r.tir !== null && best !== null && r.tir === best;
+        return '<tr style="' + (ib ? 'background:var(--turquesa-claro)' : '') + '">'
+          + '<td><span class="ticker-badge">' + r.ticker + '</span></td>'
+          + '<td style="font-size:.78rem">' + r.nombre + ' <span style="font-size:.65rem;color:var(--gris-texto)">' + r.tipo + '</span></td>'
+          + '<td style="font-family:Space Mono,monospace;font-size:.78rem">' + formatDate(r.vencimiento) + '</td>'
+          + '<td style="font-family:Space Mono,monospace;text-align:center">' + r.dias + 'd</td>'
+          + '<td style="font-family:Space Mono,monospace;font-weight:600">' + (r.precio ? r.precio.toFixed(2) : '<span style="color:var(--gris-texto)">—</span>') + '</td>'
+          + '<td style="font-family:Space Mono,monospace;font-size:.78rem">' + (r.vpv ? r.vpv.toFixed(3) : '—') + '</td>'
+          + '<td style="font-family:Space Mono,monospace">' + (r.tna !== null ? r.tna.toFixed(2) + '%' : '—') + '</td>'
+          + '<td>' + (r.tir !== null ? '<span class="tir-value">' + r.tir.toFixed(2) + '%</span>' : '<span style="color:var(--gris-texto);font-size:.75rem">Sin precio</span>') + '</td></tr>';
+      }).join('');
+
+      if (!preciosVivos)
+        tbody.innerHTML += '<tr><td colspan="8" style="padding:.6rem 1rem;font-size:.75rem;color:var(--naranja);background:#FFFAF0;text-align:center">⚠ Sin precios en vivo — ' + (window.PF.isLocal ? 'solo disponible en Vercel' : 'mercado cerrado') + '. Metadata OK.</td></tr>';
+
+      // Alimenta el dropdown de la calculadora
+      if (typeof window.populateCalcDropdown === 'function') window.populateCalcDropdown(rows);
+
+    } catch (e) {
+      console.error('LECAPs:', e);
+      tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">Error al cargar LECAPs · <span style="color:var(--turquesa);cursor:pointer;text-decoration:underline" onclick="loadLecaps()">Reintentar</span></td></tr>';
+    }
+  }
+
+  // Exponer para retry y auto-refresh
+  window.loadLecaps = loadLecaps;
+
+  // Carga inicial
+  loadLecaps();
+
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 4: CALCULADORA LECAP
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Replica la lógica del Excel de Christian para
+ *   calcular rendimiento de LECAPs incluyendo costos operativos.
+ *   Permite al usuario seleccionar una LECAP, ingresar monto
+ *   y tipo de cartera, y ver el resultado neto.
+ *
+ * FUENTES DE DATOS:
+ *   - Precios y VPV: data912 + ArgentinaDatos (cargados por Módulo 3)
+ *   - Cotización MEP/CCL: DolarAPI (cargadas por Módulo 2)
+ *
+ * FÓRMULAS CRÍTICAS:
+ *   - Nominales = ROUND(monto / precio * 100)
+ *   - Costo neto = nominales * (precio / 100)
+ *   - Comisión = MAX(costoNeto * arancelPct / 365 * días, 100)
+ *     Donde arancelPct: Estándar=0.012, Preferente=0.01, Personalizada=0
+ *   - Derecho de mercado = monto * 0.0001
+ *   - Total arancel = comisión + derecho de mercado
+ *   - Total a pagar = monto + arancel
+ *   - Monto a cobrar = nominales * (VPV / 100)
+ *   - Ganancia = cobrar - pagar
+ *   - Rendimiento directo = cobrar / pagar - 1
+ *   - TNA = rendDirecto * (365 / días)
+ *   - TEA = (1 + rendDirecto) ^ (365/días) - 1
+ *   - TEM = (1 + TEA) ^ (30/365) - 1
+ *   - MEP Breakeven = cotizMEP * (1 + rendDirecto)
+ *   - CCL Breakeven = cotizCCL * (1 + rendDirecto)
+ *
+ * NOTA: La fecha de liquidación default es hoy. El usuario
+ *   puede cambiarla manualmente (útil para operaciones futuras).
+ *
+ * CARGA: Diferida — se inicializa al primer clic en "Herramientas"
+ * ═══════════════════════════════════════════════════════ */
+(function setupCalculadora() {
+
+  // Poblar dropdown con letras disponibles
+  window.populateCalcDropdown = function(rows) {
+    const sel = document.getElementById('calc-ticker');
+    sel.innerHTML = '<option value="">— Seleccioná una letra —</option>';
+    for (const r of rows) sel.innerHTML += '<option value="' + r.ticker + '">' + r.ticker + ' — ' + r.nombre + ' (' + r.dias + 'd)</option>';
+  };
+
+  // Actualizar cotización dólar en panel automático
+  window.updateCalcDollar = function() {
+    document.getElementById('calc-mep-val').textContent = window.PF.mepVenta ? formatARS(window.PF.mepVenta) : '—';
+    document.getElementById('calc-ccl-val').textContent = window.PF.cclVenta ? formatARS(window.PF.cclVenta) : '—';
+    calcular();
+  };
+
+  function calcular() {
+    const ticker = document.getElementById('calc-ticker').value;
+    if (!ticker) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
+    const letra = window.PF.letrasMeta.find(l => l.ticker === ticker);
+    if (!letra) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
+    const precio = window.PF.livePrices[ticker], monto = parseFloat(document.getElementById('calc-monto').value) || 0, arancelPct = parseFloat(document.getElementById('calc-cartera').value) || 0;
+    const fechaLiqStr = document.getElementById('calc-fecha-liq').value;
+    const stl = fechaLiqStr ? new Date(fechaLiqStr + 'T00:00:00') : new Date();
+    stl.setHours(0, 0, 0, 0);
+    const vto = new Date(letra.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
+
+    document.getElementById('calc-precio').textContent = precio ? precio.toFixed(2) : 'Sin precio en vivo';
+    document.getElementById('calc-vpv').textContent = letra.vpv ? letra.vpv.toFixed(6) : '—';
+    document.getElementById('calc-vto').textContent = formatDate(letra.fechaVencimiento);
+    document.getElementById('calc-dias').textContent = dias + ' días';
+
+    if (!precio || !letra.vpv || monto <= 0) {
+      clearResults();
+      window.PF.lastCalc.ticker = null;
+      renderComparativa();
+      if (!precio) document.getElementById('res-nominales').textContent = 'Necesita precio en vivo';
+      return;
+    }
+
+    const nominales = Math.round(monto / precio * 100);
+    const costoNeto = nominales * (precio / 100);
+    const comision = Math.max((costoNeto * arancelPct / 365 * dias), 100);
+    const derechoMcdo = monto * 0.0001;
+    const arancel = comision + derechoMcdo;
+    const totalPagar = monto + arancel;
+    const montoCobrar = nominales * (letra.vpv / 100);
+    const ganancia = montoCobrar - totalPagar;
+    const rendDirecto = totalPagar > 0 ? montoCobrar / totalPagar - 1 : 0;
+    const tna = rendDirecto * (365 / dias);
+    const tea = Math.pow(1 + rendDirecto, 365 / dias) - 1;
+    const tem = Math.pow(1 + tea, 30 / 365) - 1;
+    const mepBE = window.PF.mepVenta ? window.PF.mepVenta * (1 + rendDirecto) : null;
+    const cclBE = window.PF.cclVenta ? window.PF.cclVenta * (1 + rendDirecto) : null;
+
+    document.getElementById('res-nominales').textContent = nominales.toLocaleString('es-AR');
+    document.getElementById('res-arancel').textContent = formatMoney(arancel);
+    document.getElementById('res-total-pagar').textContent = formatMoney(totalPagar);
+    document.getElementById('res-amort').textContent = letra.vpv.toFixed(6);
+    document.getElementById('res-cobrar').textContent = formatMoney(montoCobrar);
+    document.getElementById('res-ganancia').textContent = formatMoney(ganancia);
+    document.getElementById('res-rend').textContent = formatPct(rendDirecto);
+    document.getElementById('res-tna').textContent = formatPct(tna);
+    document.getElementById('res-tea').textContent = formatPct(tea);
+    document.getElementById('res-tem').textContent = formatPct(tem);
+    document.getElementById('res-mep-be').textContent = mepBE ? formatARS(mepBE) : '—';
+    document.getElementById('res-ccl-be').textContent = cclBE ? formatARS(cclBE) : '—';
+
+    window.PF.lastCalc = { ticker, monto, dias, totalPagar, montoCobrar, ganancia, tea, tna: tna };
+    renderComparativa();
+  }
+
+  function clearResults() {
+    ['res-nominales', 'res-arancel', 'res-total-pagar', 'res-amort', 'res-cobrar', 'res-ganancia', 'res-rend', 'res-tna', 'res-tea', 'res-tem', 'res-mep-be', 'res-ccl-be']
+      .forEach(id => { document.getElementById(id).textContent = '—'; });
+  }
+
+  // Inicialización diferida (se llama al primer clic en Herramientas)
+  window.initCalculadora = function() {
+    document.getElementById('calc-ticker').addEventListener('change', calcular);
+    document.getElementById('calc-monto').addEventListener('input', calcular);
+    document.getElementById('calc-cartera').addEventListener('change', calcular);
+    document.getElementById('calc-fecha-liq').addEventListener('change', calcular);
+    const hoy = new Date();
+    document.getElementById('calc-fecha-liq').value = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+  };
+
+  // Exponer calcular para que el comparador pueda re-renderizar
+  window.calcularLecap = calcular;
+
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 5: COMPARADOR — LECAP vs Plazo Fijo
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Compara el rendimiento neto de la LECAP
+ *   seleccionada en la calculadora contra un Plazo Fijo
+ *   del banco elegido, al mismo plazo.
+ *
+ * FUENTES DE DATOS:
+ *   - Tasas PF: BCRA Transparencia vía /api/plazofijo.js
+ *     Filtro: PF intransferible en pesos, Home Banking,
+ *     ordena por TEA descendente (mejor tasa disponible)
+ *   - Datos LECAP: viene del Módulo 4 (window.PF.lastCalc)
+ *
+ * FÓRMULAS:
+ *   - PF Final = monto * (1 + TNA/100 * días/365)
+ *     → Interés simple para un solo período de PF
+ *   - Diferencia = LECAP final - PF final
+ *
+ * CONVERSIÓN TEA ↔ TNA (para PF a 30 días):
+ *   - TNA = ((1+TEA)^(30/365) - 1) * 365/30
+ *   - TEA = ((1+TNA*30/365)^(365/30)) - 1
+ *
+ * BANCOS DISPONIBLES (código BCRA):
+ *   11=Nación, 285=Macro, 191=Credicoop, 72=Santander,
+ *   7=Galicia, 17=BBVA, 15=ICBC, manual=tasa libre
+ *
+ * CACHE: Las consultas al proxy se cachean en PF_CACHE
+ *   para no re-consultar el mismo banco en la misma sesión.
+ *
+ * CARGA: Diferida — se inicializa al primer clic en "Herramientas"
+ * ═══════════════════════════════════════════════════════ */
+(function setupComparador() {
+
+  const BANCOS = { 11: 'Banco Nación', 285: 'Banco Macro', 191: 'Banco Credicoop', 72: 'Banco Santander', 7: 'Banco Galicia', 17: 'Banco BBVA', 15: 'ICBC' };
+  let PF_CACHE = {};
+
+  function applyPFData(data, codigo) {
+    const statusEl = document.getElementById('pf-status');
+    if (!data.results || data.results.length === 0) {
+      statusEl.textContent = 'Sin datos de PF para este banco';
+      window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return;
+    }
+    const filtered = data.results.filter(r => {
+      const nombre = (r.nombreCompleto || '').toUpperCase();
+      const canal = (r.canalConstitucion || '').toLowerCase();
+      const esPesos = !nombre.includes('DOLAR') && !nombre.includes('UVA');
+      const esHB = canal.includes('home banking') || canal.includes('homebanking');
+      return esPesos && esHB && r.tasaEfectivaAnualMinima > 0;
+    });
+    if (filtered.length === 0) {
+      const fallback = data.results.filter(r => {
+        const nombre = (r.nombreCompleto || '').toUpperCase();
+        return !nombre.includes('DOLAR') && !nombre.includes('UVA') && r.tasaEfectivaAnualMinima > 0;
+      });
+      if (fallback.length === 0) { statusEl.textContent = 'Sin PF en pesos'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return; }
+      fallback.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima);
+      window.PF.pfTEA = fallback[0].tasaEfectivaAnualMinima;
+    } else {
+      filtered.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima);
+      window.PF.pfTEA = filtered[0].tasaEfectivaAnualMinima;
+    }
+    const teaDec = window.PF.pfTEA / 100;
+    window.PF.pfTNA = ((Math.pow(1 + teaDec, 30 / 365) - 1) * 365 / 30) * 100;
+    window.PF.pfBancoNombre = BANCOS[codigo] || data.results[0].descripcionEntidad;
+    statusEl.textContent = window.PF.pfBancoNombre + ' · TEA ' + window.PF.pfTEA.toFixed(2) + '% · TNA ' + window.PF.pfTNA.toFixed(2) + '%';
+    renderComparativa();
+  }
+
+  // Inicialización diferida
+  window.initComparador = function() {
+    document.getElementById('pf-banco').addEventListener('change', async function() {
+      const val = this.value;
+      const manualWrap = document.getElementById('pf-manual-wrap');
+      const statusEl = document.getElementById('pf-status');
+
+      if (val === 'manual') {
+        manualWrap.style.display = '';
+        window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = 'Plazo Fijo (manual)';
+        statusEl.textContent = 'Ingresá la TNA manualmente';
+        renderComparativa(); return;
+      }
+      manualWrap.style.display = 'none';
+      if (!val) { window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = null; statusEl.textContent = ''; renderComparativa(); return; }
+
+      if (PF_CACHE[val]) { applyPFData(PF_CACHE[val], val); return; }
+
+      statusEl.textContent = 'Consultando BCRA...';
+      try {
+        const resp = await fetch('/api/plazofijo?codigoEntidad=' + val);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        if (data.error) throw new Error(data.message || 'Error proxy');
+        PF_CACHE[val] = data;
+        applyPFData(data, val);
+      } catch (e) {
+        statusEl.textContent = 'Error al consultar BCRA · Reintentá';
+        window.PF.pfTEA = null; window.PF.pfTNA = null;
+        renderComparativa();
+      }
+    });
+
+    document.getElementById('pf-tna-manual').addEventListener('input', function() {
+      const val = parseFloat(this.value);
+      if (!isNaN(val) && val > 0) {
+        window.PF.pfTNA = val;
+        window.PF.pfTEA = (Math.pow(1 + val / 100 * 30 / 365, 365 / 30) - 1) * 100;
+        window.PF.pfBancoNombre = 'Plazo Fijo (manual)';
+        document.getElementById('pf-status').textContent = 'TNA ' + val.toFixed(2) + '% · TEA ' + window.PF.pfTEA.toFixed(2) + '%';
+      } else { window.PF.pfTNA = null; window.PF.pfTEA = null; }
+      renderComparativa();
+    });
+  };
+
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * RENDER COMPARATIVA (usado por Módulos 4 y 5)
+ * ═══════════════════════════════════════════════════════ */
+function renderComparativa() {
+  const div = document.getElementById('vs-content');
+  const LC = window.PF.lastCalc;
+
+  if (!LC.ticker || !window.PF.pfTNA || !window.PF.pfTEA) {
+    let msg = '';
+    if (!LC.ticker && !window.PF.pfTNA) msg = 'Elegí una LECAP en la calculadora y un banco para ver la comparativa.';
+    else if (!LC.ticker) msg = 'Elegí una LECAP en la calculadora de arriba.';
+    else msg = 'Elegí un banco para comparar contra el Plazo Fijo.';
+    div.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--gris-texto);font-size:.85rem">' + msg + '</div>';
     return;
   }
 
-  const monto=LAST_CALC.monto;
-  const dias=LAST_CALC.dias;
-  const tnaDec=PF_TNA/100;
+  const monto = LC.monto, dias = LC.dias;
+  const tnaDec = window.PF.pfTNA / 100;
+  const pfFinal = monto * (1 + tnaDec * dias / 365);
+  const pfGanancia = pfFinal - monto;
+  const lecapFinal = LC.montoCobrar;
+  const lecapGanancia = LC.ganancia;
+  const diferencia = lecapFinal - pfFinal;
+  const lecapGana = diferencia > 0;
 
-  // PF calculation: simple interest for a single period
-  const pfFinal=monto*(1+tnaDec*dias/365);
-  const pfGanancia=pfFinal-monto;
-
-  const lecapFinal=LAST_CALC.montoCobrar;
-  const lecapGanancia=LAST_CALC.ganancia;
-
-  const diferencia=lecapFinal-pfFinal;
-  const lecapGana=diferencia>0;
-
-  div.innerHTML=`
+  div.innerHTML = `
     <div class="vs-cards">
       <div class="vs-card lecap-side">
-        <div class="vs-card-title">LECAP ${LAST_CALC.ticker}</div>
+        <div class="vs-card-title">LECAP ${LC.ticker}</div>
         <div class="vs-card-amount">${formatMoney(lecapFinal)}</div>
-        <div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LAST_CALC.tea)}</div>
+        <div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LC.tea)}</div>
       </div>
       <div class="vs-badge">
         <div style="font-size:.65rem;color:var(--gris-texto);margin-bottom:.3rem">Diferencia</div>
-        <span class="${lecapGana?'win':'lose'}">${lecapGana?'+':''}${formatMoney(diferencia)}</span>
+        <span class="${lecapGana ? 'win' : 'lose'}">${lecapGana ? '+' : ''}${formatMoney(diferencia)}</span>
       </div>
       <div class="vs-card pf-side">
-        <div class="vs-card-title">PF ${PF_BANCO_NOMBRE}</div>
+        <div class="vs-card-title">PF ${window.PF.pfBancoNombre}</div>
         <div class="vs-card-amount">${formatMoney(pfFinal)}</div>
-        <div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${PF_TNA.toFixed(2)}%</div>
+        <div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${window.PF.pfTNA.toFixed(2)}%</div>
       </div>
     </div>
     <div class="vs-detail">
@@ -501,16 +836,30 @@ function renderComparativa(){
     </div>
     <div class="vs-note">
       ${lecapGana
-        ?'✓ La <strong>LECAP '+LAST_CALC.ticker+'</strong> rinde <strong>'+formatMoney(diferencia)+' más</strong> que el Plazo Fijo de '+PF_BANCO_NOMBRE+' a '+dias+' días (neto de comisiones).'
-        :'El <strong>Plazo Fijo de '+PF_BANCO_NOMBRE+'</strong> rinde <strong>'+formatMoney(-diferencia)+' más</strong> que la LECAP '+LAST_CALC.ticker+' a '+dias+' días.'}
+        ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que el Plazo Fijo de ' + window.PF.pfBancoNombre + ' a ' + dias + ' días (neto de comisiones).'
+        : 'El <strong>Plazo Fijo de ' + window.PF.pfBancoNombre + '</strong> rinde <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}
     </div>`;
 }
 
-// INIT + AUTO-REFRESH
-const REFRESH_MS=5*60*1000;let nextRefresh=Date.now()+REFRESH_MS;
-loadAll();
-setInterval(()=>{nextRefresh=Date.now()+REFRESH_MS;loadAll()},REFRESH_MS);
-setInterval(()=>{const s=Math.max(0,Math.round((nextRefresh-Date.now())/1000));document.getElementById('countdown').textContent='('+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+')'},1000);
+
+/* ═══════════════════════════════════════════════════════
+ * AUTO-REFRESH — Recarga cada 5 minutos
+ * ═══════════════════════════════════════════════════════ */
+(function initAutoRefresh() {
+  const REFRESH_MS = 5 * 60 * 1000;
+  let nextRefresh = Date.now() + REFRESH_MS;
+
+  setInterval(() => {
+    nextRefresh = Date.now() + REFRESH_MS;
+    window.loadCards();
+    window.loadLecaps();
+  }, REFRESH_MS);
+
+  setInterval(() => {
+    const s = Math.max(0, Math.round((nextRefresh - Date.now()) / 1000));
+    document.getElementById('countdown').textContent = '(' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ')';
+  }, 1000);
+})();
 </script>
 </body>
 </html>
