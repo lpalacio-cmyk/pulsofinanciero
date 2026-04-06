@@ -1,133 +1,287 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pulso Financiero NOA — WL HNOS & ASOC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--azul-oscuro:#0A2D50;--azul-medio:#1A5276;--turquesa:#0096A0;--turquesa-suave:#00B4C5;--turquesa-claro:#E0F7FA;--gris-bg:#F4F6F8;--gris-borde:#E2E8F0;--gris-texto:#64748B;--blanco:#FFFFFF;--rojo:#E53E3E;--verde:#38A169;--naranja:#ED8936}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Open Sans',sans-serif;background:var(--gris-bg);color:var(--azul-oscuro);min-height:100vh}
-  .top-bar{background:var(--azul-oscuro);padding:.5rem 2rem;display:flex;justify-content:space-between;align-items:center}
-  .top-bar .brand{font-family:'Poppins',sans-serif;font-weight:700;font-size:.8rem;color:var(--turquesa-suave);letter-spacing:1px}
-  .top-bar .update-info{font-family:'Space Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.5)}
-  .top-bar .countdown{font-family:'Space Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.35);margin-left:.5rem}
-  .nav-tabs{background:var(--blanco);border-bottom:2px solid var(--gris-borde);padding:0 2rem;display:flex;gap:0}
-  .nav-tab{font-family:'Open Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--gris-texto);padding:.9rem 1.5rem;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;user-select:none}
-  .nav-tab:hover{color:var(--azul-oscuro);background:var(--gris-bg)}
-  .nav-tab.active{color:var(--turquesa);border-bottom-color:var(--turquesa)}
-  .nav-tab.disabled{opacity:.4;cursor:default}
-  .nav-tab.disabled:hover{color:var(--gris-texto);background:transparent}
-  .main{max-width:1100px;margin:0 auto;padding:2rem}
-  .tab-content{display:none}.tab-content.active{display:block}
-  .header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.4rem}
-  .header-left h1{font-family:'Poppins',sans-serif;font-size:2.2rem;font-weight:800;line-height:1.05}
-  .header-left h1 .highlight{background:linear-gradient(135deg,var(--turquesa),var(--turquesa-suave));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .date-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border:1.5px solid var(--gris-borde);border-radius:20px;font-family:'Space Mono',monospace;font-size:.78rem;color:var(--gris-texto);background:var(--blanco)}
-  .date-badge::before{content:'◷';font-size:.9rem}
-  .subtitle{color:var(--gris-texto);font-size:.88rem;margin-bottom:2.2rem;font-style:italic}
-  .section-title{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--turquesa)}
-  .section-title::before{content:'';width:4px;height:20px;background:linear-gradient(180deg,var(--turquesa),var(--turquesa-suave));border-radius:2px}
-  .cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2.5rem}
-  .card{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;padding:1.2rem 1.3rem;transition:all .3s;position:relative;overflow:hidden}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--azul-oscuro),var(--turquesa));transform:scaleX(0);transform-origin:left;transition:transform .3s}
-  .card:hover{border-color:var(--turquesa);box-shadow:0 6px 24px rgba(0,150,160,.1);transform:translateY(-2px)}
-  .card:hover::before{transform:scaleX(1)}
-  .card-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texto);margin-bottom:.6rem}
-  .card-value{font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:700;color:var(--azul-oscuro);line-height:1}
-  .card-detail{margin-top:.4rem;font-size:.7rem;color:var(--gris-texto)}
-  .card-value.loading{background:linear-gradient(90deg,var(--gris-borde) 25%,#f0f0f0 50%,var(--gris-borde) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:2rem;width:110px;color:transparent}
-  .card-value.error-state{font-size:.85rem;color:var(--rojo)}
-  .card-detail .retry-btn{color:var(--turquesa);cursor:pointer;text-decoration:underline;font-size:.68rem}
-  .card-detail .retry-btn:hover{color:var(--turquesa-suave)}
-  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  .lecap-table-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2.5rem}
-  .lecap-table{width:100%;border-collapse:collapse;font-size:.82rem}
-  .lecap-table thead{background:var(--azul-oscuro)}
-  .lecap-table th{font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.85);padding:.8rem 1rem;text-align:left}
-  .lecap-table td{padding:.7rem 1rem;border-bottom:1px solid var(--gris-bg)}
-  .lecap-table tbody tr:hover{background:var(--turquesa-claro)}
-  .lecap-table tbody tr:last-child td{border-bottom:none}
-  .ticker-badge{font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;color:var(--turquesa);background:var(--turquesa-claro);padding:.2rem .5rem;border-radius:4px}
-  .tir-value{font-family:'Space Mono',monospace;font-weight:700;color:var(--azul-oscuro);font-size:.9rem}
-  .lecap-loading{padding:2rem;text-align:center;color:var(--gris-texto);font-size:.85rem}
-  .calc-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2rem}
-  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
-  .calc-inputs{padding:1.5rem;border-right:1px solid var(--gris-borde)}
-  .calc-results{padding:1.5rem;background:var(--gris-bg)}
-  .calc-subtitle{font-family:'Poppins',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--azul-oscuro);margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:2px solid var(--turquesa)}
-  .form-group{margin-bottom:1rem}
-  .form-group label{display:block;font-size:.72rem;font-weight:600;color:var(--gris-texto);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
-  .form-group select,.form-group input{width:100%;padding:.6rem .8rem;border:1.5px solid var(--gris-borde);border-radius:8px;font-family:'Open Sans',sans-serif;font-size:.88rem;color:var(--azul-oscuro);background:var(--blanco);transition:border-color .2s}
-  .form-group select:focus,.form-group input:focus{outline:none;border-color:var(--turquesa);box-shadow:0 0 0 3px rgba(0,150,160,.1)}
-  .form-group .auto-value{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:600;color:var(--turquesa);padding:.6rem 0}
-  .result-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--gris-borde)}
-  .result-row:last-child{border-bottom:none}
-  .result-label{font-size:.78rem;color:var(--gris-texto)}
-  .result-val{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;color:var(--azul-oscuro)}
-  .result-val.green{color:var(--verde)}.result-val.big{font-size:1.1rem}.result-val.red{color:var(--rojo)}
-  .result-divider{height:1px;background:var(--turquesa);margin:.6rem 0;opacity:.3}
-  .breakeven-box{margin-top:.8rem;padding:.8rem;background:var(--turquesa-claro);border-radius:8px}
-  .breakeven-box .result-label{font-size:.7rem}
-  .vs-wrap{background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:12px;overflow:hidden;margin-bottom:2rem}
-  .vs-header{background:var(--azul-oscuro);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
-  .vs-header .vs-title{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;color:var(--blanco)}
-  .vs-header select,.vs-header input{padding:.5rem .7rem;border:1px solid rgba(255,255,255,.2);border-radius:6px;font-family:'Open Sans',sans-serif;font-size:.82rem;color:var(--blanco);background:rgba(255,255,255,.1)}
-  .vs-header select option{color:var(--azul-oscuro);background:var(--blanco)}
-  .vs-header input::placeholder{color:rgba(255,255,255,.4)}
-  .vs-body{padding:1.5rem}
-  .vs-cards{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1rem}
-  .vs-card{padding:1.2rem;border-radius:10px;text-align:center}
-  .vs-card.lecap-side{background:var(--turquesa-claro);border:1.5px solid var(--turquesa)}
-  .vs-card.pf-side{background:#F0F4FF;border:1.5px solid #93A8D0}
-  .vs-card .vs-card-title{font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
-  .vs-card.lecap-side .vs-card-title{color:var(--turquesa)}
-  .vs-card.pf-side .vs-card-title{color:#4472C4}
-  .vs-card .vs-card-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--azul-oscuro)}
-  .vs-card .vs-card-sub{font-size:.72rem;color:var(--gris-texto);margin-top:.3rem}
-  .vs-badge{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;text-align:center}
-  .vs-badge span{display:inline-block;padding:.4rem .8rem;border-radius:6px;font-size:.78rem}
-  .vs-badge .win{background:rgba(56,161,105,.12);color:var(--verde)}
-  .vs-badge .lose{background:rgba(229,62,62,.1);color:var(--rojo)}
-  .vs-detail{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;font-size:.78rem}
-  .vs-detail-item{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--gris-bg)}
-  .vs-detail-item span:first-child{color:var(--gris-texto)}
-  .vs-detail-item span:last-child{font-family:'Space Mono',monospace;font-weight:600}
-  .vs-note{margin-top:1rem;padding:.7rem 1rem;background:var(--gris-bg);border-radius:8px;font-size:.72rem;color:var(--gris-texto);text-align:center}
-  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);padding:.7rem 1.5rem;border-radius:8px;font-family:'Open Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--blanco);background:var(--azul-oscuro);box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
-  .toast.show{opacity:1}
-  .footer{margin-top:3rem;padding:1.2rem 0;border-top:1px solid var(--gris-borde);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--gris-texto)}
-  .footer .version{font-family:'Space Mono',monospace;font-size:.65rem;opacity:.5}
-  @media(max-width:768px){.top-bar{padding:.5rem 1rem}.nav-tabs{padding:0 .5rem;overflow-x:auto}.nav-tab{padding:.8rem 1rem;font-size:.72rem;white-space:nowrap}.main{padding:1.5rem 1rem}.header{flex-direction:column;align-items:flex-start;gap:.8rem}.header-left h1{font-size:1.6rem}.cards-grid{grid-template-columns:1fr 1fr}.card-value{font-size:1.3rem}.calc-grid{grid-template-columns:1fr}.calc-inputs{border-right:none;border-bottom:1px solid var(--gris-borde)}.vs-cards{grid-template-columns:1fr}.footer{flex-direction:column;gap:.5rem;text-align:center}}
-  @media(max-width:420px){.cards-grid{grid-template-columns:1fr}}
+/* ═══════════════════════════════════════════════════════
+ * DISEÑO: Pulso Financiero NOA — v3.0 "Luxury Fintech"
+ * ───────────────────────────────────────────────────────
+ * Dark mode primary con toggle a light mode.
+ * Tipografía: Poppins (display) + DM Sans (body) + JetBrains Mono (datos)
+ * Paleta: Cyan/Teal accent sobre fondos profundos.
+ * Inspiración: Dashboard Canva Code + presentación dark/light de Fede.
+ * ═══════════════════════════════════════════════════════ */
+
+/* --- THEME VARIABLES --- */
+:root, [data-theme="dark"] {
+  --bg: #0B1120;
+  --bg-subtle: #0F1729;
+  --surface: #0F1729;
+  --surface-hover: #162036;
+  --border: #1E2D4A;
+  --border-subtle: #1A2540;
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --accent: #22D3EE;
+  --accent-dim: rgba(34,211,238,.12);
+  --accent-glow: rgba(34,211,238,.15);
+  --green: #34D399;
+  --green-dim: rgba(52,211,153,.12);
+  --red: #FB7185;
+  --red-dim: rgba(251,113,133,.12);
+  --orange: #FBBF24;
+  --orange-dim: rgba(251,191,36,.12);
+  --shadow-card: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-card-hover: 0 8px 32px rgba(0,0,0,.3);
+  --gradient-accent: linear-gradient(135deg, #22D3EE, #06B6D4);
+  --shimmer-a: #1A2540;
+  --shimmer-b: #1E2D4A;
+  --input-bg: #1A2540;
+  --thead-bg: #0B1120;
+  --table-row-hover: rgba(34,211,238,.06);
+  --toast-bg: #E2E8F0;
+  --toast-text: #0B1120;
+}
+[data-theme="light"] {
+  --bg: #F1F5F9;
+  --bg-subtle: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-hover: #F8FAFC;
+  --border: #E2E8F0;
+  --border-subtle: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --accent: #0891B2;
+  --accent-dim: rgba(8,145,178,.08);
+  --accent-glow: rgba(8,145,178,.1);
+  --green: #059669;
+  --green-dim: rgba(5,150,105,.08);
+  --red: #E11D48;
+  --red-dim: rgba(225,29,72,.08);
+  --orange: #D97706;
+  --orange-dim: rgba(217,119,6,.08);
+  --shadow-card: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-card-hover: 0 8px 32px rgba(0,0,0,.08);
+  --gradient-accent: linear-gradient(135deg, #0891B2, #0E7490);
+  --shimmer-a: #E2E8F0;
+  --shimmer-b: #F1F5F9;
+  --input-bg: #F8FAFC;
+  --thead-bg: #0F172A;
+  --table-row-hover: rgba(8,145,178,.04);
+  --toast-bg: #0F172A;
+  --toast-text: #E2E8F0;
+}
+
+/* --- RESET & BASE --- */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;transition:background .3s,color .3s}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes pulse-dot{0%,100%{opacity:.4}50%{opacity:1}}
+.anim{animation:fadeUp .5s ease both}
+.anim-d1{animation-delay:.06s}.anim-d2{animation-delay:.12s}.anim-d3{animation-delay:.18s}
+.anim-d4{animation-delay:.24s}.anim-d5{animation-delay:.30s}
+
+/* --- TOP BAR --- */
+.top-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+.brand-group{display:flex;align-items:center;gap:.7rem}
+.brand-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--gradient-accent);flex-shrink:0}
+.brand-icon svg{width:16px;height:16px;color:var(--bg)}
+.brand-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:.82rem;color:var(--text-primary);letter-spacing:.5px}
+.brand-sub{font-size:.62rem;color:var(--text-muted);font-weight:500}
+.top-right{display:flex;align-items:center;gap:.8rem}
+.update-info{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text-muted)}
+.countdown{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text-muted);opacity:.5}
+.theme-toggle{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--text-muted)}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+/* --- NAVIGATION TABS --- */
+.nav-tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0}
+.nav-tab{font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;color:var(--text-muted);padding:.85rem 1.5rem;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.8px;user-select:none}
+.nav-tab:hover{color:var(--text-secondary);background:var(--accent-dim)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-tab.disabled{opacity:.35;cursor:default}
+.nav-tab.disabled:hover{color:var(--text-muted);background:transparent}
+
+/* --- LAYOUT --- */
+.main{max-width:1100px;margin:0 auto;padding:2rem}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* --- HEADER --- */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.5rem}
+.header h1{font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;line-height:1.1;color:var(--text-primary)}
+.header h1 .highlight{background:var(--gradient-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.date-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .9rem;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-secondary);background:var(--surface)}
+.date-badge svg{width:14px;height:14px;color:var(--accent)}
+.subtitle{color:var(--text-muted);font-size:.82rem;margin-bottom:2rem;font-weight:400}
+
+/* --- SECTION TITLE --- */
+.section-title{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent)}
+.section-title::before{content:'';width:3px;height:18px;background:var(--gradient-accent);border-radius:2px}
+
+/* --- KPI CARDS --- */
+.cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-bottom:2.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;transition:all .3s;position:relative;overflow:hidden;box-shadow:var(--shadow-card)}
+.card::after{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);transform:skewX(-20deg);transition:left .6s}
+.card:hover::after{left:125%}
+.card:hover{border-color:var(--accent);box-shadow:var(--shadow-card-hover),0 0 20px var(--accent-glow);transform:translateY(-2px)}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem}
+.card-icon svg{width:15px;height:15px}
+.card-icon.dollar{background:var(--accent-dim);color:var(--accent)}
+.card-icon.risk{background:var(--orange-dim);color:var(--orange)}
+.card-icon.rate{background:var(--green-dim);color:var(--green)}
+.card-label{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:.5rem}
+.card-value{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:700;color:var(--text-primary);line-height:1}
+.card-detail{margin-top:.35rem;font-size:.68rem;color:var(--text-muted)}
+.card-value.loading{background:linear-gradient(90deg,var(--shimmer-a) 25%,var(--shimmer-b) 50%,var(--shimmer-a) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:1.8rem;width:100px;color:transparent}
+.card-value.error-state{font-size:.78rem;color:var(--red)}
+.card-detail .retry-btn{color:var(--accent);cursor:pointer;text-decoration:underline;font-size:.66rem}
+.card-detail .retry-btn:hover{opacity:.8}
+
+/* --- TABLE --- */
+.lecap-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2.5rem;box-shadow:var(--shadow-card)}
+.lecap-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.lecap-table thead{background:var(--thead-bg)}
+.lecap-table th{font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7);padding:.75rem 1rem;text-align:left}
+.lecap-table td{padding:.65rem 1rem;border-bottom:1px solid var(--border-subtle);transition:background .15s}
+.lecap-table tbody tr:hover{background:var(--table-row-hover)}
+.lecap-table tbody tr:last-child td{border-bottom:none}
+.ticker-badge{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.72rem;color:var(--accent);background:var(--accent-dim);padding:.2rem .5rem;border-radius:5px}
+.tir-value{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text-primary);font-size:.85rem}
+.lecap-loading{padding:2rem;text-align:center;color:var(--text-muted);font-size:.82rem}
+
+/* --- CALCULATOR --- */
+.calc-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2rem;box-shadow:var(--shadow-card)}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.calc-inputs{padding:1.5rem;border-right:1px solid var(--border)}
+.calc-results{padding:1.5rem;background:var(--bg-subtle)}
+.calc-subtitle{font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-primary);margin-bottom:1.1rem;padding-bottom:.45rem;border-bottom:2px solid var(--accent)}
+.form-group{margin-bottom:.9rem}
+.form-group label{display:block;font-size:.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.25rem}
+.form-group select,.form-group input{width:100%;padding:.55rem .75rem;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text-primary);background:var(--input-bg);transition:border-color .2s}
+.form-group select:focus,.form-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-group .auto-value{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;color:var(--accent);padding:.5rem 0}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border-subtle)}
+.result-row:last-child{border-bottom:none}
+.result-label{font-size:.74rem;color:var(--text-muted)}
+.result-val{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--text-primary)}
+.result-val.green{color:var(--green)}.result-val.big{font-size:1rem}.result-val.red{color:var(--red)}
+.result-divider{height:1px;background:var(--accent);margin:.5rem 0;opacity:.2}
+.breakeven-box{margin-top:.7rem;padding:.7rem;background:var(--accent-dim);border-radius:8px;border:1px solid rgba(34,211,238,.15)}
+.breakeven-box .result-label{font-size:.68rem}
+
+/* --- COMPARATIVA VS --- */
+.vs-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2rem;box-shadow:var(--shadow-card)}
+.vs-header{background:var(--thead-bg);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem}
+.vs-header .vs-title{font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.9)}
+.vs-header select,.vs-header input{padding:.45rem .65rem;border:1px solid rgba(255,255,255,.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.8rem;color:rgba(255,255,255,.9);background:rgba(255,255,255,.08);transition:border-color .2s}
+.vs-header select:focus,.vs-header input:focus{border-color:var(--accent);outline:none}
+.vs-header select option{color:#0F172A;background:#fff}
+.vs-header input::placeholder{color:rgba(255,255,255,.3)}
+.vs-body{padding:1.5rem}
+.vs-cards{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1rem}
+.vs-card{padding:1.1rem;border-radius:10px;text-align:center}
+.vs-card.lecap-side{background:var(--accent-dim);border:1px solid rgba(34,211,238,.2)}
+.vs-card.pf-side{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2)}
+.vs-card .vs-card-title{font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem}
+.vs-card.lecap-side .vs-card-title{color:var(--accent)}
+.vs-card.pf-side .vs-card-title{color:#818CF8}
+.vs-card .vs-card-amount{font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text-primary)}
+.vs-card .vs-card-sub{font-size:.7rem;color:var(--text-muted);margin-top:.25rem}
+.vs-badge{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;text-align:center}
+.vs-badge span{display:inline-block;padding:.35rem .75rem;border-radius:6px;font-size:.75rem}
+.vs-badge .win{background:var(--green-dim);color:var(--green)}
+.vs-badge .lose{background:var(--red-dim);color:var(--red)}
+.vs-detail{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;font-size:.75rem}
+.vs-detail-item{display:flex;justify-content:space-between;padding:.25rem 0;border-bottom:1px solid var(--border-subtle)}
+.vs-detail-item span:first-child{color:var(--text-muted)}
+.vs-detail-item span:last-child{font-family:'JetBrains Mono',monospace;font-weight:600}
+.vs-note{margin-top:1rem;padding:.65rem 1rem;background:var(--bg-subtle);border-radius:8px;font-size:.7rem;color:var(--text-muted);text-align:center;border:1px solid var(--border-subtle)}
+
+/* --- TOAST --- */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);padding:.65rem 1.4rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--toast-text);background:var(--toast-bg);box-shadow:0 8px 30px rgba(0,0,0,.2);opacity:0;transition:all .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* --- FOOTER --- */
+.footer{margin-top:3rem;padding:1rem 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.68rem;color:var(--text-muted)}
+.footer .version{font-family:'JetBrains Mono',monospace;font-size:.62rem;opacity:.4}
+
+/* --- LIVE DOT --- */
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse-dot 2s infinite;margin-right:.4rem}
+
+/* --- RESPONSIVE --- */
+@media(max-width:768px){
+  .top-bar{padding:.5rem 1rem}
+  .nav-tabs{padding:0 .5rem;overflow-x:auto}
+  .nav-tab{padding:.75rem 1rem;font-size:.7rem;white-space:nowrap}
+  .main{padding:1.5rem 1rem}
+  .header{flex-direction:column;align-items:flex-start;gap:.8rem}
+  .header h1{font-size:1.5rem}
+  .cards-grid{grid-template-columns:1fr 1fr}
+  .card-value{font-size:1.2rem}
+  .calc-grid{grid-template-columns:1fr}
+  .calc-inputs{border-right:none;border-bottom:1px solid var(--border)}
+  .vs-cards{grid-template-columns:1fr}
+  .footer{flex-direction:column;gap:.5rem;text-align:center}
+}
+@media(max-width:420px){.cards-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="top-bar"><div class="brand">WL HNOS & ASOC</div><div style="display:flex;align-items:center"><span class="update-info" id="update-time">Actualizando...</span><span class="countdown" id="countdown"></span></div></div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="brand-group">
+    <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+    <div><div class="brand-name">WL HNOS & ASOC</div><div class="brand-sub">Pulso Financiero NOA</div></div>
+  </div>
+  <div class="top-right">
+    <span class="live-dot"></span>
+    <span class="update-info" id="update-time">Actualizando...</span>
+    <span class="countdown" id="countdown"></span>
+    <button class="theme-toggle" id="theme-toggle" title="Cambiar tema">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- NAV TABS -->
 <nav class="nav-tabs">
   <div class="nav-tab active" data-tab="pulso">Pulso Financiero</div>
   <div class="nav-tab" data-tab="herramientas">Herramientas</div>
   <div class="nav-tab disabled" id="tab-costos-btn">Costos</div>
 </nav>
+
+<!-- MAIN -->
 <div class="main">
-  <div class="header"><div class="header-left"><h1>PULSO<br><span class="highlight">FINANCIERO NOA</span></h1></div><div class="header-right"><div class="date-badge" id="fecha-hoy"></div></div></div>
-  <p class="subtitle">Información financiera clave pensada para vos y tu negocio</p>
+  <div class="header anim">
+    <div><h1>PULSO <span class="highlight">FINANCIERO NOA</span></h1></div>
+    <div class="date-badge" id="fecha-hoy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="fecha-text"></span></div>
+  </div>
+  <p class="subtitle anim anim-d1">Información financiera clave pensada para vos y tu negocio</p>
 
   <!-- TAB: PULSO -->
   <div class="tab-content active" id="tab-pulso">
-    <div class="section-title">Variables Clave</div>
+    <div class="section-title anim anim-d1">Variables Clave</div>
     <div class="cards-grid">
-      <div class="card"><div class="card-label">Dólar Oficial</div><div class="card-value loading" id="val-oficial"></div><div class="card-detail" id="det-oficial"></div></div>
-      <div class="card"><div class="card-label">Dólar MEP</div><div class="card-value loading" id="val-mep"></div><div class="card-detail" id="det-mep"></div></div>
-      <div class="card"><div class="card-label">Dólar CCL</div><div class="card-value loading" id="val-ccl"></div><div class="card-detail" id="det-ccl"></div></div>
-      <div class="card"><div class="card-label">Riesgo País</div><div class="card-value loading" id="val-riesgo"></div><div class="card-detail" id="det-riesgo"></div></div>
-      <div class="card"><div class="card-label">TNA Badlar (Priv.)</div><div class="card-value loading" id="val-badlar"></div><div class="card-detail" id="det-badlar"></div></div>
+      <div class="card anim anim-d1"><div class="card-icon dollar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="card-label">Dólar Oficial</div><div class="card-value loading" id="val-oficial"></div><div class="card-detail" id="det-oficial"></div></div>
+      <div class="card anim anim-d2"><div class="card-icon dollar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div><div class="card-label">Dólar MEP</div><div class="card-value loading" id="val-mep"></div><div class="card-detail" id="det-mep"></div></div>
+      <div class="card anim anim-d3"><div class="card-icon dollar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="card-label">Dólar CCL</div><div class="card-value loading" id="val-ccl"></div><div class="card-detail" id="det-ccl"></div></div>
+      <div class="card anim anim-d4"><div class="card-icon risk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="card-label">Riesgo País</div><div class="card-value loading" id="val-riesgo"></div><div class="card-detail" id="det-riesgo"></div></div>
+      <div class="card anim anim-d5"><div class="card-icon rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="card-label">TNA Badlar (Priv.)</div><div class="card-value loading" id="val-badlar"></div><div class="card-detail" id="det-badlar"></div></div>
     </div>
-    <div class="section-title">LECAPs — Rendimientos en Vivo</div>
-    <div class="lecap-table-wrap"><table class="lecap-table"><thead><tr><th>Ticker</th><th>Nombre</th><th>Vencimiento</th><th>Días</th><th>Precio</th><th>VPV</th><th>TNA</th><th>TIR (TEA)</th></tr></thead><tbody id="lecap-body"><tr><td colspan="8" class="lecap-loading">Cargando LECAPs...</td></tr></tbody></table></div>
+    <div class="section-title anim anim-d3">LECAPs — Rendimientos en Vivo</div>
+    <div class="lecap-table-wrap anim anim-d4"><table class="lecap-table"><thead><tr><th>Ticker</th><th>Nombre</th><th>Vencimiento</th><th>Días</th><th>Precio</th><th>VPV</th><th>TNA</th><th>TIR (TEA)</th></tr></thead><tbody id="lecap-body"><tr><td colspan="8" class="lecap-loading">Cargando LECAPs...</td></tr></tbody></table></div>
   </div>
 
   <!-- TAB: HERRAMIENTAS -->
@@ -140,7 +294,7 @@
         <div class="form-group"><label>Monto a colocar ($)</label><input type="number" id="calc-monto" value="10000000" min="0" step="100000"></div>
         <div class="form-group"><label>Tipo de cartera</label><select id="calc-cartera"><option value="0.012">Estándar (1,2%)</option><option value="0.01">Preferente (1,0%)</option><option value="0">Personalizada (0%)</option></select></div>
         <div class="form-group"><label>Fecha de liquidación</label><input type="date" id="calc-fecha-liq"></div>
-        <div style="height:1px;background:var(--gris-borde);margin:1.2rem 0"></div>
+        <div style="height:1px;background:var(--border);margin:1rem 0"></div>
         <div class="calc-subtitle">Datos automáticos</div>
         <div class="form-group"><label>Precio de mercado</label><div class="auto-value" id="calc-precio">—</div></div>
         <div class="form-group"><label>VPV (pago al vencimiento)</label><div class="auto-value" id="calc-vpv">—</div></div>
@@ -175,7 +329,6 @@
       </div>
     </div></div>
 
-    <!-- COMPARATIVA VS PLAZO FIJO -->
     <div class="section-title">Comparativa — LECAP vs Plazo Fijo</div>
     <div class="vs-wrap">
       <div class="vs-header">
@@ -194,10 +347,10 @@
         <div id="pf-manual-wrap" style="display:none">
           <input type="number" id="pf-tna-manual" placeholder="TNA % (ej: 28)" min="0" max="200" step="0.5" style="width:140px">
         </div>
-        <span id="pf-status" style="font-size:.7rem;color:rgba(255,255,255,.4)"></span>
+        <span id="pf-status" style="font-size:.68rem;color:rgba(255,255,255,.35)"></span>
       </div>
       <div class="vs-body">
-        <div id="vs-content" style="text-align:center;color:var(--gris-texto);padding:1rem;font-size:.85rem">
+        <div id="vs-content" style="text-align:center;color:var(--text-muted);padding:1rem;font-size:.82rem">
           Elegí un banco y una LECAP en la calculadora para ver la comparativa.
         </div>
       </div>
@@ -207,146 +360,72 @@
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v2.1</span>
+    <span class="version">v3.0</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v2.1
+ * PULSO FINANCIERO NOA — v3.0 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
- * PROPÓSITO: Dashboard financiero automatizado para clientes de
- *   WL HNOS & ASOC. Reemplaza el reporte manual de Christian
- *   con datos en vivo de APIs públicas.
- *
- * ARQUITECTURA:
- *   Frontend: Single-file HTML/CSS/JS (este archivo)
- *   Backend:  Vercel Serverless Functions en /api/
- *     - /api/bcra.js      → BADLAR, variables monetarias
- *     - /api/data912.js   → Precios en vivo LECAPs/BONCAPs
- *     - /api/plazofijo.js → Tasas PF por banco
- *
- * APIs DIRECTAS (sin proxy, no tienen CORS):
- *   - DolarAPI (dolarapi.com) → Dólar Oficial, MEP, CCL
- *   - ArgentinaDatos (api.argentinadatos.com) → Riesgo País, metadata letras
- *
- * MÓDULOS:
- *   1. Core         → Estado compartido, helpers, navegación
- *   2. Cards Macro  → Dólares, Riesgo País, BADLAR
- *   3. Tabla LECAPs → Rendimientos en vivo con metadata ArgentinaDatos
- *   4. Calculadora  → Replica lógica Excel de Christian
- *   5. Comparador   → LECAP vs Plazo Fijo por banco
- *
- * AUTO-REFRESH: Cada 5 minutos recarga datos de la pestaña activa
- *
- * HISTORIAL:
- *   2026-03    — v1.0: Primera versión con cards + tabla
- *   2026-03    — v1.5: Calculadora LECAP con arancel y breakeven
- *   2026-03    — v2.0: Comparador PF, proxy plazofijo, auto-refresh
- *   2026-04-06 — v2.1: Modularización, documentación, carga progresiva,
- *                       manejo de errores con reintentar, timeout en proxies
+ * Rediseño visual completo. Lógica idéntica a v2.1.
+ * Nuevo: Dark/Light mode toggle con persistencia en localStorage.
  * ═══════════════════════════════════════════════════════════════ */
 
-
-/* ═══════════════════════════════════════════════════════
- * MÓDULO 1: CORE — Estado compartido, helpers, navegación
- * ───────────────────────────────────────────────────────
- * PROPÓSITO: Variables globales compartidas entre módulos,
- *   funciones de formateo, detección de entorno, y sistema
- *   de navegación por pestañas con carga progresiva.
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ MÓDULO 1: CORE ═══════ */
 (function initCore() {
-
-  // --- Estado compartido (accesible por todos los módulos) ---
   window.PF = {
-    // Metadata de letras (viene de ArgentinaDatos)
-    letrasMeta: [],
-    // Precios en vivo {ticker: precio} (viene de data912)
-    livePrices: {},
-    // Cotizaciones dólar (se actualizan desde Cards Macro)
-    mepVenta: null,
-    cclVenta: null,
-    // Estado del comparador PF
-    pfTEA: null,
-    pfTNA: null,
-    pfBancoNombre: null,
-    // Último cálculo de la calculadora (para comparativa)
+    letrasMeta: [], livePrices: {},
+    mepVenta: null, cclVenta: null,
+    pfTEA: null, pfTNA: null, pfBancoNombre: null,
     lastCalc: { ticker: null, monto: 0, dias: 0, totalPagar: 0, montoCobrar: 0, ganancia: 0, tea: 0, tna: 0 },
-    // Flag: ¿Ya se cargaron los datos de Herramientas?
     herramientasCargadas: false
   };
-
-  // --- Detección de entorno ---
   window.PF.isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
 
-  // --- Helpers de formateo ---
   window.formatARS = n => '$' + Math.round(n).toLocaleString('es-AR');
   window.formatDate = s => { const [y, m, d] = s.split('-'); return d + '/' + m + '/' + y; };
   window.formatPct = (n, d = 2) => (n * 100).toFixed(d) + '%';
   window.formatMoney = n => '$' + Math.round(n).toLocaleString('es-AR');
 
-  // --- Helpers de UI ---
   window.setCard = function(id, v, d) {
     const el = document.getElementById('val-' + id);
-    el.classList.remove('loading', 'error-state');
-    el.textContent = v;
+    el.classList.remove('loading', 'error-state'); el.textContent = v;
     if (d) document.getElementById('det-' + id).textContent = d;
   };
-
   window.setError = function(id, msg, retryFn) {
     const el = document.getElementById('val-' + id);
-    el.classList.remove('loading');
-    el.classList.add('error-state');
-    el.textContent = 'No disponible';
+    el.classList.remove('loading'); el.classList.add('error-state'); el.textContent = 'No disponible';
     const det = document.getElementById('det-' + id);
-    if (retryFn) {
-      det.innerHTML = (msg || 'Error') + ' · <span class="retry-btn" onclick="' + retryFn + '">Reintentar</span>';
-    } else {
-      det.textContent = msg || 'Error';
-    }
+    if (retryFn) det.innerHTML = (msg || 'Error') + ' · <span class="retry-btn" onclick="' + retryFn + '">Reintentar</span>';
+    else det.textContent = msg || 'Error';
   };
-
   window.showToast = function(msg, ms) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), ms || 2500);
   };
-
-  // --- Settlement date (T+1 hábil, salta fines de semana) ---
   window.getSettlement = function() {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
+    const d = new Date(); d.setDate(d.getDate() + 1);
     if (d.getDay() === 0) d.setDate(d.getDate() + 1);
     if (d.getDay() === 6) d.setDate(d.getDate() + 2);
     return d;
   };
-
-  // --- Fetch con fallback proxy/directo ---
   window.fetchFB = async function(proxy, direct) {
-    if (!window.PF.isLocal) {
-      const r = await fetch(proxy);
-      if (r.ok) return r.json();
-    }
-    const r2 = await fetch(direct);
-    if (!r2.ok) throw new Error('HTTP ' + r2.status);
-    return r2.json();
+    if (!window.PF.isLocal) { const r = await fetch(proxy); if (r.ok) return r.json(); }
+    const r2 = await fetch(direct); if (!r2.ok) throw new Error('HTTP ' + r2.status); return r2.json();
   };
 
-  // --- Fecha de hoy ---
-  document.getElementById('fecha-hoy').textContent =
+  document.getElementById('fecha-text').textContent =
     new Date().toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  // --- Navegación por pestañas con carga progresiva ---
+  // Tab navigation with lazy loading
   document.querySelectorAll('.nav-tab[data-tab]').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-
-      // Carga progresiva: Herramientas se carga al primer clic
       if (tab.dataset.tab === 'herramientas' && !window.PF.herramientasCargadas) {
         window.PF.herramientasCargadas = true;
         if (typeof window.initCalculadora === 'function') window.initCalculadora();
@@ -354,135 +433,67 @@
       }
     });
   });
+  document.getElementById('tab-costos-btn').addEventListener('click', () => showToast('Próximamente — sección en desarrollo'));
 
-  // --- Pestaña Costos: próximamente ---
-  document.getElementById('tab-costos-btn').addEventListener('click', () => {
-    showToast('Próximamente — sección en desarrollo');
+  // Theme toggle
+  const saved = localStorage.getItem('pf-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon();
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pf-theme', next);
+    updateThemeIcon();
   });
-
+  function updateThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    document.getElementById('icon-moon').style.display = isDark ? '' : 'none';
+    document.getElementById('icon-sun').style.display = isDark ? 'none' : '';
+  }
 })();
 
 
-/* ═══════════════════════════════════════════════════════
- * MÓDULO 2: CARDS MACRO — Dólares, Riesgo País, BADLAR
- * ───────────────────────────────────────────────────────
- * PROPÓSITO: Muestra indicadores macroeconómicos clave
- *   en 5 tarjetas con auto-refresh.
- *
- * FUENTES DE DATOS:
- *   - Dólar Oficial/MEP/CCL: DolarAPI (directo, sin CORS)
- *     https://dolarapi.com/v1/dolares/{tipo}
- *   - Riesgo País: ArgentinaDatos (directo)
- *     https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo
- *   - BADLAR: BCRA vía /api/bcra.js (proxy por CORS)
- *     Variable ID=7 (BADLAR bancos privados)
- *
- * FALLBACK: Si DolarAPI falla, no hay fallback automático
- *   (futuro: probar ArgentinaDatos como respaldo).
- *   Si BCRA falla y estamos en local, muestra "Solo en Vercel".
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ MÓDULO 2: CARDS MACRO ═══════ */
 (function initCardsMacro() {
-
   function loadOficial() {
-    fetch('https://dolarapi.com/v1/dolares/oficial')
-      .then(r => r.json())
+    fetch('https://dolarapi.com/v1/dolares/oficial').then(r => r.json())
       .then(d => setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
       .catch(() => setError('oficial', 'DolarAPI caído', 'loadCards()'));
   }
-
   function loadMEP() {
-    fetch('https://dolarapi.com/v1/dolares/bolsa')
-      .then(r => r.json())
-      .then(d => {
-        window.PF.mepVenta = d.venta;
-        setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
-        if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar();
-      })
+    fetch('https://dolarapi.com/v1/dolares/bolsa').then(r => r.json())
+      .then(d => { window.PF.mepVenta = d.venta; setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)); if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar(); })
       .catch(() => setError('mep', 'DolarAPI caído', 'loadCards()'));
   }
-
   function loadCCL() {
-    fetch('https://dolarapi.com/v1/dolares/contadoconliqui')
-      .then(r => r.json())
-      .then(d => {
-        window.PF.cclVenta = d.venta;
-        setCard('ccl', formatARS(d.venta), 'Compra: ' + formatARS(d.compra));
-        if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar();
-      })
+    fetch('https://dolarapi.com/v1/dolares/contadoconliqui').then(r => r.json())
+      .then(d => { window.PF.cclVenta = d.venta; setCard('ccl', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)); if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar(); })
       .catch(() => setError('ccl', 'DolarAPI caído', 'loadCards()'));
   }
-
   function loadRiesgo() {
-    fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo')
-      .then(r => r.json())
+    fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo').then(r => r.json())
       .then(d => setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha))
       .catch(() => setError('riesgo', 'ArgentinaDatos caído', 'loadCards()'));
   }
-
   function loadBadlar() {
     fetchFB('/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
-      .then(d => {
-        let v = null, f = null;
-        if (d.results && d.results.length > 0) {
-          const r = d.results[0];
-          if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; }
-          else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; }
-        }
-        if (v !== null) setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || ''));
-        else setError('badlar', 'Sin datos');
-      })
+      .then(d => { let v = null, f = null; if (d.results && d.results.length > 0) { const r = d.results[0]; if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; } else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; } } if (v !== null) setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || '')); else setError('badlar', 'Sin datos'); })
       .catch(() => setError('badlar', window.PF.isLocal ? 'Solo en Vercel (CORS)' : 'Error BCRA', 'loadCards()'));
   }
-
-  // Exponer para retry y auto-refresh
-  window.loadCards = function() {
-    loadOficial();
-    loadMEP();
-    loadCCL();
-    loadRiesgo();
-    loadBadlar();
-    document.getElementById('update-time').textContent = 'Actualizado: ' +
-      new Date().toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  };
-
-  // Carga inicial
+  window.loadCards = function() { loadOficial(); loadMEP(); loadCCL(); loadRiesgo(); loadBadlar(); document.getElementById('update-time').textContent = 'Actualizado: ' + new Date().toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
   window.loadCards();
-
 })();
 
 
-/* ═══════════════════════════════════════════════════════
- * MÓDULO 3: TABLA LECAPs — Rendimientos en Vivo
- * ───────────────────────────────────────────────────────
- * PROPÓSITO: Muestra tabla de LECAPs y BONCAPs con TNA/TIR
- *   calculadas en base a precios en vivo de data912 y
- *   metadata de ArgentinaDatos.
- *
- * FUENTES DE DATOS:
- *   - Metadata (ticker, VPV, fechaVencimiento):
- *     ArgentinaDatos → /v1/finanzas/letras
- *   - Precios en vivo:
- *     data912 vía /api/data912.js → type=notes (LECAPs) y type=bonds (BONCAPs)
- *
- * FÓRMULAS:
- *   - TNA = (VPV/Precio - 1) * (365/días) * 100
- *   - TIR (TEA) = ((VPV/Precio) ^ (365/días) - 1) * 100
- *   Donde: VPV = Valor Presente de pago al Vencimiento (100 = par)
- *          Precio = último precio en data912 (campo "c")
- *          días = días calendario entre settlement y vencimiento
- *
- * DEPENDENCIA: Este módulo también alimenta el dropdown
- *   de la Calculadora (Módulo 4) via populateCalcDropdown().
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ MÓDULO 3: TABLA LECAPs ═══════ */
 (function initTablaLecaps() {
-
   async function loadLecaps() {
     const tbody = document.getElementById('lecap-body');
     try {
       const metaResp = await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
       if (!metaResp.ok) throw new Error('ArgentinaDatos no respondió');
       window.PF.letrasMeta = await metaResp.json();
-
       let preciosVivos = false;
       try {
         const nR = await fetch(window.PF.isLocal ? 'https://data912.com/live/arg_notes' : '/api/data912?type=notes');
@@ -491,7 +502,6 @@
         if (bR.ok) { const b = await bR.json(); if (Array.isArray(b)) for (const i of b) if (i.symbol && i.c && parseFloat(i.c) > 0) window.PF.livePrices[i.symbol] = parseFloat(i.c); }
         if (Object.keys(window.PF.livePrices).length > 0) preciosVivos = true;
       } catch (e) { console.log('data912:', e.message); }
-
       const stl = getSettlement(), rows = [], ms = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
       for (const l of window.PF.letrasMeta) {
         const vto = new Date(l.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
@@ -503,94 +513,41 @@
         rows.push({ ticker: l.ticker, nombre, tipo, vencimiento: l.fechaVencimiento, dias, precio, vpv: l.vpv, tna, tir });
       }
       rows.sort((a, b) => a.dias - b.dias);
-
       if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>'; return; }
-
       const tirs = rows.filter(r => r.tir !== null).map(r => r.tir), best = tirs.length > 0 ? Math.max(...tirs) : null;
       tbody.innerHTML = rows.map(r => {
         const ib = r.tir !== null && best !== null && r.tir === best;
-        return '<tr style="' + (ib ? 'background:var(--turquesa-claro)' : '') + '">'
+        return '<tr style="' + (ib ? 'background:var(--accent-dim)' : '') + '">'
           + '<td><span class="ticker-badge">' + r.ticker + '</span></td>'
-          + '<td style="font-size:.78rem">' + r.nombre + ' <span style="font-size:.65rem;color:var(--gris-texto)">' + r.tipo + '</span></td>'
-          + '<td style="font-family:Space Mono,monospace;font-size:.78rem">' + formatDate(r.vencimiento) + '</td>'
-          + '<td style="font-family:Space Mono,monospace;text-align:center">' + r.dias + 'd</td>'
-          + '<td style="font-family:Space Mono,monospace;font-weight:600">' + (r.precio ? r.precio.toFixed(2) : '<span style="color:var(--gris-texto)">—</span>') + '</td>'
-          + '<td style="font-family:Space Mono,monospace;font-size:.78rem">' + (r.vpv ? r.vpv.toFixed(3) : '—') + '</td>'
-          + '<td style="font-family:Space Mono,monospace">' + (r.tna !== null ? r.tna.toFixed(2) + '%' : '—') + '</td>'
-          + '<td>' + (r.tir !== null ? '<span class="tir-value">' + r.tir.toFixed(2) + '%</span>' : '<span style="color:var(--gris-texto);font-size:.75rem">Sin precio</span>') + '</td></tr>';
+          + '<td style="font-size:.76rem">' + r.nombre + ' <span style="font-size:.62rem;color:var(--text-muted)">' + r.tipo + '</span></td>'
+          + '<td style="font-family:JetBrains Mono,monospace;font-size:.76rem">' + formatDate(r.vencimiento) + '</td>'
+          + '<td style="font-family:JetBrains Mono,monospace;text-align:center">' + r.dias + 'd</td>'
+          + '<td style="font-family:JetBrains Mono,monospace;font-weight:600">' + (r.precio ? r.precio.toFixed(2) : '<span style="color:var(--text-muted)">—</span>') + '</td>'
+          + '<td style="font-family:JetBrains Mono,monospace;font-size:.76rem">' + (r.vpv ? r.vpv.toFixed(3) : '—') + '</td>'
+          + '<td style="font-family:JetBrains Mono,monospace">' + (r.tna !== null ? r.tna.toFixed(2) + '%' : '—') + '</td>'
+          + '<td>' + (r.tir !== null ? '<span class="tir-value">' + r.tir.toFixed(2) + '%</span>' : '<span style="color:var(--text-muted);font-size:.72rem">Sin precio</span>') + '</td></tr>';
       }).join('');
-
-      if (!preciosVivos)
-        tbody.innerHTML += '<tr><td colspan="8" style="padding:.6rem 1rem;font-size:.75rem;color:var(--naranja);background:#FFFAF0;text-align:center">⚠ Sin precios en vivo — ' + (window.PF.isLocal ? 'solo disponible en Vercel' : 'mercado cerrado') + '. Metadata OK.</td></tr>';
-
-      // Alimenta el dropdown de la calculadora
+      if (!preciosVivos) tbody.innerHTML += '<tr><td colspan="8" style="padding:.55rem 1rem;font-size:.72rem;color:var(--orange);background:var(--orange-dim);text-align:center">⚠ Sin precios en vivo — ' + (window.PF.isLocal ? 'solo disponible en Vercel' : 'mercado cerrado') + '. Metadata OK.</td></tr>';
       if (typeof window.populateCalcDropdown === 'function') window.populateCalcDropdown(rows);
-
-    } catch (e) {
-      console.error('LECAPs:', e);
-      tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">Error al cargar LECAPs · <span style="color:var(--turquesa);cursor:pointer;text-decoration:underline" onclick="loadLecaps()">Reintentar</span></td></tr>';
-    }
+    } catch (e) { console.error('LECAPs:', e); tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">Error al cargar LECAPs · <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="loadLecaps()">Reintentar</span></td></tr>'; }
   }
-
-  // Exponer para retry y auto-refresh
   window.loadLecaps = loadLecaps;
-
-  // Carga inicial
   loadLecaps();
-
 })();
 
 
-/* ═══════════════════════════════════════════════════════
- * MÓDULO 4: CALCULADORA LECAP
- * ───────────────────────────────────────────────────────
- * PROPÓSITO: Replica la lógica del Excel de Christian para
- *   calcular rendimiento de LECAPs incluyendo costos operativos.
- *   Permite al usuario seleccionar una LECAP, ingresar monto
- *   y tipo de cartera, y ver el resultado neto.
- *
- * FUENTES DE DATOS:
- *   - Precios y VPV: data912 + ArgentinaDatos (cargados por Módulo 3)
- *   - Cotización MEP/CCL: DolarAPI (cargadas por Módulo 2)
- *
- * FÓRMULAS CRÍTICAS:
- *   - Nominales = ROUND(monto / precio * 100)
- *   - Costo neto = nominales * (precio / 100)
- *   - Comisión = MAX(costoNeto * arancelPct / 365 * días, 100)
- *     Donde arancelPct: Estándar=0.012, Preferente=0.01, Personalizada=0
- *   - Derecho de mercado = monto * 0.0001
- *   - Total arancel = comisión + derecho de mercado
- *   - Total a pagar = monto + arancel
- *   - Monto a cobrar = nominales * (VPV / 100)
- *   - Ganancia = cobrar - pagar
- *   - Rendimiento directo = cobrar / pagar - 1
- *   - TNA = rendDirecto * (365 / días)
- *   - TEA = (1 + rendDirecto) ^ (365/días) - 1
- *   - TEM = (1 + TEA) ^ (30/365) - 1
- *   - MEP Breakeven = cotizMEP * (1 + rendDirecto)
- *   - CCL Breakeven = cotizCCL * (1 + rendDirecto)
- *
- * NOTA: La fecha de liquidación default es hoy. El usuario
- *   puede cambiarla manualmente (útil para operaciones futuras).
- *
- * CARGA: Diferida — se inicializa al primer clic en "Herramientas"
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ MÓDULO 4: CALCULADORA LECAP ═══════ */
 (function setupCalculadora() {
-
-  // Poblar dropdown con letras disponibles
   window.populateCalcDropdown = function(rows) {
     const sel = document.getElementById('calc-ticker');
     sel.innerHTML = '<option value="">— Seleccioná una letra —</option>';
     for (const r of rows) sel.innerHTML += '<option value="' + r.ticker + '">' + r.ticker + ' — ' + r.nombre + ' (' + r.dias + 'd)</option>';
   };
-
-  // Actualizar cotización dólar en panel automático
   window.updateCalcDollar = function() {
     document.getElementById('calc-mep-val').textContent = window.PF.mepVenta ? formatARS(window.PF.mepVenta) : '—';
     document.getElementById('calc-ccl-val').textContent = window.PF.cclVenta ? formatARS(window.PF.cclVenta) : '—';
     calcular();
   };
-
   function calcular() {
     const ticker = document.getElementById('calc-ticker').value;
     if (!ticker) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
@@ -598,23 +555,13 @@
     if (!letra) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
     const precio = window.PF.livePrices[ticker], monto = parseFloat(document.getElementById('calc-monto').value) || 0, arancelPct = parseFloat(document.getElementById('calc-cartera').value) || 0;
     const fechaLiqStr = document.getElementById('calc-fecha-liq').value;
-    const stl = fechaLiqStr ? new Date(fechaLiqStr + 'T00:00:00') : new Date();
-    stl.setHours(0, 0, 0, 0);
+    const stl = fechaLiqStr ? new Date(fechaLiqStr + 'T00:00:00') : new Date(); stl.setHours(0, 0, 0, 0);
     const vto = new Date(letra.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
-
     document.getElementById('calc-precio').textContent = precio ? precio.toFixed(2) : 'Sin precio en vivo';
     document.getElementById('calc-vpv').textContent = letra.vpv ? letra.vpv.toFixed(6) : '—';
     document.getElementById('calc-vto').textContent = formatDate(letra.fechaVencimiento);
     document.getElementById('calc-dias').textContent = dias + ' días';
-
-    if (!precio || !letra.vpv || monto <= 0) {
-      clearResults();
-      window.PF.lastCalc.ticker = null;
-      renderComparativa();
-      if (!precio) document.getElementById('res-nominales').textContent = 'Necesita precio en vivo';
-      return;
-    }
-
+    if (!precio || !letra.vpv || monto <= 0) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); if (!precio) document.getElementById('res-nominales').textContent = 'Necesita precio en vivo'; return; }
     const nominales = Math.round(monto / precio * 100);
     const costoNeto = nominales * (precio / 100);
     const comision = Math.max((costoNeto * arancelPct / 365 * dias), 100);
@@ -629,7 +576,6 @@
     const tem = Math.pow(1 + tea, 30 / 365) - 1;
     const mepBE = window.PF.mepVenta ? window.PF.mepVenta * (1 + rendDirecto) : null;
     const cclBE = window.PF.cclVenta ? window.PF.cclVenta * (1 + rendDirecto) : null;
-
     document.getElementById('res-nominales').textContent = nominales.toLocaleString('es-AR');
     document.getElementById('res-arancel').textContent = formatMoney(arancel);
     document.getElementById('res-total-pagar').textContent = formatMoney(totalPagar);
@@ -642,17 +588,10 @@
     document.getElementById('res-tem').textContent = formatPct(tem);
     document.getElementById('res-mep-be').textContent = mepBE ? formatARS(mepBE) : '—';
     document.getElementById('res-ccl-be').textContent = cclBE ? formatARS(cclBE) : '—';
-
-    window.PF.lastCalc = { ticker, monto, dias, totalPagar, montoCobrar, ganancia, tea, tna: tna };
+    window.PF.lastCalc = { ticker, monto, dias, totalPagar, montoCobrar, ganancia, tea, tna };
     renderComparativa();
   }
-
-  function clearResults() {
-    ['res-nominales', 'res-arancel', 'res-total-pagar', 'res-amort', 'res-cobrar', 'res-ganancia', 'res-rend', 'res-tna', 'res-tea', 'res-tem', 'res-mep-be', 'res-ccl-be']
-      .forEach(id => { document.getElementById(id).textContent = '—'; });
-  }
-
-  // Inicialización diferida (se llama al primer clic en Herramientas)
+  function clearResults() { ['res-nominales', 'res-arancel', 'res-total-pagar', 'res-amort', 'res-cobrar', 'res-ganancia', 'res-rend', 'res-tna', 'res-tea', 'res-tem', 'res-mep-be', 'res-ccl-be'].forEach(id => { document.getElementById(id).textContent = '—'; }); }
   window.initCalculadora = function() {
     document.getElementById('calc-ticker').addEventListener('change', calcular);
     document.getElementById('calc-monto').addEventListener('input', calcular);
@@ -661,204 +600,85 @@
     const hoy = new Date();
     document.getElementById('calc-fecha-liq').value = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
   };
-
-  // Exponer calcular para que el comparador pueda re-renderizar
   window.calcularLecap = calcular;
-
 })();
 
 
-/* ═══════════════════════════════════════════════════════
- * MÓDULO 5: COMPARADOR — LECAP vs Plazo Fijo
- * ───────────────────────────────────────────────────────
- * PROPÓSITO: Compara el rendimiento neto de la LECAP
- *   seleccionada en la calculadora contra un Plazo Fijo
- *   del banco elegido, al mismo plazo.
- *
- * FUENTES DE DATOS:
- *   - Tasas PF: BCRA Transparencia vía /api/plazofijo.js
- *     Filtro: PF intransferible en pesos, Home Banking,
- *     ordena por TEA descendente (mejor tasa disponible)
- *   - Datos LECAP: viene del Módulo 4 (window.PF.lastCalc)
- *
- * FÓRMULAS:
- *   - PF Final = monto * (1 + TNA/100 * días/365)
- *     → Interés simple para un solo período de PF
- *   - Diferencia = LECAP final - PF final
- *
- * CONVERSIÓN TEA ↔ TNA (para PF a 30 días):
- *   - TNA = ((1+TEA)^(30/365) - 1) * 365/30
- *   - TEA = ((1+TNA*30/365)^(365/30)) - 1
- *
- * BANCOS DISPONIBLES (código BCRA):
- *   11=Nación, 285=Macro, 191=Credicoop, 72=Santander,
- *   7=Galicia, 17=BBVA, 15=ICBC, manual=tasa libre
- *
- * CACHE: Las consultas al proxy se cachean en PF_CACHE
- *   para no re-consultar el mismo banco en la misma sesión.
- *
- * CARGA: Diferida — se inicializa al primer clic en "Herramientas"
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ MÓDULO 5: COMPARADOR PF ═══════ */
 (function setupComparador() {
-
   const BANCOS = { 11: 'Banco Nación', 285: 'Banco Macro', 191: 'Banco Credicoop', 72: 'Banco Santander', 7: 'Banco Galicia', 17: 'Banco BBVA', 15: 'ICBC' };
   let PF_CACHE = {};
-
   function applyPFData(data, codigo) {
     const statusEl = document.getElementById('pf-status');
-    if (!data.results || data.results.length === 0) {
-      statusEl.textContent = 'Sin datos de PF para este banco';
-      window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return;
-    }
-    const filtered = data.results.filter(r => {
-      const nombre = (r.nombreCompleto || '').toUpperCase();
-      const canal = (r.canalConstitucion || '').toLowerCase();
-      const esPesos = !nombre.includes('DOLAR') && !nombre.includes('UVA');
-      const esHB = canal.includes('home banking') || canal.includes('homebanking');
-      return esPesos && esHB && r.tasaEfectivaAnualMinima > 0;
-    });
+    if (!data.results || data.results.length === 0) { statusEl.textContent = 'Sin datos de PF para este banco'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return; }
+    const filtered = data.results.filter(r => { const nombre = (r.nombreCompleto || '').toUpperCase(); const canal = (r.canalConstitucion || '').toLowerCase(); return !nombre.includes('DOLAR') && !nombre.includes('UVA') && (canal.includes('home banking') || canal.includes('homebanking')) && r.tasaEfectivaAnualMinima > 0; });
     if (filtered.length === 0) {
-      const fallback = data.results.filter(r => {
-        const nombre = (r.nombreCompleto || '').toUpperCase();
-        return !nombre.includes('DOLAR') && !nombre.includes('UVA') && r.tasaEfectivaAnualMinima > 0;
-      });
+      const fallback = data.results.filter(r => { const nombre = (r.nombreCompleto || '').toUpperCase(); return !nombre.includes('DOLAR') && !nombre.includes('UVA') && r.tasaEfectivaAnualMinima > 0; });
       if (fallback.length === 0) { statusEl.textContent = 'Sin PF en pesos'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); return; }
       fallback.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima);
       window.PF.pfTEA = fallback[0].tasaEfectivaAnualMinima;
-    } else {
-      filtered.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima);
-      window.PF.pfTEA = filtered[0].tasaEfectivaAnualMinima;
-    }
+    } else { filtered.sort((a, b) => b.tasaEfectivaAnualMinima - a.tasaEfectivaAnualMinima); window.PF.pfTEA = filtered[0].tasaEfectivaAnualMinima; }
     const teaDec = window.PF.pfTEA / 100;
     window.PF.pfTNA = ((Math.pow(1 + teaDec, 30 / 365) - 1) * 365 / 30) * 100;
     window.PF.pfBancoNombre = BANCOS[codigo] || data.results[0].descripcionEntidad;
     statusEl.textContent = window.PF.pfBancoNombre + ' · TEA ' + window.PF.pfTEA.toFixed(2) + '% · TNA ' + window.PF.pfTNA.toFixed(2) + '%';
     renderComparativa();
   }
-
-  // Inicialización diferida
   window.initComparador = function() {
     document.getElementById('pf-banco').addEventListener('change', async function() {
-      const val = this.value;
-      const manualWrap = document.getElementById('pf-manual-wrap');
-      const statusEl = document.getElementById('pf-status');
-
-      if (val === 'manual') {
-        manualWrap.style.display = '';
-        window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = 'Plazo Fijo (manual)';
-        statusEl.textContent = 'Ingresá la TNA manualmente';
-        renderComparativa(); return;
-      }
+      const val = this.value; const manualWrap = document.getElementById('pf-manual-wrap'); const statusEl = document.getElementById('pf-status');
+      if (val === 'manual') { manualWrap.style.display = ''; window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = 'Plazo Fijo (manual)'; statusEl.textContent = 'Ingresá la TNA manualmente'; renderComparativa(); return; }
       manualWrap.style.display = 'none';
       if (!val) { window.PF.pfTEA = null; window.PF.pfTNA = null; window.PF.pfBancoNombre = null; statusEl.textContent = ''; renderComparativa(); return; }
-
       if (PF_CACHE[val]) { applyPFData(PF_CACHE[val], val); return; }
-
       statusEl.textContent = 'Consultando BCRA...';
-      try {
-        const resp = await fetch('/api/plazofijo?codigoEntidad=' + val);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-        if (data.error) throw new Error(data.message || 'Error proxy');
-        PF_CACHE[val] = data;
-        applyPFData(data, val);
-      } catch (e) {
-        statusEl.textContent = 'Error al consultar BCRA · Reintentá';
-        window.PF.pfTEA = null; window.PF.pfTNA = null;
-        renderComparativa();
-      }
+      try { const resp = await fetch('/api/plazofijo?codigoEntidad=' + val); if (!resp.ok) throw new Error('HTTP ' + resp.status); const data = await resp.json(); if (data.error) throw new Error(data.message || 'Error proxy'); PF_CACHE[val] = data; applyPFData(data, val); }
+      catch (e) { statusEl.textContent = 'Error al consultar BCRA · Reintentá'; window.PF.pfTEA = null; window.PF.pfTNA = null; renderComparativa(); }
     });
-
     document.getElementById('pf-tna-manual').addEventListener('input', function() {
       const val = parseFloat(this.value);
-      if (!isNaN(val) && val > 0) {
-        window.PF.pfTNA = val;
-        window.PF.pfTEA = (Math.pow(1 + val / 100 * 30 / 365, 365 / 30) - 1) * 100;
-        window.PF.pfBancoNombre = 'Plazo Fijo (manual)';
-        document.getElementById('pf-status').textContent = 'TNA ' + val.toFixed(2) + '% · TEA ' + window.PF.pfTEA.toFixed(2) + '%';
-      } else { window.PF.pfTNA = null; window.PF.pfTEA = null; }
+      if (!isNaN(val) && val > 0) { window.PF.pfTNA = val; window.PF.pfTEA = (Math.pow(1 + val / 100 * 30 / 365, 365 / 30) - 1) * 100; window.PF.pfBancoNombre = 'Plazo Fijo (manual)'; document.getElementById('pf-status').textContent = 'TNA ' + val.toFixed(2) + '% · TEA ' + window.PF.pfTEA.toFixed(2) + '%'; }
+      else { window.PF.pfTNA = null; window.PF.pfTEA = null; }
       renderComparativa();
     });
   };
-
 })();
 
 
-/* ═══════════════════════════════════════════════════════
- * RENDER COMPARATIVA (usado por Módulos 4 y 5)
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ RENDER COMPARATIVA ═══════ */
 function renderComparativa() {
-  const div = document.getElementById('vs-content');
-  const LC = window.PF.lastCalc;
-
+  const div = document.getElementById('vs-content'); const LC = window.PF.lastCalc;
   if (!LC.ticker || !window.PF.pfTNA || !window.PF.pfTEA) {
-    let msg = '';
-    if (!LC.ticker && !window.PF.pfTNA) msg = 'Elegí una LECAP en la calculadora y un banco para ver la comparativa.';
-    else if (!LC.ticker) msg = 'Elegí una LECAP en la calculadora de arriba.';
-    else msg = 'Elegí un banco para comparar contra el Plazo Fijo.';
-    div.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--gris-texto);font-size:.85rem">' + msg + '</div>';
-    return;
+    let msg = ''; if (!LC.ticker && !window.PF.pfTNA) msg = 'Elegí una LECAP en la calculadora y un banco para ver la comparativa.'; else if (!LC.ticker) msg = 'Elegí una LECAP en la calculadora de arriba.'; else msg = 'Elegí un banco para comparar contra el Plazo Fijo.';
+    div.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:.82rem">' + msg + '</div>'; return;
   }
-
-  const monto = LC.monto, dias = LC.dias;
-  const tnaDec = window.PF.pfTNA / 100;
-  const pfFinal = monto * (1 + tnaDec * dias / 365);
-  const pfGanancia = pfFinal - monto;
-  const lecapFinal = LC.montoCobrar;
-  const lecapGanancia = LC.ganancia;
-  const diferencia = lecapFinal - pfFinal;
-  const lecapGana = diferencia > 0;
-
+  const monto = LC.monto, dias = LC.dias, tnaDec = window.PF.pfTNA / 100;
+  const pfFinal = monto * (1 + tnaDec * dias / 365), pfGanancia = pfFinal - monto;
+  const lecapFinal = LC.montoCobrar, lecapGanancia = LC.ganancia;
+  const diferencia = lecapFinal - pfFinal, lecapGana = diferencia > 0;
   div.innerHTML = `
     <div class="vs-cards">
-      <div class="vs-card lecap-side">
-        <div class="vs-card-title">LECAP ${LC.ticker}</div>
-        <div class="vs-card-amount">${formatMoney(lecapFinal)}</div>
-        <div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LC.tea)}</div>
-      </div>
-      <div class="vs-badge">
-        <div style="font-size:.65rem;color:var(--gris-texto);margin-bottom:.3rem">Diferencia</div>
-        <span class="${lecapGana ? 'win' : 'lose'}">${lecapGana ? '+' : ''}${formatMoney(diferencia)}</span>
-      </div>
-      <div class="vs-card pf-side">
-        <div class="vs-card-title">PF ${window.PF.pfBancoNombre}</div>
-        <div class="vs-card-amount">${formatMoney(pfFinal)}</div>
-        <div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${window.PF.pfTNA.toFixed(2)}%</div>
-      </div>
+      <div class="vs-card lecap-side"><div class="vs-card-title">LECAP ${LC.ticker}</div><div class="vs-card-amount">${formatMoney(lecapFinal)}</div><div class="vs-card-sub">Ganancia: ${formatMoney(lecapGanancia)} · TEA ${formatPct(LC.tea)}</div></div>
+      <div class="vs-badge"><div style="font-size:.62rem;color:var(--text-muted);margin-bottom:.25rem">Diferencia</div><span class="${lecapGana ? 'win' : 'lose'}">${lecapGana ? '+' : ''}${formatMoney(diferencia)}</span></div>
+      <div class="vs-card pf-side"><div class="vs-card-title">PF ${window.PF.pfBancoNombre}</div><div class="vs-card-amount">${formatMoney(pfFinal)}</div><div class="vs-card-sub">Ganancia: ${formatMoney(pfGanancia)} · TNA ${window.PF.pfTNA.toFixed(2)}%</div></div>
     </div>
     <div class="vs-detail">
       <div class="vs-detail-item"><span>Monto invertido</span><span>${formatMoney(monto)}</span></div>
       <div class="vs-detail-item"><span>Plazo</span><span>${dias} días</span></div>
-      <div class="vs-detail-item"><span>LECAP — Capital final</span><span style="color:var(--turquesa)">${formatMoney(lecapFinal)}</span></div>
-      <div class="vs-detail-item"><span>PF — Capital final</span><span style="color:#4472C4">${formatMoney(pfFinal)}</span></div>
-      <div class="vs-detail-item"><span>LECAP — Ganancia neta</span><span style="color:var(--verde)">${formatMoney(lecapGanancia)}</span></div>
+      <div class="vs-detail-item"><span>LECAP — Capital final</span><span style="color:var(--accent)">${formatMoney(lecapFinal)}</span></div>
+      <div class="vs-detail-item"><span>PF — Capital final</span><span style="color:#818CF8">${formatMoney(pfFinal)}</span></div>
+      <div class="vs-detail-item"><span>LECAP — Ganancia neta</span><span style="color:var(--green)">${formatMoney(lecapGanancia)}</span></div>
       <div class="vs-detail-item"><span>PF — Ganancia</span><span>${formatMoney(pfGanancia)}</span></div>
     </div>
-    <div class="vs-note">
-      ${lecapGana
-        ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que el Plazo Fijo de ' + window.PF.pfBancoNombre + ' a ' + dias + ' días (neto de comisiones).'
-        : 'El <strong>Plazo Fijo de ' + window.PF.pfBancoNombre + '</strong> rinde <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}
-    </div>`;
+    <div class="vs-note">${lecapGana ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que el Plazo Fijo de ' + window.PF.pfBancoNombre + ' a ' + dias + ' días (neto de comisiones).' : 'El <strong>Plazo Fijo de ' + window.PF.pfBancoNombre + '</strong> rinde <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}</div>`;
 }
 
 
-/* ═══════════════════════════════════════════════════════
- * AUTO-REFRESH — Recarga cada 5 minutos
- * ═══════════════════════════════════════════════════════ */
+/* ═══════ AUTO-REFRESH ═══════ */
 (function initAutoRefresh() {
-  const REFRESH_MS = 5 * 60 * 1000;
-  let nextRefresh = Date.now() + REFRESH_MS;
-
-  setInterval(() => {
-    nextRefresh = Date.now() + REFRESH_MS;
-    window.loadCards();
-    window.loadLecaps();
-  }, REFRESH_MS);
-
-  setInterval(() => {
-    const s = Math.max(0, Math.round((nextRefresh - Date.now()) / 1000));
-    document.getElementById('countdown').textContent = '(' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ')';
-  }, 1000);
+  const REFRESH_MS = 5 * 60 * 1000; let nextRefresh = Date.now() + REFRESH_MS;
+  setInterval(() => { nextRefresh = Date.now() + REFRESH_MS; window.loadCards(); window.loadLecaps(); }, REFRESH_MS);
+  setInterval(() => { const s = Math.max(0, Math.round((nextRefresh - Date.now()) / 1000)); document.getElementById('countdown').textContent = '(' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ')'; }, 1000);
 })();
 </script>
 </body>
