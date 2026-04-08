@@ -242,6 +242,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .ch-tt-row.lecap strong{color:var(--accent)}
 .ch-tt-row.pf strong{color:var(--text-secondary)}
 
+/* --- INFO ICONS & TOOLTIPS (Calculadora) --- */
+.form-group label,.result-label,.calc-subtitle{display:inline-flex;align-items:center;gap:.35rem}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:transparent;border:1px solid var(--text-muted);color:var(--text-muted);font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;cursor:help;transition:all .15s;opacity:.55;font-style:italic;line-height:1;user-select:none}
+.info-icon:hover{opacity:1;border-color:var(--accent);color:var(--accent);background:var(--accent-dim);transform:scale(1.1)}
+.info-tooltip{position:fixed;max-width:340px;background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:.8rem .95rem;box-shadow:0 10px 40px rgba(0,0,0,.3),0 0 0 1px var(--accent-glow);pointer-events:none;opacity:0;transition:opacity .15s;z-index:1000;font-family:'DM Sans',sans-serif}
+.info-tooltip.show{opacity:1}
+.info-tt-title{font-family:'Poppins',sans-serif;font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;padding-bottom:.4rem;border-bottom:1px solid var(--border-subtle)}
+.info-tt-section{margin-top:.5rem}
+.info-tt-section:first-of-type{margin-top:0}
+.info-tt-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:.2rem}
+.info-tt-body{font-size:.75rem;color:var(--text-primary);line-height:1.45}
+.info-tt-formula{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);background:var(--accent-dim);padding:.35rem .55rem;border-radius:6px;line-height:1.4}
+
 /* --- TOAST --- */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);padding:.65rem 1.4rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--toast-text);background:var(--toast-bg);box-shadow:0 8px 30px rgba(0,0,0,.2);opacity:0;transition:all .3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -325,42 +338,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     <div class="calc-wrap"><div class="calc-grid">
       <div class="calc-inputs">
         <div class="calc-subtitle">Datos de la operación</div>
-        <div class="form-group"><label>LECAP / BONCAP</label><select id="calc-ticker"><option value="">Cargando letras...</option></select></div>
-        <div class="form-group"><label>Monto a colocar ($)</label><input type="number" id="calc-monto" value="10000000" min="0" step="100000"></div>
-        <div class="form-group"><label>Arancel</label><select id="calc-cartera"><option value="0.012">Estándar (1,20% TNA)</option><option value="0.01">Preferente (1,00% TNA)</option><option value="custom">Personalizado</option></select></div>
-        <div class="form-group" id="calc-custom-wrap" style="display:none"><label>Arancel personalizado (% TNA)</label><input type="number" id="calc-custom-arancel" value="0" min="0" max="10" step="0.01" placeholder="Ej: 0.80"></div>
-        <div class="form-group"><label>Fecha de liquidación</label><input type="date" id="calc-fecha-liq"></div>
+        <div class="form-group"><label>LECAP / BONCAP <span class="info-icon" data-title="LECAP / BONCAP" data-desc="LECAP (Letra del Tesoro Capitalizable) y BONCAP (Bono Capitalizable) son instrumentos de deuda del Tesoro Nacional emitidos en pesos que capitalizan intereses a tasa fija hasta el vencimiento. En esa fecha el tenedor recibe capital e intereses acumulados en un único pago (bullet).">i</span></label><select id="calc-ticker"><option value="">Cargando letras...</option></select></div>
+        <div class="form-group"><label>Monto a colocar ($) <span class="info-icon" data-title="Monto a colocar" data-desc="Capital en pesos que el inversor destina a la compra del instrumento. No incluye los costos transaccionales (arancel del broker y derecho de mercado), que se suman por encima de este valor.">i</span></label><input type="number" id="calc-monto" value="10000000" min="0" step="100000"></div>
+        <div class="form-group"><label>Arancel <span class="info-icon" data-title="Arancel" data-desc="Comisión que cobra el agente de bolsa por ejecutar la operación de compra. Se expresa como Tasa Nominal Anual y se aplica proporcionalmente a los días de la inversión, con un piso mínimo fijo. Las categorías Estándar y Preferente corresponden a tarifarios del broker según el perfil o volumen operado por el cliente.">i</span></label><select id="calc-cartera"><option value="0.012">Estándar (1,20% TNA)</option><option value="0.01">Preferente (1,00% TNA)</option><option value="custom">Personalizado</option></select></div>
+        <div class="form-group" id="calc-custom-wrap" style="display:none"><label>Arancel personalizado (% TNA) <span class="info-icon" data-title="Arancel personalizado" data-desc="Valor manual del arancel del broker expresado como Tasa Nominal Anual (TNA). Se aplica con la misma fórmula que las categorías predefinidas.">i</span></label><input type="number" id="calc-custom-arancel" value="0" min="0" max="10" step="0.01" placeholder="Ej: 0.80"></div>
+        <div class="form-group"><label>Fecha de liquidación <span class="info-icon" data-title="Fecha de liquidación" data-desc="Fecha efectiva en la que se concreta la operación y se debita el monto de la cuenta comitente. En el mercado argentino las LECAPs y BONCAPs liquidan habitualmente en T+1 (un día hábil posterior a la concertación).">i</span></label><input type="date" id="calc-fecha-liq"></div>
         <div style="height:1px;background:var(--border);margin:1rem 0"></div>
         <div class="calc-subtitle">Datos automáticos</div>
-        <div class="form-group"><label>Precio de mercado</label><div class="auto-value" id="calc-precio">—</div></div>
-        <div class="form-group"><label>VPV (pago al vencimiento)</label><div class="auto-value" id="calc-vpv">—</div></div>
+        <div class="form-group"><label>Precio de mercado <span class="info-icon" data-title="Precio de mercado" data-desc="Precio al que cotiza el instrumento en el mercado secundario, expresado cada 100 valores nominales. Es el valor al cual se compran y venden las letras antes del vencimiento. Se obtiene en tiempo real durante la rueda bursátil.">i</span></label><div class="auto-value" id="calc-precio">—</div></div>
+        <div class="form-group"><label>VPV (pago al vencimiento) <span class="info-icon" data-title="VPV — Valor de Pago al Vencimiento" data-desc="Monto total que el Tesoro abona al tenedor en la fecha de vencimiento del instrumento, por cada 100 valores nominales. Incluye el capital original más los intereses capitalizados desde la fecha de emisión según la tasa fija estipulada en el prospecto.">i</span></label><div class="auto-value" id="calc-vpv">—</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div class="form-group"><label>Vencimiento</label><div class="auto-value" id="calc-vto">—</div></div>
-          <div class="form-group"><label>Días al vto.</label><div class="auto-value" id="calc-dias">—</div></div>
+          <div class="form-group"><label>Vencimiento <span class="info-icon" data-title="Vencimiento" data-desc="Fecha en la cual el instrumento madura y el Tesoro realiza el pago único del VPV al tenedor registrado.">i</span></label><div class="auto-value" id="calc-vto">—</div></div>
+          <div class="form-group"><label>Días al vto. <span class="info-icon" data-title="Días al vencimiento" data-desc="Cantidad de días calendario entre la fecha de liquidación de la compra y la fecha de vencimiento del instrumento. Determina el plazo efectivo de la inversión.">i</span></label><div class="auto-value" id="calc-dias">—</div></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div class="form-group"><label>Cotización MEP</label><div class="auto-value" id="calc-mep-val">—</div></div>
-          <div class="form-group"><label>Cotización CCL</label><div class="auto-value" id="calc-ccl-val">—</div></div>
+          <div class="form-group"><label>Cotización MEP <span class="info-icon" data-title="Dólar MEP" data-desc="Tipo de cambio del dólar MEP (Mercado Electrónico de Pagos), también denominado dólar Bolsa. Se obtiene del ratio entre el precio en pesos y el precio en dólares de un mismo activo (típicamente AL30 o GD30) operado en el mercado local.">i</span></label><div class="auto-value" id="calc-mep-val">—</div></div>
+          <div class="form-group"><label>Cotización CCL <span class="info-icon" data-title="Dólar CCL" data-desc="Tipo de cambio del dólar Contado con Liquidación. Se obtiene del ratio entre el precio en pesos de un activo operado localmente y su precio en dólares operado en el exterior (generalmente Nueva York).">i</span></label><div class="auto-value" id="calc-ccl-val">—</div></div>
         </div>
       </div>
       <div class="calc-results">
         <div class="calc-subtitle">Resultado de la inversión</div>
-        <div class="result-row"><span class="result-label">Cantidad (nominales)</span><span class="result-val" id="res-nominales">—</span></div>
-        <div class="result-row"><span class="result-label">Arancel + D. Mercado</span><span class="result-val" id="res-arancel">—</span></div>
-        <div class="result-row"><span class="result-label">Total a pagar</span><span class="result-val" id="res-total-pagar">—</span></div>
+        <div class="result-row"><span class="result-label">Cantidad (nominales) <span class="info-icon" data-title="Cantidad de nominales" data-desc="Cantidad de valores nominales del instrumento que el inversor adquiere con el monto colocado." data-formula="(Monto / Precio) × 100">i</span></span><span class="result-val" id="res-nominales">—</span></div>
+        <div class="result-row"><span class="result-label">Arancel + D. Mercado <span class="info-icon" data-title="Arancel + Derecho de Mercado" data-desc="Suma de los costos transaccionales de la operación. Incluye la comisión del broker (arancel) y el derecho de mercado cobrado por BYMA (Bolsas y Mercados Argentinos)." data-formula="Comisión = MAX(Costo neto × Arancel% × Días/365 ; $100)&#10;Derecho de Mercado = Monto × 0,01%">i</span></span><span class="result-val" id="res-arancel">—</span></div>
+        <div class="result-row"><span class="result-label">Total a pagar <span class="info-icon" data-title="Total a pagar" data-desc="Monto total que debe desembolsar el inversor para concretar la operación, incluyendo capital y costos transaccionales." data-formula="Monto a colocar + Arancel + Derecho de Mercado">i</span></span><span class="result-val" id="res-total-pagar">—</span></div>
         <div class="result-divider"></div>
-        <div class="result-row"><span class="result-label">Amortización al vto.</span><span class="result-val" id="res-amort">—</span></div>
-        <div class="result-row"><span class="result-label">Monto a cobrar</span><span class="result-val" id="res-cobrar">—</span></div>
+        <div class="result-row"><span class="result-label">Amortización al vto. <span class="info-icon" data-title="Amortización al vencimiento" data-desc="Factor de pago del instrumento al vencimiento, expresado por unidad de valor nominal. Es equivalente al VPV expresado como cociente y representa el valor residual del título al momento del pago final.">i</span></span><span class="result-val" id="res-amort">—</span></div>
+        <div class="result-row"><span class="result-label">Monto a cobrar <span class="info-icon" data-title="Monto a cobrar" data-desc="Importe total en pesos que el inversor recibirá en la fecha de vencimiento del instrumento." data-formula="Nominales × (VPV / 100)">i</span></span><span class="result-val" id="res-cobrar">—</span></div>
         <div class="result-divider"></div>
-        <div class="result-row"><span class="result-label">Ganancia ($)</span><span class="result-val green big" id="res-ganancia">—</span></div>
-        <div class="result-row"><span class="result-label">Rendimiento directo</span><span class="result-val" id="res-rend">—</span></div>
+        <div class="result-row"><span class="result-label">Ganancia ($) <span class="info-icon" data-title="Ganancia nominal" data-desc="Resultado económico nominal de la operación en pesos. Diferencia entre el monto a cobrar al vencimiento y el total pagado al momento de la compra, incluyendo todos los costos transaccionales." data-formula="Monto a cobrar − Total a pagar">i</span></span><span class="result-val green big" id="res-ganancia">—</span></div>
+        <div class="result-row"><span class="result-label">Rendimiento directo <span class="info-icon" data-title="Rendimiento directo" data-desc="Tasa de retorno total de la operación, sin anualizar. Representa la ganancia porcentual sobre el capital efectivamente desembolsado durante todo el período de la inversión." data-formula="(Monto a cobrar / Total a pagar) − 1">i</span></span><span class="result-val" id="res-rend">—</span></div>
         <div class="result-divider"></div>
-        <div class="result-row"><span class="result-label">TNA</span><span class="result-val big" id="res-tna">—</span></div>
-        <div class="result-row"><span class="result-label">TEA</span><span class="result-val big" id="res-tea">—</span></div>
-        <div class="result-row"><span class="result-label">TEM</span><span class="result-val" id="res-tem">—</span></div>
+        <div class="result-row"><span class="result-label">TNA <span class="info-icon" data-title="TNA — Tasa Nominal Anual" data-desc="Anualización lineal del rendimiento directo, sin considerar el efecto de la capitalización compuesta. Se obtiene proyectando la tasa del período a una base anual de 365 días." data-formula="Rendimiento directo × (365 / Días)">i</span></span><span class="result-val big" id="res-tna">—</span></div>
+        <div class="result-row"><span class="result-label">TEA <span class="info-icon" data-title="TEA — Tasa Efectiva Anual" data-desc="Anualización del rendimiento directo considerando el efecto de la capitalización compuesta (reinversión de intereses). Refleja el rendimiento efectivo anual de la operación." data-formula="(1 + Rendimiento directo) ^ (365 / Días) − 1">i</span></span><span class="result-val big" id="res-tea">—</span></div>
+        <div class="result-row"><span class="result-label">TEM <span class="info-icon" data-title="TEM — Tasa Efectiva Mensual" data-desc="Rendimiento equivalente mensual derivado de la Tasa Efectiva Anual, considerando capitalización compuesta sobre una base de 30 días." data-formula="(1 + TEA) ^ (30 / 365) − 1">i</span></span><span class="result-val" id="res-tem">—</span></div>
         <div class="breakeven-box">
-          <div class="result-row"><span class="result-label">MEP Breakeven</span><span class="result-val" id="res-mep-be">—</span></div>
-          <div class="result-row"><span class="result-label">CCL Breakeven</span><span class="result-val" id="res-ccl-be">—</span></div>
+          <div class="result-row"><span class="result-label">MEP Breakeven <span class="info-icon" data-title="MEP Breakeven" data-desc="Cotización teórica del dólar MEP en la fecha de vencimiento del instrumento a la cual el resultado de la inversión en pesos iguala el resultado de haber mantenido el capital en dólares MEP. Surge de capitalizar la cotización MEP actual por el rendimiento directo del instrumento." data-formula="Cotización MEP actual × (1 + Rendimiento directo)">i</span></span><span class="result-val" id="res-mep-be">—</span></div>
+          <div class="result-row"><span class="result-label">CCL Breakeven <span class="info-icon" data-title="CCL Breakeven" data-desc="Cotización teórica del dólar CCL en la fecha de vencimiento del instrumento a la cual el resultado de la inversión en pesos iguala el resultado de haber mantenido el capital en dólares CCL. Surge de capitalizar la cotización CCL actual por el rendimiento directo del instrumento." data-formula="Cotización CCL actual × (1 + Rendimiento directo)">i</span></span><span class="result-val" id="res-ccl-be">—</span></div>
         </div>
       </div>
     </div></div>
@@ -382,14 +395,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.4</span>
+    <span class="version">v3.5</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<div class="info-tooltip" id="infoTooltip">
+  <div class="info-tt-title"></div>
+  <div class="info-tt-section"><div class="info-tt-label">Concepto</div><div class="info-tt-body"></div></div>
+  <div class="info-tt-section" id="infoTTFormulaWrap"><div class="info-tt-label">Cálculo</div><div class="info-tt-formula"></div></div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.4 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.5 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
  * v3.1: Comparador simplificado — BADLAR TNA como referencia única.
  * v3.2: Gráfico SVG nativo de evolución del capital.
@@ -397,6 +415,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
  *       y diferencia día a día. Fix fila destacada en tabla LECAPs.
  * v3.4: Renombrado "Tipo de cartera" → "Arancel". Nuevo modo
  *       Personalizado con input manual de % TNA.
+ * v3.5: Tooltips educativos en cada campo de la calculadora con
+ *       definición conceptual y fórmula de cálculo.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -950,6 +970,97 @@ function attachChartInteractivity() {
   }, { passive: false });
   overlay.addEventListener('touchend', onLeave);
 }
+
+
+/* ═══════════════════════════════════════════════════════
+ * INFO TOOLTIPS — Calculadora LECAPs
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Muestra definiciones conceptuales y fórmulas
+ *   al hacer hover sobre los íconos "i" de cada campo.
+ *
+ * FUNCIONAMIENTO:
+ *   - Event delegation sobre document para soportar íconos
+ *     agregados dinámicamente.
+ *   - Un único div flotante reutilizable (#infoTooltip).
+ *   - Posicionamiento inteligente: se coloca a la derecha
+ *     del ícono por defecto, pero se invierte a la izquierda
+ *     si se saldría de la ventana. Se ajusta verticalmente
+ *     para no salir del viewport.
+ *   - Soporte touch para mobile (tap muestra, tap fuera oculta).
+ * ═══════════════════════════════════════════════════════ */
+(function initInfoTooltips() {
+  const tt = document.getElementById('infoTooltip');
+  const ttTitle = tt.querySelector('.info-tt-title');
+  const ttBody = tt.querySelector('.info-tt-body');
+  const ttFormulaWrap = document.getElementById('infoTTFormulaWrap');
+  const ttFormula = tt.querySelector('.info-tt-formula');
+  let activeTouchIcon = null;
+
+  function showTooltip(icon) {
+    const title = icon.dataset.title || '';
+    const desc = icon.dataset.desc || '';
+    const formula = icon.dataset.formula || '';
+    ttTitle.textContent = title;
+    ttBody.textContent = desc;
+    if (formula) {
+      ttFormula.textContent = formula;
+      ttFormulaWrap.style.display = '';
+    } else {
+      ttFormulaWrap.style.display = 'none';
+    }
+    // Hacer visible para medir
+    tt.style.opacity = '0';
+    tt.classList.add('show');
+    const iconRect = icon.getBoundingClientRect();
+    const ttRect = tt.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const gap = 10;
+
+    // Posición horizontal: derecha por defecto, izquierda si no entra
+    let left = iconRect.right + gap;
+    if (left + ttRect.width > vw - 10) left = iconRect.left - ttRect.width - gap;
+    if (left < 10) left = 10;
+
+    // Posición vertical: centrado respecto al ícono, clamp al viewport
+    let top = iconRect.top + iconRect.height / 2 - ttRect.height / 2;
+    if (top < 10) top = 10;
+    if (top + ttRect.height > vh - 10) top = vh - ttRect.height - 10;
+
+    tt.style.left = left + 'px';
+    tt.style.top = top + 'px';
+    tt.style.opacity = '1';
+  }
+
+  function hideTooltip() {
+    tt.classList.remove('show');
+    activeTouchIcon = null;
+  }
+
+  // Event delegation para hover
+  document.addEventListener('mouseover', e => {
+    const icon = e.target.closest('.info-icon');
+    if (icon) showTooltip(icon);
+  });
+  document.addEventListener('mouseout', e => {
+    const icon = e.target.closest('.info-icon');
+    if (icon && !e.relatedTarget?.closest('.info-icon')) hideTooltip();
+  });
+
+  // Soporte touch (tap)
+  document.addEventListener('touchstart', e => {
+    const icon = e.target.closest('.info-icon');
+    if (icon) {
+      e.preventDefault();
+      if (activeTouchIcon === icon) { hideTooltip(); }
+      else { activeTouchIcon = icon; showTooltip(icon); }
+    } else if (activeTouchIcon) {
+      hideTooltip();
+    }
+  }, { passive: false });
+
+  // Cerrar con scroll
+  window.addEventListener('scroll', hideTooltip, { passive: true });
+})();
 
 
 /* ═══════ AUTO-REFRESH ═══════ */
