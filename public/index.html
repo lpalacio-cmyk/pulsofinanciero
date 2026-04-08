@@ -207,6 +207,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .vs-detail-item span:last-child{font-family:'JetBrains Mono',monospace;font-weight:600}
 .vs-note{margin-top:1rem;padding:.65rem 1rem;background:var(--bg-subtle);border-radius:8px;font-size:.7rem;color:var(--text-muted);text-align:center;border:1px solid var(--border-subtle)}
 
+/* --- CHART --- */
+.chart-wrap{margin-top:1.2rem;padding:1rem 1.2rem .8rem;background:var(--bg-subtle);border:1px solid var(--border-subtle);border-radius:10px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.chart-title{font-family:'Poppins',sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted)}
+.chart-legend{display:flex;gap:1rem;font-size:.68rem;color:var(--text-secondary);font-weight:500}
+.chart-legend .leg{display:flex;align-items:center;gap:.4rem}
+.chart-legend .leg-box{width:18px;height:3px;border-radius:2px;flex-shrink:0}
+.chart-legend .leg-box.lecap{background:var(--accent);box-shadow:0 0 6px var(--accent-glow)}
+.chart-legend .leg-box.pf{background-image:linear-gradient(90deg,var(--text-muted) 60%,transparent 60%);background-size:5px 3px}
+.chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.ch-grid{stroke:var(--border);stroke-width:1;stroke-dasharray:2 4;opacity:.6}
+.ch-baseline{stroke:var(--border);stroke-width:1}
+.ch-area-lecap{fill:url(#chGradLecap)}
+.ch-area-pf{fill:url(#chGradPF)}
+.ch-line-pf{fill:none;stroke:var(--text-muted);stroke-width:1.8;stroke-dasharray:5 4;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.ch-line-lecap{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px var(--accent-glow))}
+.ch-dot-lecap{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+.ch-dot-pf{fill:var(--text-muted);stroke:var(--surface);stroke-width:2}
+.ch-axis-lbl{fill:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500}
+.ch-end-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.ch-end-lbl.lecap{fill:var(--accent)}
+.ch-end-lbl.pf{fill:var(--text-muted)}
+
 /* --- TOAST --- */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);padding:.65rem 1.4rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--toast-text);background:var(--toast-bg);box-shadow:0 8px 30px rgba(0,0,0,.2);opacity:0;transition:all .3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -346,20 +369,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.1</span>
+    <span class="version">v3.2</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.1 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.2 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
  * Rediseño visual completo. Lógica idéntica a v2.1.
  * Nuevo: Dark/Light mode toggle con persistencia en localStorage.
  * v3.1: Comparador simplificado — usa BADLAR TNA como referencia
  *       única en vez de consultar tasas por banco. Fórmula PF
  *       corregida a capitalización compuesta (renovación 30d).
+ * v3.2: Gráfico SVG nativo de evolución del capital en el
+ *       comparador. Sin dependencias externas, responsive al theme.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -690,7 +715,127 @@ function renderComparativa() {
         ? '✓ La <strong>LECAP ' + LC.ticker + '</strong> rinde <strong>' + formatMoney(diferencia) + ' más</strong> que renovar Plazo Fijo a BADLAR durante ' + dias + ' días (neto de comisiones).'
         : 'Renovar <strong>Plazo Fijo a BADLAR</strong> rendiría <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}
       <br><span style="font-size:.65rem;opacity:.7">Supuesto: PF renovado cada 30 días capitalizando intereses. BADLAR = promedio bancos privados para depósitos &gt;$1M.</span>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-head">
+        <div class="chart-title">Evolución del capital · ${dias} días</div>
+        <div class="chart-legend">
+          <div class="leg"><div class="leg-box lecap"></div>LECAP ${LC.ticker}</div>
+          <div class="leg"><div class="leg-box pf"></div>PF BADLAR</div>
+        </div>
+      </div>
+      ${buildChartSVG(monto, lecapFinal, dias, badlar)}
     </div>`;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+ * SVG CHART — Evolución comparativa LECAP vs PF
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: Genera un gráfico de líneas SVG nativo que
+ *   muestra la evolución del capital invertido en ambas
+ *   opciones (LECAP y PF BADLAR) a lo largo del tiempo.
+ *
+ * CURVAS:
+ *   - PF: monto * (1 + tasa30d) ^ (día / 30)
+ *     Capitalización compuesta renovando cada 30 días.
+ *   - LECAP: monto * (montoCobrar / monto) ^ (día / dias)
+ *     Capitalización compuesta devengada desde monto inicial
+ *     hasta el valor neto al vencimiento. Ambas curvas
+ *     arrancan en "monto" para mostrar la divergencia desde
+ *     un origen común.
+ *
+ * DISEÑO:
+ *   - SVG nativo sin dependencias externas
+ *   - Usa CSS variables → se adapta automáticamente al theme
+ *   - 60 puntos interpolados para curvas suaves
+ *   - Grid horizontal, labels de ejes, puntos finales destacados
+ * ═══════════════════════════════════════════════════════ */
+function buildChartSVG(monto, montoCobrar, dias, badlarTNA) {
+  const W = 720, H = 280;
+  const M = { top: 20, right: 75, bottom: 32, left: 62 };
+  const chartW = W - M.left - M.right;
+  const chartH = H - M.top - M.bottom;
+
+  const NUM_POINTS = 60;
+  const tasa30d = badlarTNA / 100 * 30 / 365;
+  const ratio = montoCobrar / monto;
+
+  const pfPts = [], lecapPts = [];
+  for (let i = 0; i <= NUM_POINTS; i++) {
+    const d = (i / NUM_POINTS) * dias;
+    pfPts.push({ d, v: monto * Math.pow(1 + tasa30d, d / 30) });
+    lecapPts.push({ d, v: monto * Math.pow(ratio, d / dias) });
+  }
+
+  const pfFinalV = pfPts[pfPts.length - 1].v;
+  const lecapFinalV = lecapPts[lecapPts.length - 1].v;
+  const yMin = monto * 0.998;
+  const yMax = Math.max(pfFinalV, lecapFinalV) * 1.015;
+
+  const xScale = d => M.left + (d / dias) * chartW;
+  const yScale = v => M.top + (1 - (v - yMin) / (yMax - yMin)) * chartH;
+
+  // Paths
+  const pfPath = pfPts.map((p, i) => (i === 0 ? 'M' : 'L') + xScale(p.d).toFixed(1) + ',' + yScale(p.v).toFixed(1)).join(' ');
+  const lecapPath = lecapPts.map((p, i) => (i === 0 ? 'M' : 'L') + xScale(p.d).toFixed(1) + ',' + yScale(p.v).toFixed(1)).join(' ');
+
+  // Areas (cerrar al eje inferior)
+  const baseY = M.top + chartH;
+  const pfArea = pfPath + ` L${xScale(dias).toFixed(1)},${baseY} L${xScale(0).toFixed(1)},${baseY} Z`;
+  const lecapArea = lecapPath + ` L${xScale(dias).toFixed(1)},${baseY} L${xScale(0).toFixed(1)},${baseY} Z`;
+
+  // Grid Y y labels (5 líneas)
+  let gridY = '', labelsY = '';
+  for (let i = 0; i <= 4; i++) {
+    const y = M.top + (i / 4) * chartH;
+    const v = yMax - (i / 4) * (yMax - yMin);
+    gridY += `<line x1="${M.left}" y1="${y.toFixed(1)}" x2="${W - M.right}" y2="${y.toFixed(1)}" class="ch-grid"/>`;
+    const vFmt = v >= 1e6 ? '$' + (v / 1e6).toFixed(2) + 'M' : '$' + (v / 1000).toFixed(0) + 'k';
+    labelsY += `<text x="${M.left - 8}" y="${(y + 3).toFixed(1)}" class="ch-axis-lbl" text-anchor="end">${vFmt}</text>`;
+  }
+
+  // Labels X (5 puntos)
+  let labelsX = '';
+  for (let i = 0; i <= 4; i++) {
+    const d = Math.round((i / 4) * dias);
+    const x = xScale(d);
+    labelsX += `<text x="${x.toFixed(1)}" y="${(H - M.bottom + 16).toFixed(1)}" class="ch-axis-lbl" text-anchor="middle">${d}d</text>`;
+  }
+
+  // Baseline
+  const baseline = `<line x1="${M.left}" y1="${baseY}" x2="${W - M.right}" y2="${baseY}" class="ch-baseline"/>`;
+
+  // Puntos finales con labels
+  const lecapEndX = xScale(dias), lecapEndY = yScale(lecapFinalV);
+  const pfEndX = xScale(dias), pfEndY = yScale(pfFinalV);
+  const endLecapLbl = '$' + (lecapFinalV / 1e6).toFixed(2) + 'M';
+  const endPfLbl = '$' + (pfFinalV / 1e6).toFixed(2) + 'M';
+
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="chGradLecap" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity=".28"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="chGradPF" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--text-muted)" stop-opacity=".12"/>
+        <stop offset="100%" stop-color="var(--text-muted)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${gridY}
+    ${baseline}
+    <path d="${pfArea}" class="ch-area-pf"/>
+    <path d="${lecapArea}" class="ch-area-lecap"/>
+    <path d="${pfPath}" class="ch-line-pf"/>
+    <path d="${lecapPath}" class="ch-line-lecap"/>
+    <circle cx="${lecapEndX.toFixed(1)}" cy="${lecapEndY.toFixed(1)}" r="4.5" class="ch-dot-lecap"/>
+    <circle cx="${pfEndX.toFixed(1)}" cy="${pfEndY.toFixed(1)}" r="3.5" class="ch-dot-pf"/>
+    <text x="${(lecapEndX + 8).toFixed(1)}" y="${(lecapEndY + 3).toFixed(1)}" class="ch-end-lbl lecap" text-anchor="start">${endLecapLbl}</text>
+    <text x="${(pfEndX + 8).toFixed(1)}" y="${(pfEndY + 3).toFixed(1)}" class="ch-end-lbl pf" text-anchor="start">${endPfLbl}</text>
+    ${labelsY}
+    ${labelsX}
+  </svg>`;
 }
 
 
