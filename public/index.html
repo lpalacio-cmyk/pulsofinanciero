@@ -395,7 +395,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.5</span>
+    <span class="version">v3.6</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -407,7 +407,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.5 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.6 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
  * v3.1: Comparador simplificado — BADLAR TNA como referencia única.
  * v3.2: Gráfico SVG nativo de evolución del capital.
@@ -417,6 +417,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
  *       Personalizado con input manual de % TNA.
  * v3.5: Tooltips educativos en cada campo de la calculadora con
  *       definición conceptual y fórmula de cálculo.
+ * v3.6: Fix tooltips se quedaban pegados al mover el mouse fuera.
+ *       Listeners directos mouseenter/mouseleave + cierre por click
+ *       fuera. Removido opacity inline que pisaba el CSS.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -1008,9 +1011,7 @@ function attachChartInteractivity() {
     } else {
       ttFormulaWrap.style.display = 'none';
     }
-    // Hacer visible para medir
-    tt.style.opacity = '0';
-    tt.classList.add('show');
+    // Medir rects (el reflow se garantiza al llamar getBoundingClientRect)
     const iconRect = icon.getBoundingClientRect();
     const ttRect = tt.getBoundingClientRect();
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -1028,7 +1029,7 @@ function attachChartInteractivity() {
 
     tt.style.left = left + 'px';
     tt.style.top = top + 'px';
-    tt.style.opacity = '1';
+    tt.classList.add('show');
   }
 
   function hideTooltip() {
@@ -1036,17 +1037,18 @@ function attachChartInteractivity() {
     activeTouchIcon = null;
   }
 
-  // Event delegation para hover
-  document.addEventListener('mouseover', e => {
-    const icon = e.target.closest('.info-icon');
-    if (icon) showTooltip(icon);
-  });
-  document.addEventListener('mouseout', e => {
-    const icon = e.target.closest('.info-icon');
-    if (icon && !e.relatedTarget?.closest('.info-icon')) hideTooltip();
-  });
+  // Listeners directos por ícono (mouseenter/mouseleave no burbujean pero son más confiables)
+  function attachIconListeners() {
+    document.querySelectorAll('.info-icon').forEach(icon => {
+      if (icon.dataset.ttBound) return; // evita duplicar listeners
+      icon.dataset.ttBound = '1';
+      icon.addEventListener('mouseenter', () => showTooltip(icon));
+      icon.addEventListener('mouseleave', hideTooltip);
+    });
+  }
+  attachIconListeners();
 
-  // Soporte touch (tap)
+  // Soporte touch (tap) — delegado porque permite re-bind automático
   document.addEventListener('touchstart', e => {
     const icon = e.target.closest('.info-icon');
     if (icon) {
@@ -1058,8 +1060,11 @@ function attachChartInteractivity() {
     }
   }, { passive: false });
 
-  // Cerrar con scroll
+  // Cerrar con scroll o al hacer click fuera
   window.addEventListener('scroll', hideTooltip, { passive: true });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.info-icon')) hideTooltip();
+  });
 })();
 
 
