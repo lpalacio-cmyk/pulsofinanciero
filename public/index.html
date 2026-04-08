@@ -327,7 +327,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
         <div class="calc-subtitle">Datos de la operación</div>
         <div class="form-group"><label>LECAP / BONCAP</label><select id="calc-ticker"><option value="">Cargando letras...</option></select></div>
         <div class="form-group"><label>Monto a colocar ($)</label><input type="number" id="calc-monto" value="10000000" min="0" step="100000"></div>
-        <div class="form-group"><label>Tipo de cartera</label><select id="calc-cartera"><option value="0.012">Estándar (1,2%)</option><option value="0.01">Preferente (1,0%)</option><option value="0">Personalizada (0%)</option></select></div>
+        <div class="form-group"><label>Arancel</label><select id="calc-cartera"><option value="0.012">Estándar (1,20% TNA)</option><option value="0.01">Preferente (1,00% TNA)</option><option value="custom">Personalizado</option></select></div>
+        <div class="form-group" id="calc-custom-wrap" style="display:none"><label>Arancel personalizado (% TNA)</label><input type="number" id="calc-custom-arancel" value="0" min="0" max="10" step="0.01" placeholder="Ej: 0.80"></div>
         <div class="form-group"><label>Fecha de liquidación</label><input type="date" id="calc-fecha-liq"></div>
         <div style="height:1px;background:var(--border);margin:1rem 0"></div>
         <div class="calc-subtitle">Datos automáticos</div>
@@ -381,19 +382,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.3</span>
+    <span class="version">v3.4</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.3 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.4 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
  * v3.1: Comparador simplificado — BADLAR TNA como referencia única.
  * v3.2: Gráfico SVG nativo de evolución del capital.
  * v3.3: Tooltip interactivo en el gráfico con valores completos
  *       y diferencia día a día. Fix fila destacada en tabla LECAPs.
+ * v3.4: Renombrado "Tipo de cartera" → "Arancel". Nuevo modo
+ *       Personalizado con input manual de % TNA.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -573,7 +576,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     if (!ticker) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
     const letra = window.PF.letrasMeta.find(l => l.ticker === ticker);
     if (!letra) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
-    const precio = window.PF.livePrices[ticker], monto = parseFloat(document.getElementById('calc-monto').value) || 0, arancelPct = parseFloat(document.getElementById('calc-cartera').value) || 0;
+    const precio = window.PF.livePrices[ticker], monto = parseFloat(document.getElementById('calc-monto').value) || 0;
+    const carteraVal = document.getElementById('calc-cartera').value;
+    let arancelPct = 0;
+    if (carteraVal === 'custom') {
+      arancelPct = (parseFloat(document.getElementById('calc-custom-arancel').value) || 0) / 100;
+    } else {
+      arancelPct = parseFloat(carteraVal) || 0;
+    }
     const fechaLiqStr = document.getElementById('calc-fecha-liq').value;
     const stl = fechaLiqStr ? new Date(fechaLiqStr + 'T00:00:00') : new Date(); stl.setHours(0, 0, 0, 0);
     const vto = new Date(letra.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
@@ -615,7 +625,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   window.initCalculadora = function() {
     document.getElementById('calc-ticker').addEventListener('change', calcular);
     document.getElementById('calc-monto').addEventListener('input', calcular);
-    document.getElementById('calc-cartera').addEventListener('change', calcular);
+    document.getElementById('calc-cartera').addEventListener('change', function() {
+      document.getElementById('calc-custom-wrap').style.display = this.value === 'custom' ? '' : 'none';
+      calcular();
+    });
+    document.getElementById('calc-custom-arancel').addEventListener('input', calcular);
     document.getElementById('calc-fecha-liq').addEventListener('change', calcular);
     const hoy = new Date();
     document.getElementById('calc-fecha-liq').value = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
