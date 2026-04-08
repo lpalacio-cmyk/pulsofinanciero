@@ -229,6 +229,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .ch-end-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
 .ch-end-lbl.lecap{fill:var(--accent)}
 .ch-end-lbl.pf{fill:var(--text-muted)}
+.ch-hover-line{stroke:var(--accent);stroke-width:1;stroke-dasharray:3 3;pointer-events:none;transition:opacity .12s;opacity:0}
+.ch-hover-dot{pointer-events:none;transition:opacity .12s;opacity:0}
+.ch-hover-dot.lecap{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+.ch-hover-dot.pf{fill:var(--text-muted);stroke:var(--surface);stroke-width:2}
+.ch-overlay{fill:transparent;cursor:crosshair}
+.ch-tooltip{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;box-shadow:0 6px 18px rgba(0,0,0,.2);pointer-events:none;opacity:0;transition:opacity .12s;z-index:10;min-width:170px;transform:translateY(-50%)}
+.ch-tt-day{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:.35rem;padding-bottom:.35rem;border-bottom:1px solid var(--border-subtle);font-weight:600}
+.ch-tt-row{display:flex;justify-content:space-between;align-items:center;gap:.9rem;padding:.15rem 0;font-size:.72rem}
+.ch-tt-row span{color:var(--text-muted);font-size:.66rem}
+.ch-tt-row strong{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.74rem}
+.ch-tt-row.lecap strong{color:var(--accent)}
+.ch-tt-row.pf strong{color:var(--text-secondary)}
 
 /* --- TOAST --- */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);padding:.65rem 1.4rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:var(--toast-text);background:var(--toast-bg);box-shadow:0 8px 30px rgba(0,0,0,.2);opacity:0;transition:all .3s;pointer-events:none;z-index:100}
@@ -369,22 +381,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.2</span>
+    <span class="version">v3.3</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
- * PULSO FINANCIERO NOA — v3.2 "Luxury Fintech"
+ * PULSO FINANCIERO NOA — v3.3 "Luxury Fintech"
  * ═══════════════════════════════════════════════════════════════
- * Rediseño visual completo. Lógica idéntica a v2.1.
- * Nuevo: Dark/Light mode toggle con persistencia en localStorage.
- * v3.1: Comparador simplificado — usa BADLAR TNA como referencia
- *       única en vez de consultar tasas por banco. Fórmula PF
- *       corregida a capitalización compuesta (renovación 30d).
- * v3.2: Gráfico SVG nativo de evolución del capital en el
- *       comparador. Sin dependencias externas, responsive al theme.
+ * v3.1: Comparador simplificado — BADLAR TNA como referencia única.
+ * v3.2: Gráfico SVG nativo de evolución del capital.
+ * v3.3: Tooltip interactivo en el gráfico con valores completos
+ *       y diferencia día a día. Fix fila destacada en tabla LECAPs.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
@@ -527,10 +536,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
       }
       rows.sort((a, b) => a.dias - b.dias);
       if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>'; return; }
-      const tirs = rows.filter(r => r.tir !== null).map(r => r.tir), best = tirs.length > 0 ? Math.max(...tirs) : null;
       tbody.innerHTML = rows.map(r => {
-        const ib = r.tir !== null && best !== null && r.tir === best;
-        return '<tr style="' + (ib ? 'background:var(--accent-dim)' : '') + '">'
+        return '<tr>'
           + '<td><span class="ticker-badge">' + r.ticker + '</span></td>'
           + '<td style="font-size:.76rem">' + r.nombre + ' <span style="font-size:.62rem;color:var(--text-muted)">' + r.tipo + '</span></td>'
           + '<td style="font-family:JetBrains Mono,monospace;font-size:.76rem">' + formatDate(r.vencimiento) + '</td>'
@@ -716,7 +723,7 @@ function renderComparativa() {
         : 'Renovar <strong>Plazo Fijo a BADLAR</strong> rendiría <strong>' + formatMoney(-diferencia) + ' más</strong> que la LECAP ' + LC.ticker + ' a ' + dias + ' días.'}
       <br><span style="font-size:.65rem;opacity:.7">Supuesto: PF renovado cada 30 días capitalizando intereses. BADLAR = promedio bancos privados para depósitos &gt;$1M.</span>
     </div>
-    <div class="chart-wrap">
+    <div class="chart-wrap" style="position:relative">
       <div class="chart-head">
         <div class="chart-title">Evolución del capital · ${dias} días</div>
         <div class="chart-legend">
@@ -725,7 +732,16 @@ function renderComparativa() {
         </div>
       </div>
       ${buildChartSVG(monto, lecapFinal, dias, badlar)}
+      <div class="ch-tooltip" id="chTooltip">
+        <div class="ch-tt-day">Día 0</div>
+        <div class="ch-tt-row lecap"><span>LECAP ${LC.ticker}</span><strong>—</strong></div>
+        <div class="ch-tt-row pf"><span>PF BADLAR</span><strong>—</strong></div>
+        <div class="ch-tt-row"><span>Diferencia</span><strong>—</strong></div>
+      </div>
     </div>`;
+
+  // Adjuntar interactividad después de insertar el SVG en el DOM
+  attachChartInteractivity();
 }
 
 
@@ -751,6 +767,7 @@ function renderComparativa() {
  *   - 60 puntos interpolados para curvas suaves
  *   - Grid horizontal, labels de ejes, puntos finales destacados
  * ═══════════════════════════════════════════════════════ */
+let CHART_STATE = null;
 function buildChartSVG(monto, montoCobrar, dias, badlarTNA) {
   const W = 720, H = 280;
   const M = { top: 20, right: 75, bottom: 32, left: 62 };
@@ -775,6 +792,9 @@ function buildChartSVG(monto, montoCobrar, dias, badlarTNA) {
 
   const xScale = d => M.left + (d / dias) * chartW;
   const yScale = v => M.top + (1 - (v - yMin) / (yMax - yMin)) * chartH;
+
+  // Guardar estado para interactividad
+  CHART_STATE = { pfPts, lecapPts, dias, yMin, yMax, M, chartW, chartH, W, H };
 
   // Paths
   const pfPath = pfPts.map((p, i) => (i === 0 ? 'M' : 'L') + xScale(p.d).toFixed(1) + ',' + yScale(p.v).toFixed(1)).join(' ');
@@ -835,7 +855,86 @@ function buildChartSVG(monto, montoCobrar, dias, badlarTNA) {
     <text x="${(pfEndX + 8).toFixed(1)}" y="${(pfEndY + 3).toFixed(1)}" class="ch-end-lbl pf" text-anchor="start">${endPfLbl}</text>
     ${labelsY}
     ${labelsX}
+    <line id="chHoverLine" x1="0" y1="${M.top}" x2="0" y2="${M.top + chartH}" class="ch-hover-line"/>
+    <circle id="chHoverDotLecap" cx="0" cy="0" r="5" class="ch-hover-dot lecap"/>
+    <circle id="chHoverDotPF" cx="0" cy="0" r="4" class="ch-hover-dot pf"/>
+    <rect id="chOverlay" x="${M.left}" y="${M.top}" width="${chartW}" height="${chartH}" class="ch-overlay"/>
   </svg>`;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+ * CHART INTERACTIVITY — Tooltip y hover line
+ * ═══════════════════════════════════════════════════════ */
+function attachChartInteractivity() {
+  if (!CHART_STATE) return;
+  const svg = document.querySelector('.chart-svg');
+  const overlay = document.getElementById('chOverlay');
+  const tooltip = document.getElementById('chTooltip');
+  const line = document.getElementById('chHoverLine');
+  const dotLE = document.getElementById('chHoverDotLecap');
+  const dotPF = document.getElementById('chHoverDotPF');
+  if (!svg || !overlay || !tooltip) return;
+
+  const S = CHART_STATE;
+  const xScale = d => S.M.left + (d / S.dias) * S.chartW;
+  const yScale = v => S.M.top + (1 - (v - S.yMin) / (S.yMax - S.yMin)) * S.chartH;
+
+  function onMove(e) {
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * S.W;
+    const dPos = (svgX - S.M.left) / S.chartW;
+    if (dPos < 0 || dPos > 1) { onLeave(); return; }
+
+    const idx = Math.round(dPos * (S.pfPts.length - 1));
+    const pf = S.pfPts[idx];
+    const le = S.lecapPts[idx];
+    const cx = xScale(pf.d);
+    const yPF = yScale(pf.v);
+    const yLE = yScale(le.v);
+
+    line.setAttribute('x1', cx);
+    line.setAttribute('x2', cx);
+    line.style.opacity = '1';
+    dotPF.setAttribute('cx', cx);
+    dotPF.setAttribute('cy', yPF);
+    dotPF.style.opacity = '1';
+    dotLE.setAttribute('cx', cx);
+    dotLE.setAttribute('cy', yLE);
+    dotLE.style.opacity = '1';
+
+    const dayInt = Math.round(pf.d);
+    tooltip.querySelector('.ch-tt-day').textContent = 'Día ' + dayInt;
+    const rows = tooltip.querySelectorAll('.ch-tt-row strong');
+    rows[0].textContent = formatMoney(le.v);
+    rows[1].textContent = formatMoney(pf.v);
+    const diff = le.v - pf.v;
+    rows[2].textContent = (diff >= 0 ? '+' : '') + formatMoney(diff);
+    rows[2].style.color = diff >= 0 ? 'var(--green)' : 'var(--red)';
+
+    // Posicionar tooltip (coords pixel reales del SVG)
+    const pxX = (cx / S.W) * rect.width;
+    const pxY = (Math.min(yPF, yLE) / S.H) * rect.height;
+    // Si está muy a la derecha, pasamos a la izquierda del cursor
+    const ttWidth = 180;
+    const leftPos = pxX + ttWidth + 20 > rect.width ? pxX - ttWidth - 15 : pxX + 15;
+    tooltip.style.left = leftPos + 'px';
+    tooltip.style.top = pxY + 'px';
+    tooltip.style.opacity = '1';
+  }
+  function onLeave() {
+    tooltip.style.opacity = '0';
+    line.style.opacity = '0';
+    dotLE.style.opacity = '0';
+    dotPF.style.opacity = '0';
+  }
+
+  overlay.addEventListener('mousemove', onMove);
+  overlay.addEventListener('mouseleave', onLeave);
+  overlay.addEventListener('touchmove', e => {
+    if (e.touches[0]) { e.preventDefault(); onMove(e.touches[0]); }
+  }, { passive: false });
+  overlay.addEventListener('touchend', onLeave);
 }
 
 
