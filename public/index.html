@@ -266,7 +266,57 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 /* --- LIVE DOT --- */
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse-dot 2s infinite;margin-right:.4rem}
 
+/* --- v3.7: PRECIOS EN VIVO --- */
+.lecap-meta{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.2px;text-transform:none;color:var(--text-muted)}
+.lecap-meta.warn{color:var(--orange)}
+.lecap-table tbody tr.clickable{cursor:pointer}
+.lecap-table tbody tr.sel{background:var(--accent-dim)}
+.lecap-table td.num{font-family:'JetBrains Mono',monospace}
+.var-up{color:var(--green)}.var-down{color:var(--red)}.var-flat{color:var(--text-muted)}
+.precio-origen{font-size:.58rem;color:var(--orange);margin-left:.3rem;font-family:'DM Sans',sans-serif;font-weight:500}
+@keyframes flashUp{from{background:var(--green-dim);box-shadow:inset 0 0 0 1px var(--green)}to{background:transparent;box-shadow:inset 0 0 0 1px transparent}}
+@keyframes flashDown{from{background:var(--red-dim);box-shadow:inset 0 0 0 1px var(--red)}to{background:transparent;box-shadow:inset 0 0 0 1px transparent}}
+.flash-up{animation:flashUp 1.8s ease-out}.flash-down{animation:flashDown 1.8s ease-out}
+
+/* --- v3.7: PANEL "DETRÁS DE LOS NÚMEROS" --- */
+.api-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2.5rem;box-shadow:var(--shadow-card)}
+.api-fuentes{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.9rem 1.5rem;border-bottom:1px solid var(--border)}
+.api-fuentes-lbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-right:.3rem}
+.api-chip{display:inline-flex;align-items:center;gap:.45rem;padding:.32rem .7rem;border:1px solid var(--border);border-radius:20px;font-size:.72rem;font-weight:600;color:var(--text-secondary);background:var(--bg-subtle)}
+.api-chip .st{width:7px;height:7px;border-radius:50%;background:var(--text-muted);opacity:.5}
+.api-chip.ok .st{background:var(--green);opacity:1}.api-chip.err .st{background:var(--red);opacity:1}
+.api-chip .ms{font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:500;color:var(--text-muted)}
+.api-flow{display:grid;grid-template-columns:1fr 1.15fr 1.25fr}
+.api-step{padding:1.2rem 1.5rem;border-right:1px solid var(--border);min-width:0}
+.api-step:last-child{border-right:none;background:var(--bg-subtle)}
+.api-step-t{font-family:'Poppins',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--text-primary);margin-bottom:.8rem}
+.api-step-t span{color:var(--accent);margin-right:.4rem}
+.api-code{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--accent);background:var(--accent-dim);border-radius:8px;padding:.6rem .75rem;word-break:break-all;line-height:1.5}
+.api-code .verb{color:var(--green);font-weight:700;margin-right:.45rem}
+.api-meta{margin-top:.65rem;font-size:.72rem;color:var(--text-muted);line-height:1.6}
+.api-meta strong{color:var(--text-secondary);font-weight:600}
+.api-json{font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:1.6;color:var(--text-primary);background:var(--bg);border:1px solid var(--border-subtle);border-radius:8px;padding:.7rem .85rem;white-space:pre;overflow-x:auto;margin:0}
+.api-json .k{color:var(--text-secondary)}.api-json .n{color:var(--accent)}.api-json .s{color:var(--green)}
+.api-json .hl{display:inline-block;background:var(--accent-dim);border-radius:4px;padding:0 .25rem;margin-left:-.25rem;box-shadow:inset 0 0 0 1px var(--accent)}
+.api-calc-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.38rem 0;border-bottom:1px solid var(--border-subtle);font-size:.74rem}
+.api-calc-row span:first-child{color:var(--text-muted)}
+.api-calc-row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right}
+.api-calc-row small{display:block;font-family:'DM Sans',sans-serif;font-weight:400;font-size:.62rem;color:var(--text-muted)}
+.api-formula{margin-top:.9rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.75;color:var(--text-secondary)}
+.api-formula .res{color:var(--accent);font-weight:700;font-size:1.05rem}
+.api-hint{padding:.7rem 1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--text-muted)}
+
+/* --- v3.7: PRECIO EDITABLE EN LA CALCULADORA --- */
+.precio-live{font-size:.68rem;color:var(--text-muted);margin-top:.35rem}
+.precio-live.manual{color:var(--orange)}
+.precio-live a{color:var(--accent);cursor:pointer;text-decoration:underline}
+
 /* --- RESPONSIVE --- */
+@media(max-width:900px){
+  .api-flow{grid-template-columns:1fr}
+  .api-step{border-right:none;border-bottom:1px solid var(--border)}
+  .lecap-table-wrap{overflow-x:auto}
+}
 @media(max-width:768px){
   .top-bar{padding:.5rem 1rem}
   .nav-tabs{padding:0 .5rem;overflow-x:auto}
@@ -328,8 +378,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
       <div class="card anim anim-d4"><div class="card-icon risk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="card-label">Riesgo País</div><div class="card-value loading" id="val-riesgo"></div><div class="card-detail" id="det-riesgo"></div></div>
       <div class="card anim anim-d5"><div class="card-icon rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="card-label">TNA Badlar (Priv.)</div><div class="card-value loading" id="val-badlar"></div><div class="card-detail" id="det-badlar"></div></div>
     </div>
-    <div class="section-title anim anim-d3">LECAPs — Rendimientos en Vivo</div>
-    <div class="lecap-table-wrap anim anim-d4"><table class="lecap-table"><thead><tr><th>Ticker</th><th>Nombre</th><th>Vencimiento</th><th>Días</th><th>Precio</th><th>VPV</th><th>TNA</th><th>TIR (TEA)</th></tr></thead><tbody id="lecap-body"><tr><td colspan="8" class="lecap-loading">Cargando LECAPs...</td></tr></tbody></table></div>
+    <div class="section-title anim anim-d3">LECAPs y BONCAPs — Rendimientos en Vivo<span class="lecap-meta" id="lecap-meta"></span></div>
+    <div class="lecap-table-wrap anim anim-d4"><table class="lecap-table"><thead><tr><th>Ticker</th><th>Nombre</th><th>Vencimiento</th><th>Días</th><th>Precio</th><th>Var. día</th><th>VPV</th><th>TNA</th><th>TIR (TEA)</th></tr></thead><tbody id="lecap-body"><tr><td colspan="9" class="lecap-loading">Cargando LECAPs...</td></tr></tbody></table></div>
+
+    <div class="section-title anim anim-d4">Detrás de los números — así llegan los datos</div>
+    <div class="api-wrap anim anim-d5">
+      <div class="api-fuentes" id="api-fuentes"></div>
+      <div class="api-flow">
+        <div class="api-step"><div class="api-step-t"><span>1</span>Pedido</div><div class="api-code" id="api-req">—</div><div class="api-meta" id="api-req-meta"></div></div>
+        <div class="api-step"><div class="api-step-t"><span>2</span>Respuesta</div><pre class="api-json" id="api-resp">Esperando datos…</pre><div class="api-meta" id="api-resp-meta"></div></div>
+        <div class="api-step"><div class="api-step-t"><span>3</span>Cálculo</div><div id="api-calc"></div></div>
+      </div>
+      <div class="api-hint">Tocá una fila de la tabla para ver el dato crudo de esa letra. Los precios se vuelven a pedir cada 30 segundos.</div>
+    </div>
   </div>
 
   <!-- TAB: HERRAMIENTAS -->
@@ -345,7 +406,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
         <div class="form-group"><label>Fecha de liquidación <span class="info-icon" data-title="Fecha de liquidación" data-desc="Fecha efectiva en la que se concreta la operación y se debita el monto de la cuenta comitente. En el mercado argentino las LECAPs y BONCAPs liquidan habitualmente en T+1 (un día hábil posterior a la concertación).">i</span></label><input type="date" id="calc-fecha-liq"></div>
         <div style="height:1px;background:var(--border);margin:1rem 0"></div>
         <div class="calc-subtitle">Datos automáticos</div>
-        <div class="form-group"><label>Precio de mercado <span class="info-icon" data-title="Precio de mercado" data-desc="Precio al que cotiza el instrumento en el mercado secundario, expresado cada 100 valores nominales. Es el valor al cual se compran y venden las letras antes del vencimiento. Se obtiene en tiempo real durante la rueda bursátil.">i</span></label><div class="auto-value" id="calc-precio">—</div></div>
+        <div class="form-group"><label>Precio de mercado <span class="info-icon" data-title="Precio de mercado" data-desc="Precio al que cotiza el instrumento en el mercado secundario, expresado cada 100 valores nominales. Es el valor al cual se compran y venden las letras antes del vencimiento. Llega en vivo desde data912; podés cambiarlo para simular otro precio de compra.">i</span></label><input type="number" id="calc-precio-input" step="0.001" min="0" placeholder="—"><div class="precio-live" id="calc-precio-live"></div></div>
         <div class="form-group"><label>VPV (pago al vencimiento) <span class="info-icon" data-title="VPV — Valor de Pago al Vencimiento" data-desc="Monto total que el Tesoro abona al tenedor en la fecha de vencimiento del instrumento, por cada 100 valores nominales. Incluye el capital original más los intereses capitalizados desde la fecha de emisión según la tasa fija estipulada en el prospecto.">i</span></label><div class="auto-value" id="calc-vpv">—</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
           <div class="form-group"><label>Vencimiento <span class="info-icon" data-title="Vencimiento" data-desc="Fecha en la cual el instrumento madura y el Tesoro realiza el pago único del VPV al tenedor registrado.">i</span></label><div class="auto-value" id="calc-vto">—</div></div>
@@ -395,7 +456,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   <div class="footer">
     <span>Los datos son informativos y no constituyen asesoramiento financiero.</span>
     <span>Fuentes: DolarAPI · ArgentinaDatos · BCRA · data912</span>
-    <span class="version">v3.6</span>
+    <span class="version">v3.7</span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -420,12 +481,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
  * v3.6: Fix tooltips se quedaban pegados al mover el mouse fuera.
  *       Listeners directos mouseenter/mouseleave + cierre por click
  *       fuera. Removido opacity inline que pisaba el CSS.
+ * v3.7: (oct 2026) Fix tabla LECAPs: ArgentinaDatos cambió el formato
+ *       de /v1/finanzas/letras (ahora { letras: [...] } y sin vpv) y la
+ *       tabla dejaba de cargar. VPV oficial + calculado, vencimiento
+ *       leído del ticker si falta una fuente. Precios cada 30 s con
+ *       variación del día y destello al cambiar. Panel "Detrás de los
+ *       números" (pedido, respuesta cruda y cálculo) y estado de cada
+ *       API. Precio editable en la calculadora para simular. La
+ *       selección de la calculadora ya no se pierde al refrescar.
  * ═══════════════════════════════════════════════════════════════ */
 
 /* ═══════ MÓDULO 1: CORE ═══════ */
 (function initCore() {
   window.PF = {
-    letrasMeta: [], livePrices: {},
+    letrasMeta: [], livePrices: {}, precioOrigen: {}, rows: [],
+    raw912: {}, rawAD: {}, apis: {}, pedidos: {},
+    inspTicker: null, precioManual: false, precioManualTicker: null, cargandoLecaps: false,
     mepVenta: null, cclVenta: null,
     badlarTNA: null,
     lastCalc: { ticker: null, monto: 0, dias: 0, totalPagar: 0, montoCobrar: 0, ganancia: 0, tea: 0, tna: 0 },
@@ -460,9 +531,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     if (d.getDay() === 6) d.setDate(d.getDate() + 2);
     return d;
   };
-  window.fetchFB = async function(proxy, direct) {
-    if (!window.PF.isLocal) { const r = await fetch(proxy); if (r.ok) return r.json(); }
-    const r2 = await fetch(direct); if (!r2.ok) throw new Error('HTTP ' + r2.status); return r2.json();
+  /* apiJSON: pide una URL, devuelve el JSON y anota cuánto tardó y si respondió bien.
+   * fuente: nombre que se muestra en el panel ("data912", "DolarAPI"...).
+   * mostrar: URL que se muestra (la del proveedor, aunque el pedido pase por /api/...). */
+  window.fmtHora = d => d ? d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }) : '';
+  window.apiJSON = async function(fuente, url, mostrar) {
+    const t0 = performance.now();
+    let status = 0;
+    try {
+      const r = await fetch(url, { cache: 'no-store' });
+      status = r.status;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const n = Array.isArray(data) ? data.length : (data && Array.isArray(data.letras) ? data.letras.length : null);
+      registrarApi(fuente, mostrar || url, true, Math.round(performance.now() - t0), status, n);
+      return data;
+    } catch (e) {
+      registrarApi(fuente, mostrar || url, false, Math.round(performance.now() - t0), status, null);
+      throw e;
+    }
+  };
+  function registrarApi(fuente, url, ok, ms, status, n) {
+    const reg = { fuente, url, ok, ms, status, n, at: new Date() };
+    window.PF.apis[fuente] = reg;
+    window.PF.pedidos[url] = reg;
+    if (typeof window.renderFuentes === 'function') window.renderFuentes();
+  }
+  window.fetchFB = async function(fuente, proxy, direct) {
+    if (!window.PF.isLocal) { try { return await window.apiJSON(fuente, proxy, direct); } catch (e) { /* sigue directo */ } }
+    return window.apiJSON(fuente, direct);
   };
 
   document.getElementById('fecha-text').textContent =
@@ -505,27 +602,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 /* ═══════ MÓDULO 2: CARDS MACRO ═══════ */
 (function initCardsMacro() {
   function loadOficial() {
-    fetch('https://dolarapi.com/v1/dolares/oficial').then(r => r.json())
+    apiJSON('DolarAPI', 'https://dolarapi.com/v1/dolares/oficial')
       .then(d => setCard('oficial', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)))
       .catch(() => setError('oficial', 'DolarAPI caído', 'loadCards()'));
   }
   function loadMEP() {
-    fetch('https://dolarapi.com/v1/dolares/bolsa').then(r => r.json())
+    apiJSON('DolarAPI', 'https://dolarapi.com/v1/dolares/bolsa')
       .then(d => { window.PF.mepVenta = d.venta; setCard('mep', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)); if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar(); })
       .catch(() => setError('mep', 'DolarAPI caído', 'loadCards()'));
   }
   function loadCCL() {
-    fetch('https://dolarapi.com/v1/dolares/contadoconliqui').then(r => r.json())
+    apiJSON('DolarAPI', 'https://dolarapi.com/v1/dolares/contadoconliqui')
       .then(d => { window.PF.cclVenta = d.venta; setCard('ccl', formatARS(d.venta), 'Compra: ' + formatARS(d.compra)); if (typeof window.updateCalcDollar === 'function') window.updateCalcDollar(); })
       .catch(() => setError('ccl', 'DolarAPI caído', 'loadCards()'));
   }
   function loadRiesgo() {
-    fetch('https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo').then(r => r.json())
+    apiJSON('ArgentinaDatos', 'https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais/ultimo')
       .then(d => setCard('riesgo', d.valor + ' pts', 'Fecha: ' + d.fecha))
       .catch(() => setError('riesgo', 'ArgentinaDatos caído', 'loadCards()'));
   }
   function loadBadlar() {
-    fetchFB('/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
+    fetchFB('BCRA', '/api/bcra?id=7', 'https://api.bcra.gob.ar/estadisticas/v4.0/Monetarias/7')
       .then(d => { let v = null, f = null; if (d.results && d.results.length > 0) { const r = d.results[0]; if (r.detalle && r.detalle.length > 0) { v = r.detalle[0].valor; f = r.detalle[0].fecha; } else if (r.ultValorInformado !== undefined) { v = r.ultValorInformado; f = r.ultFechaInformada; } } if (v !== null) { window.PF.badlarTNA = v; setCard('badlar', v.toFixed(2) + '%', 'TNA · ' + (f || '')); updateBadlarInfo(); renderComparativa(); } else setError('badlar', 'Sin datos'); })
       .catch(() => setError('badlar', window.PF.isLocal ? 'Solo en Vercel (CORS)' : 'Error BCRA', 'loadCards()'));
   }
@@ -534,51 +631,296 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 })();
 
 
-/* ═══════ MÓDULO 3: TABLA LECAPs ═══════ */
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 3: TABLA LECAPs / BONCAPs (v3.7)
+ * ───────────────────────────────────────────────────────
+ * FUENTES (se piden las tres a la vez):
+ *   - data912 /live/arg_notes y /live/arg_bonds → precio en vivo ("c"),
+ *     puntas y variación del día. En Vercel pasa por /api/data912.
+ *   - ArgentinaDatos /v1/finanzas/letras → listado, vencimiento y base
+ *     para calcular el VPV. OJO: desde oct 2026 devuelve
+ *     { fechaActualizacion, letras: [...] } y ya no trae "vpv"; antes era
+ *     una lista con vpv y por eso la tabla dejó de cargar.
+ *   - VPV_OFICIAL (abajo) → pago al vencimiento cada 100 VN según las
+ *     condiciones de emisión.
+ *
+ * VPV: si la letra está en VPV_OFICIAL se usa ese. Si no (una letra nueva),
+ *   se calcula con el cierre que informa ArgentinaDatos:
+ *     VPV = precio × (1 + TEA)^(días / 365)
+ *   y da lo mismo que el oficial hasta el segundo decimal.
+ *   Para sumar una letra nueva a mano: 'TICKER': VPV.
+ *
+ * SI UNA FUENTE FALLA: sin ArgentinaDatos, la tabla sigue con data912 +
+ *   VPV_OFICIAL (el vencimiento se lee del ticker: S30N6 = 30/11/2026).
+ *   Sin data912, se muestran los cierres de ArgentinaDatos. Si fallan
+ *   todas en un refresco, queda la última tabla buena.
+ * ═══════════════════════════════════════════════════════ */
+const VPV_OFICIAL = {
+  S30O6: 135.278, S13N6: 109.65, S30N6: 129.888,
+  T15E7: 161.104, T30A7: 157.341, T31Y7: 151.563, T30J7: 156.037
+};
+const MES_TICKER = { E: 1, F: 2, M: 3, A: 4, Y: 5, J: 6, L: 7, G: 8, S: 9, O: 10, N: 11, D: 12 };
+// LECAP = S + día + mes + año (S30N6) · BONCAP = T + día + mes + año (T15E7).
+// Deja afuera las LECER (X...), duales (TTD26), BONTE (TY30P) y letras en dólares (D...).
+const RE_CAPITALIZABLE = /^([ST])(\d{2})([EFMAYJLGSOND])(\d)$/;
+
+function vencimientoDesdeTicker(t) {
+  const m = RE_CAPITALIZABLE.exec(t || '');
+  if (!m) return null;
+  let y = 2020 + parseInt(m[4], 10);
+  if (y < new Date().getFullYear() - 1) y += 10;
+  return y + '-' + String(MES_TICKER[m[3]]).padStart(2, '0') + '-' + m[2];
+}
+window.fmtN = (n, d) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
+
 (function initTablaLecaps() {
+  const MS = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
   async function loadLecaps() {
+    const PF = window.PF;
+    if (PF.cargandoLecaps) return;
+    PF.cargandoLecaps = true;
     const tbody = document.getElementById('lecap-body');
+    const metaEl = document.getElementById('lecap-meta');
     try {
-      const metaResp = await fetch('https://api.argentinadatos.com/v1/finanzas/letras');
-      if (!metaResp.ok) throw new Error('ArgentinaDatos no respondió');
-      window.PF.letrasMeta = await metaResp.json();
-      let preciosVivos = false;
-      try {
-        const nR = await fetch(window.PF.isLocal ? 'https://data912.com/live/arg_notes' : '/api/data912?type=notes');
-        if (nR.ok) { const n = await nR.json(); if (Array.isArray(n)) for (const i of n) if (i.symbol && i.c && parseFloat(i.c) > 0) window.PF.livePrices[i.symbol] = parseFloat(i.c); }
-        const bR = await fetch(window.PF.isLocal ? 'https://data912.com/live/arg_bonds' : '/api/data912?type=bonds');
-        if (bR.ok) { const b = await bR.json(); if (Array.isArray(b)) for (const i of b) if (i.symbol && i.c && parseFloat(i.c) > 0) window.PF.livePrices[i.symbol] = parseFloat(i.c); }
-        if (Object.keys(window.PF.livePrices).length > 0) preciosVivos = true;
-      } catch (e) { console.log('data912:', e.message); }
-      const stl = getSettlement(), rows = [], ms = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      for (const l of window.PF.letrasMeta) {
-        const vto = new Date(l.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
-        if (dias <= 0) continue;
-        const precio = window.PF.livePrices[l.ticker] || null, tipo = l.ticker.startsWith('T') ? 'BONCAP' : 'LECAP';
-        const [y, m, d] = l.fechaVencimiento.split('-'), nombre = tipo + ' ' + ms[parseInt(m)] + ' ' + parseInt(d) + " '" + y.slice(2);
+      const pedido912 = tipo => {
+        const upstream = 'https://data912.com/live/arg_' + tipo;
+        return apiJSON('data912', PF.isLocal ? upstream : '/api/data912?type=' + tipo, upstream);
+      };
+      const [rAD, rNotes, rBonds] = await Promise.allSettled([
+        apiJSON('ArgentinaDatos', 'https://api.argentinadatos.com/v1/finanzas/letras'),
+        pedido912('notes'),
+        pedido912('bonds')
+      ]);
+
+      const meta = {};      // ticker → { ticker, fechaVencimiento, vpv, vpvOrigen }
+      const cierreAD = {};  // ticker → precio de cierre de ArgentinaDatos
+      const vivos = {};     // ticker → { c, pct }
+
+      // 1) ArgentinaDatos: acepta el formato nuevo ({ letras: [...] }) y el viejo (lista)
+      if (rAD.status === 'fulfilled') {
+        const ad = rAD.value;
+        const lista = Array.isArray(ad) ? ad : (ad && Array.isArray(ad.letras) ? ad.letras : []);
+        for (const l of lista) {
+          if (!l || !RE_CAPITALIZABLE.test(l.ticker || '')) continue;
+          const p = parseFloat(l.precioArs), tea = parseFloat(l.teaPorcentaje), d = parseFloat(l.diasAlVencimiento);
+          let vpv = parseFloat(l.vpv) || null, origen = vpv ? 'ArgentinaDatos' : null;
+          if (!vpv && p > 0 && isFinite(tea) && d > 0) { vpv = p * Math.pow(1 + tea / 100, d / 365); origen = 'calculado'; }
+          meta[l.ticker] = { ticker: l.ticker, fechaVencimiento: l.fechaVencimiento || vencimientoDesdeTicker(l.ticker), vpv, vpvOrigen: origen };
+          if (p > 0) cierreAD[l.ticker] = p;
+          PF.rawAD[l.ticker] = l;
+        }
+      }
+
+      // 2) data912: precios en vivo
+      const ok912 = [];
+      [['notes', rNotes], ['bonds', rBonds]].forEach(([tipo, r]) => {
+        if (r.status !== 'fulfilled' || !Array.isArray(r.value)) return;
+        ok912.push(tipo);
+        for (const i of r.value) {
+          if (!i || !RE_CAPITALIZABLE.test(i.symbol || '')) continue;
+          PF.raw912[i.symbol] = { item: i, tipo };
+          const c = parseFloat(i.c);
+          if (c > 0) vivos[i.symbol] = { c, pct: parseFloat(i.pct_change) };
+        }
+      });
+
+      // 3) VPV oficial y letras que solo aparecen en data912
+      for (const [t, vpv] of Object.entries(VPV_OFICIAL)) {
+        if (meta[t]) { meta[t].vpv = vpv; meta[t].vpvOrigen = 'oficial'; }
+        else if (vivos[t]) meta[t] = { ticker: t, fechaVencimiento: vencimientoDesdeTicker(t), vpv, vpvOrigen: 'oficial' };
+      }
+      for (const t of Object.keys(vivos)) if (!meta[t]) meta[t] = { ticker: t, fechaVencimiento: vencimientoDesdeTicker(t), vpv: null, vpvOrigen: null };
+
+      if (Object.keys(meta).length === 0) {
+        if (PF.rows.length) {
+          metaEl.textContent = 'No se pudo actualizar a las ' + fmtHora(new Date()) + ' · se muestran los últimos datos';
+          metaEl.classList.add('warn');
+          return;
+        }
+        throw new Error('Ninguna fuente respondió');
+      }
+
+      // 4) Precios: data912 primero; si no hay, el cierre de ArgentinaDatos
+      const previos = PF.livePrices;
+      PF.livePrices = {}; PF.precioOrigen = {};
+      for (const t of Object.keys(meta)) {
+        if (vivos[t]) { PF.livePrices[t] = vivos[t].c; PF.precioOrigen[t] = 'data912'; }
+        else if (cierreAD[t]) { PF.livePrices[t] = cierreAD[t]; PF.precioOrigen[t] = 'cierre'; }
+      }
+      PF.letrasMeta = Object.values(meta);
+
+      // 5) Filas: días desde la liquidación (T+1 hábil)
+      const stl = getSettlement(); stl.setHours(0, 0, 0, 0);
+      const rows = [];
+      for (const l of PF.letrasMeta) {
+        if (!l.fechaVencimiento) continue;
+        const vto = new Date(l.fechaVencimiento + 'T00:00:00');
+        const dias = Math.round((vto - stl) / 864e5);
+        if (dias < 1) continue;
+        const precio = PF.livePrices[l.ticker] || null, tipo = l.ticker.startsWith('T') ? 'BONCAP' : 'LECAP';
+        const [y, m, d] = l.fechaVencimiento.split('-'), nombre = tipo + ' ' + MS[parseInt(m, 10)] + ' ' + parseInt(d, 10) + " '" + y.slice(2);
         let tna = null, tir = null;
-        if (precio && precio > 0 && l.vpv) { const g = l.vpv / precio; tna = (g - 1) * (365 / dias) * 100; tir = (Math.pow(g, 365 / dias) - 1) * 100; }
-        rows.push({ ticker: l.ticker, nombre, tipo, vencimiento: l.fechaVencimiento, dias, precio, vpv: l.vpv, tna, tir });
+        if (precio && l.vpv) { const g = l.vpv / precio; tna = (g - 1) * (365 / dias) * 100; tir = (Math.pow(g, 365 / dias) - 1) * 100; }
+        const v = vivos[l.ticker];
+        rows.push({ ticker: l.ticker, nombre, tipo, vencimiento: l.fechaVencimiento, dias, precio, vpv: l.vpv, vpvOrigen: l.vpvOrigen,
+                    tna, tir, pct: v && isFinite(v.pct) ? v.pct : null, origen: PF.precioOrigen[l.ticker] || null });
       }
       rows.sort((a, b) => a.dias - b.dias);
-      if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">No se encontraron letras activas</td></tr>'; return; }
+      PF.rows = rows;
+      if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="9" class="lecap-loading">No se encontraron letras activas</td></tr>'; return; }
+
       tbody.innerHTML = rows.map(r => {
-        return '<tr>'
+        const prev = previos[r.ticker];
+        const flash = prev && r.precio && r.precio !== prev ? (r.precio > prev ? ' flash-up' : ' flash-down') : '';
+        const pctTxt = r.pct === null ? '<span class="var-flat">—</span>'
+          : '<span class="' + (r.pct > 0 ? 'var-up' : r.pct < 0 ? 'var-down' : 'var-flat') + '">' + (r.pct > 0 ? '+' : '') + fmtN(r.pct, 2) + '%</span>';
+        return '<tr class="clickable' + (r.ticker === PF.inspTicker ? ' sel' : '') + '" data-ticker="' + r.ticker + '">'
           + '<td><span class="ticker-badge">' + r.ticker + '</span></td>'
           + '<td style="font-size:.76rem">' + r.nombre + ' <span style="font-size:.62rem;color:var(--text-muted)">' + r.tipo + '</span></td>'
-          + '<td style="font-family:JetBrains Mono,monospace;font-size:.76rem">' + formatDate(r.vencimiento) + '</td>'
-          + '<td style="font-family:JetBrains Mono,monospace;text-align:center">' + r.dias + 'd</td>'
-          + '<td style="font-family:JetBrains Mono,monospace;font-weight:600">' + (r.precio ? r.precio.toFixed(2) : '<span style="color:var(--text-muted)">—</span>') + '</td>'
-          + '<td style="font-family:JetBrains Mono,monospace;font-size:.76rem">' + (r.vpv ? r.vpv.toFixed(3) : '—') + '</td>'
-          + '<td style="font-family:JetBrains Mono,monospace">' + (r.tna !== null ? r.tna.toFixed(2) + '%' : '—') + '</td>'
-          + '<td>' + (r.tir !== null ? '<span class="tir-value">' + r.tir.toFixed(2) + '%</span>' : '<span style="color:var(--text-muted);font-size:.72rem">Sin precio</span>') + '</td></tr>';
+          + '<td class="num" style="font-size:.76rem">' + formatDate(r.vencimiento) + '</td>'
+          + '<td class="num" style="text-align:center">' + r.dias + 'd</td>'
+          + '<td class="num' + flash + '" style="font-weight:600">' + (r.precio ? fmtN(r.precio, 2) + (r.origen === 'cierre' ? '<span class="precio-origen">cierre</span>' : '') : '<span style="color:var(--text-muted)">—</span>') + '</td>'
+          + '<td class="num" style="font-size:.76rem">' + pctTxt + '</td>'
+          + '<td class="num" style="font-size:.76rem">' + (r.vpv ? fmtN(r.vpv, 3) : '—') + '</td>'
+          + '<td class="num">' + (r.tna !== null ? fmtN(r.tna, 2) + '%' : '—') + '</td>'
+          + '<td>' + (r.tir !== null ? '<span class="tir-value">' + fmtN(r.tir, 2) + '%</span>' : '<span style="color:var(--text-muted);font-size:.72rem">' + (r.precio ? 'Sin VPV' : 'Sin precio') + '</span>') + '</td></tr>';
       }).join('');
-      if (!preciosVivos) tbody.innerHTML += '<tr><td colspan="8" style="padding:.55rem 1rem;font-size:.72rem;color:var(--orange);background:var(--orange-dim);text-align:center">⚠ Sin precios en vivo — ' + (window.PF.isLocal ? 'solo disponible en Vercel' : 'mercado cerrado') + '. Metadata OK.</td></tr>';
+
+      // Avisos
+      const avisos = [];
+      if (!ok912.length) avisos.push('data912 no respondió: precios de cierre de ArgentinaDatos');
+      else if (!Object.keys(vivos).length) avisos.push('Sin precios en vivo (mercado cerrado)');
+      if (rAD.status !== 'fulfilled') avisos.push('ArgentinaDatos no respondió: VPV de condiciones de emisión');
+      if (avisos.length) tbody.innerHTML += '<tr><td colspan="9" style="padding:.55rem 1rem;font-size:.72rem;color:var(--orange);background:var(--orange-dim);text-align:center">⚠ ' + avisos.join(' · ') + '</td></tr>';
+      metaEl.classList.toggle('warn', !ok912.length);
+      metaEl.textContent = (ok912.length ? 'Precios data912 · ' : 'Cierre ArgentinaDatos · ') + fmtHora(new Date()) + ' · cada 30 s';
+
       if (typeof window.populateCalcDropdown === 'function') window.populateCalcDropdown(rows);
-    } catch (e) { console.error('LECAPs:', e); tbody.innerHTML = '<tr><td colspan="8" class="lecap-loading">Error al cargar LECAPs · <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="loadLecaps()">Reintentar</span></td></tr>'; }
+      if (typeof window.calcularLecap === 'function') window.calcularLecap();
+      if (typeof window.renderInspector === 'function') window.renderInspector();
+    } catch (e) {
+      console.error('LECAPs:', e);
+      if (!window.PF.rows.length) tbody.innerHTML = '<tr><td colspan="9" class="lecap-loading">Error al cargar LECAPs · <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="loadLecaps()">Reintentar</span></td></tr>';
+    } finally {
+      window.PF.cargandoLecaps = false;
+    }
   }
+
+  // Tocar una fila muestra su dato crudo en "Detrás de los números"
+  document.getElementById('lecap-body').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-ticker]');
+    if (!tr) return;
+    window.PF.inspTicker = tr.dataset.ticker;
+    document.querySelectorAll('#lecap-body tr.sel').forEach(x => x.classList.remove('sel'));
+    tr.classList.add('sel');
+    if (typeof window.renderInspector === 'function') window.renderInspector();
+  });
+
   window.loadLecaps = loadLecaps;
   loadLecaps();
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+ * MÓDULO 3b: DETRÁS DE LOS NÚMEROS (v3.7)
+ * ───────────────────────────────────────────────────────
+ * PROPÓSITO: mostrar en la página cómo funciona una API:
+ *   1. el pedido (URL, tiempo de respuesta, cantidad de datos),
+ *   2. la respuesta cruda de esa letra, tal como llega,
+ *   3. el cálculo de la TIR con esos números.
+ *   Arriba, el estado de cada fuente conectada.
+ * ═══════════════════════════════════════════════════════ */
+(function initInspector() {
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const FUENTES = [
+    ['DolarAPI', 'Dólar oficial, MEP y CCL'],
+    ['ArgentinaDatos', 'Riesgo país y listado de letras'],
+    ['BCRA', 'Tasa BADLAR'],
+    ['data912', 'Precios de LECAPs y BONCAPs']
+  ];
+
+  window.renderFuentes = function() {
+    const el = document.getElementById('api-fuentes');
+    if (!el) return;
+    el.innerHTML = '<span class="api-fuentes-lbl">Fuentes conectadas</span>' + FUENTES.map(([f, que]) => {
+      const a = window.PF.apis[f];
+      const cls = !a ? '' : (a.ok ? ' ok' : ' err');
+      const det = !a ? 'esperando…' : (a.ok ? a.ms + ' ms · ' + fmtHora(a.at) : 'sin respuesta');
+      return '<span class="api-chip' + cls + '" title="' + esc(que) + (a ? ' · ' + esc(a.url) : '') + '"><span class="st"></span>' + f + ' <span class="ms">' + det + '</span></span>';
+    }).join('');
+  };
+
+  function jsonHTML(obj, resaltar) {
+    const lineas = Object.entries(obj).map(([k, v]) => {
+      const val = typeof v === 'string' ? '<span class="s">"' + esc(v) + '"</span>' : '<span class="n">' + esc(JSON.stringify(v)) + '</span>';
+      const linea = '<span class="k">"' + esc(k) + '"</span>: ' + val;
+      return '  ' + (resaltar.includes(k) ? '<span class="hl">' + linea + '</span>' : linea);
+    });
+    return '{\n' + lineas.join(',\n') + '\n}';
+  }
+
+  window.renderInspector = function() {
+    const PF = window.PF;
+    if (!PF.rows.length) return;
+    let t = PF.inspTicker;
+    if (!t || !PF.rows.some(r => r.ticker === t)) {
+      // Por defecto, la letra con más volumen operado
+      let best = null, bv = -1;
+      for (const r of PF.rows) {
+        const raw = PF.raw912[r.ticker], v = raw ? parseFloat(raw.item.v) || 0 : -1;
+        if (r.tir !== null && v > bv) { bv = v; best = r.ticker; }
+      }
+      t = best || PF.rows[0].ticker;
+      PF.inspTicker = t;
+      const tr = document.querySelector('#lecap-body tr[data-ticker="' + t + '"]');
+      if (tr) tr.classList.add('sel');
+    }
+    const r = PF.rows.find(x => x.ticker === t);
+    const raw912 = r.origen === 'data912' ? PF.raw912[t] : null;
+    const rawAD = PF.rawAD[t];
+    const reqEl = document.getElementById('api-req'), reqMeta = document.getElementById('api-req-meta');
+    const respEl = document.getElementById('api-resp'), respMeta = document.getElementById('api-resp-meta');
+
+    // 1 · Pedido
+    let url, ped;
+    if (raw912) url = 'https://data912.com/live/arg_' + raw912.tipo;
+    else if (rawAD) url = 'https://api.argentinadatos.com/v1/finanzas/letras';
+    ped = url ? PF.pedidos[url] : null;
+    reqEl.innerHTML = url ? '<span class="verb">GET</span>' + esc(url) : '—';
+    reqMeta.innerHTML = ped
+      ? '<strong>' + (ped.ok ? 'Respondió ' + (ped.status || 200) + ' OK' : 'Sin respuesta') + '</strong> en ' + ped.ms + ' ms'
+        + (ped.n ? ' · ' + ped.n + ' instrumentos' : '') + '<br>Último pedido: ' + fmtHora(ped.at)
+        + (raw912 && !PF.isLocal ? '<br>Pasa por nuestro servidor (/api/data912): el navegador no puede pedirle directo a data912.' : '')
+      : '';
+
+    // 2 · Respuesta
+    if (raw912) {
+      respEl.innerHTML = jsonHTML(raw912.item, ['c']);
+      respMeta.innerHTML = '<strong>"c"</strong> es el último precio operado; "px_bid" y "px_ask", las mejores puntas de compra y venta; "v", el volumen; "pct_change", la variación del día.';
+    } else if (rawAD) {
+      respEl.innerHTML = jsonHTML(rawAD, ['precioArs', 'teaPorcentaje', 'diasAlVencimiento']);
+      respMeta.innerHTML = 'data912 no trajo precio para esta letra: se usa el cierre de ArgentinaDatos.';
+    } else {
+      respEl.textContent = 'Sin datos para ' + t;
+      respMeta.textContent = '';
+    }
+
+    // 3 · Cálculo
+    const calc = document.getElementById('api-calc');
+    if (!r.precio || !r.vpv) { calc.innerHTML = '<div class="api-meta">Falta ' + (r.precio ? 'el VPV' : 'el precio') + ' para calcular la TIR de ' + t + '.</div>'; return; }
+    const origenVpv = r.vpvOrigen === 'oficial' ? 'condiciones de emisión' : r.vpvOrigen === 'calculado' ? 'calculado con ArgentinaDatos' : (r.vpvOrigen || '');
+    const stl = getSettlement();
+    calc.innerHTML =
+        '<div class="api-calc-row"><span>Precio <small>dato de la API</small></span><span>' + fmtN(r.precio, 3) + '</span></div>'
+      + '<div class="api-calc-row"><span>VPV <small>pago al vencimiento · ' + origenVpv + '</small></span><span>' + fmtN(r.vpv, 3) + '</span></div>'
+      + '<div class="api-calc-row"><span>Días <small>liquida el ' + stl.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }) + ', vence el ' + formatDate(r.vencimiento) + '</small></span><span>' + r.dias + '</span></div>'
+      + '<div class="api-formula">TIR = (VPV ÷ Precio)<sup>365 ÷ días</sup> − 1<br>'
+      + '&nbsp;&nbsp;&nbsp;&nbsp;= (' + fmtN(r.vpv, 3) + ' ÷ ' + fmtN(r.precio, 3) + ')<sup>365 ÷ ' + r.dias + '</sup> − 1<br>'
+      + '&nbsp;&nbsp;&nbsp;&nbsp;= <span class="res">' + fmtN(r.tir, 2) + '%</span> efectiva anual</div>';
+  };
+
+  window.renderFuentes();
 })();
 
 
@@ -586,8 +928,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 (function setupCalculadora() {
   window.populateCalcDropdown = function(rows) {
     const sel = document.getElementById('calc-ticker');
-    sel.innerHTML = '<option value="">— Seleccioná una letra —</option>';
-    for (const r of rows) sel.innerHTML += '<option value="' + r.ticker + '">' + r.ticker + ' — ' + r.nombre + ' (' + r.dias + 'd)</option>';
+    const elegido = sel.value;  // v3.7: se conserva la letra elegida al refrescar
+    sel.innerHTML = '<option value="">— Seleccioná una letra —</option>'
+      + rows.map(r => '<option value="' + r.ticker + '">' + r.ticker + ' — ' + r.nombre + ' (' + r.dias + 'd)</option>').join('');
+    if (elegido && rows.some(r => r.ticker === elegido)) sel.value = elegido;
   };
   window.updateCalcDollar = function() {
     document.getElementById('calc-mep-val').textContent = window.PF.mepVenta ? formatARS(window.PF.mepVenta) : '—';
@@ -596,10 +940,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
   };
   function calcular() {
     const ticker = document.getElementById('calc-ticker').value;
-    if (!ticker) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
+    if (!ticker) { clearResults(); document.getElementById('calc-precio-input').value = ''; document.getElementById('calc-precio-live').textContent = ''; window.PF.lastCalc.ticker = null; renderComparativa(); return; }
     const letra = window.PF.letrasMeta.find(l => l.ticker === ticker);
     if (!letra) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); return; }
-    const precio = window.PF.livePrices[ticker], monto = parseFloat(document.getElementById('calc-monto').value) || 0;
+    // v3.7: el precio llega en vivo, pero se puede escribir otro para simular
+    const PF = window.PF, inp = document.getElementById('calc-precio-input'), live = PF.livePrices[ticker] || null;
+    if (!PF.precioManual || PF.precioManualTicker !== ticker) { PF.precioManual = false; inp.value = live ? live.toFixed(3) : ''; }
+    const precio = parseFloat(inp.value) > 0 ? parseFloat(inp.value) : null;
+    const liveEl = document.getElementById('calc-precio-live');
+    const origenTxt = PF.precioOrigen[ticker] === 'cierre' ? 'cierre de ArgentinaDatos' : 'en vivo (data912)';
+    if (PF.precioManual) { liveEl.className = 'precio-live manual'; liveEl.innerHTML = 'Precio simulado · ' + origenTxt + ': ' + (live ? fmtN(live, 3) : '—') + ' · <a onclick="volverPrecioVivo()">volver</a>'; }
+    else { liveEl.className = 'precio-live'; liveEl.textContent = live ? 'Precio ' + origenTxt + ' · podés cambiarlo para simular' : 'Sin precio en vivo: escribí uno para simular'; }
+    const monto = parseFloat(document.getElementById('calc-monto').value) || 0;
     const carteraVal = document.getElementById('calc-cartera').value;
     let arancelPct = 0;
     if (carteraVal === 'custom') {
@@ -610,8 +962,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     const fechaLiqStr = document.getElementById('calc-fecha-liq').value;
     const stl = fechaLiqStr ? new Date(fechaLiqStr + 'T00:00:00') : new Date(); stl.setHours(0, 0, 0, 0);
     const vto = new Date(letra.fechaVencimiento + 'T00:00:00'), dias = Math.max(1, Math.round((vto - stl) / 864e5));
-    document.getElementById('calc-precio').textContent = precio ? precio.toFixed(2) : 'Sin precio en vivo';
-    document.getElementById('calc-vpv').textContent = letra.vpv ? letra.vpv.toFixed(6) : '—';
+    document.getElementById('calc-vpv').textContent = letra.vpv ? letra.vpv.toFixed(3) + (letra.vpvOrigen === 'calculado' ? ' (calculado)' : '') : '—';
     document.getElementById('calc-vto').textContent = formatDate(letra.fechaVencimiento);
     document.getElementById('calc-dias').textContent = dias + ' días';
     if (!precio || !letra.vpv || monto <= 0) { clearResults(); window.PF.lastCalc.ticker = null; renderComparativa(); if (!precio) document.getElementById('res-nominales').textContent = 'Necesita precio en vivo'; return; }
@@ -632,7 +983,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     document.getElementById('res-nominales').textContent = nominales.toLocaleString('es-AR');
     document.getElementById('res-arancel').textContent = formatMoney(arancel);
     document.getElementById('res-total-pagar').textContent = formatMoney(totalPagar);
-    document.getElementById('res-amort').textContent = letra.vpv.toFixed(6);
+    document.getElementById('res-amort').textContent = letra.vpv.toFixed(3);
     document.getElementById('res-cobrar').textContent = formatMoney(montoCobrar);
     document.getElementById('res-ganancia').textContent = formatMoney(ganancia);
     document.getElementById('res-rend').textContent = formatPct(rendDirecto);
@@ -645,8 +996,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     renderComparativa();
   }
   function clearResults() { ['res-nominales', 'res-arancel', 'res-total-pagar', 'res-amort', 'res-cobrar', 'res-ganancia', 'res-rend', 'res-tna', 'res-tea', 'res-tem', 'res-mep-be', 'res-ccl-be'].forEach(id => { document.getElementById(id).textContent = '—'; }); }
+  window.volverPrecioVivo = function() { window.PF.precioManual = false; calcular(); };
   window.initCalculadora = function() {
-    document.getElementById('calc-ticker').addEventListener('change', calcular);
+    document.getElementById('calc-ticker').addEventListener('change', () => { window.PF.precioManual = false; calcular(); });
+    document.getElementById('calc-precio-input').addEventListener('input', () => {
+      window.PF.precioManual = true;
+      window.PF.precioManualTicker = document.getElementById('calc-ticker').value;
+      calcular();
+    });
     document.getElementById('calc-monto').addEventListener('input', calcular);
     document.getElementById('calc-cartera').addEventListener('change', function() {
       document.getElementById('calc-custom-wrap').style.display = this.value === 'custom' ? '' : 'none';
@@ -654,8 +1011,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
     });
     document.getElementById('calc-custom-arancel').addEventListener('input', calcular);
     document.getElementById('calc-fecha-liq').addEventListener('change', calcular);
-    const hoy = new Date();
-    document.getElementById('calc-fecha-liq').value = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+    // v3.7: por defecto liquida T+1 hábil, igual que la tabla (antes era hoy y daba un día más)
+    const liq = getSettlement();
+    document.getElementById('calc-fecha-liq').value = liq.getFullYear() + '-' + String(liq.getMonth() + 1).padStart(2, '0') + '-' + String(liq.getDate()).padStart(2, '0');
   };
   window.calcularLecap = calcular;
 })();
@@ -1068,11 +1426,16 @@ function attachChartInteractivity() {
 })();
 
 
-/* ═══════ AUTO-REFRESH ═══════ */
+/* ═══════ AUTO-REFRESH ═══════
+ * v3.7: precios de LECAPs/BONCAPs cada 30 s (el proxy de data912 guarda
+ *   20 s en caché); tarjetas cada 5 min. Si la pestaña está oculta no pide.
+ *   La cuenta regresiva de arriba es la del próximo pedido de precios. */
 (function initAutoRefresh() {
-  const REFRESH_MS = 5 * 60 * 1000; let nextRefresh = Date.now() + REFRESH_MS;
-  setInterval(() => { nextRefresh = Date.now() + REFRESH_MS; window.loadCards(); window.loadLecaps(); }, REFRESH_MS);
-  setInterval(() => { const s = Math.max(0, Math.round((nextRefresh - Date.now()) / 1000)); document.getElementById('countdown').textContent = '(' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') + ')'; }, 1000);
+  const CARDS_MS = 5 * 60 * 1000, LECAPS_MS = 30 * 1000;
+  let nextLecaps = Date.now() + LECAPS_MS;
+  setInterval(() => { if (!document.hidden) window.loadCards(); }, CARDS_MS);
+  setInterval(() => { nextLecaps = Date.now() + LECAPS_MS; if (!document.hidden) window.loadLecaps(); }, LECAPS_MS);
+  setInterval(() => { const s = Math.max(0, Math.round((nextLecaps - Date.now()) / 1000)); document.getElementById('countdown').textContent = '(precios en ' + s + ' s)'; }, 1000);
 })();
 </script>
 </body>

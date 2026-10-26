@@ -15,19 +15,21 @@
  *   - c: precio de cierre/último (string numérico)
  *   - (otros campos no usados por el frontend)
  *
- * CACHE: s-maxage=120 (2 min), stale-while-revalidate=300 (5 min)
- *   → Precios de mercado cambian en tiempo real durante rueda
- * TIMEOUT: 5 segundos
+ * CACHE: s-maxage=20, stale-while-revalidate=40
+ *   → La página pide precios cada 30 s; con 20 s de caché cada pedido
+ *     trae un dato nuevo y data912 recibe a lo sumo 3 pedidos por minuto.
+ * TIMEOUT: 8 segundos
  *
  * HISTORIAL:
  *   2026-03 — v1: Proxy básico con CORS y cache 2min
  *   2026-04 — v2: Agregado timeout 5s, documentación, error tipado
+ *   2026-10 — v3: Caché 20 s (precios en vivo cada 30 s) y timeout 8 s
  * ═══════════════════════════════════════════════════════ */
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=300');
+  res.setHeader('Cache-Control', 's-maxage=20, stale-while-revalidate=40');
 
   const { type } = req.query;
   const urls = {
@@ -44,7 +46,7 @@ export default async function handler(req, res) {
         'User-Agent': 'Mozilla/5.0 (compatible; PulsoFinancieroNOA/1.0)',
         'Accept': 'application/json'
       },
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(8000)
     });
     if (!response.ok) throw new Error(`data912 status ${response.status}`);
     const data = await response.json();
@@ -53,7 +55,7 @@ export default async function handler(req, res) {
     const isTimeout = error.name === 'TimeoutError' || error.name === 'AbortError';
     return res.status(isTimeout ? 504 : 502).json({
       error: true,
-      message: isTimeout ? 'data912 no respondió en 5s' : 'No se pudo consultar data912',
+      message: isTimeout ? 'data912 no respondió en 8s' : 'No se pudo consultar data912',
       detalle: error.message
     });
   }
